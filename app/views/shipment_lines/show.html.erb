@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Shipment line number:</strong>
+  <%= @shipment_line.shipment_line_number %>
+</p>
+
+<p>
+  <strong>Quantity:</strong>
+  <%= @shipment_line.quantity %>
+</p>
+
+<p>
+  <strong>Eta:</strong>
+  <%= @shipment_line.eta %>
+</p>
+
+<p>
+  <strong>Etd:</strong>
+  <%= @shipment_line.etd %>
+</p>
+
+<p>
+  <strong>Origin location:</strong>
+  <%= @shipment_line.origin_location_id %>
+</p>
+
+<p>
+  <strong>Destination location:</strong>
+  <%= @shipment_line.destination_location_id %>
+</p>
+
+<p>
+  <strong>Order line:</strong>
+  <%= @shipment_line.order_line_id %>
+</p>
+
+<%= link_to 'Edit', edit_shipment_line_path(@shipment_line) %> |
+<%= link_to 'Back', shipment_lines_path %>

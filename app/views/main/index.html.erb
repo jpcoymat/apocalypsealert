@@ -1,0 +1,60 @@
+<h1>Main Menu </h1>
+  <script>
+  $(function() {
+    var tabs = $( "#tabs" ).tabs();
+    tabs.find( ".ui-tabs-nav" ).sortable({
+      axis: "x",
+      stop: function() {
+        tabs.tabs( "refresh" );
+      }
+    });
+  });
+  </script>
+  <div id="tabs">
+    <ul>
+      <li><a href="#dashboard-tab">Dashboard</a></li>
+      <li><a href="#projections-tab">Projections</a></li>
+      <li><a href="#sources-tab">Sources</a></li>
+      <li><a href="#adjustments-tab">Adjustments</a></li>
+      <li><a href="#configuration-tab">Configuration</a></li>
+    </ul>
+	<div id="configuration-tab">
+		<ul class="nav">
+			<li><%= link_to "Users", users_path %></li>
+			<li><%= link_to "Products", lookup_products_path %></li>
+			<li><%= link_to "Locations", locations_path %></li>
+			<li><%= link_to "Location Groups", location_groups_path %></li>
+			<li><%= link_to "Product Location Assignment", product_location_assignments_path %></li>
+		</ul>
+	</div>
+	<div id="dashboard-tab">
+		<ul class="nav">
+
+		</ul>
+	</div>
+	<div id="projections-tab">
+		<ul class="nav">
+
+
+
+
+
+		</ul>
+	</div>
+	<div id="sources-tab">
+		<ul class="nav">
+
+
+
+		</ul>
+	</div>
+  	<div id="adjustments-tab">
+		<ul class="nav">
+
+
+
+		</ul>
+	</div>
+  </div>
+	<br \><br \>
+	<%= link_to "Log Out", login_logout_path, method: :post %>

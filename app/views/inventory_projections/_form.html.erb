@@ -1,0 +1,33 @@
+<%= form_for(@inventory_projection) do |f| %>
+  <% if @inventory_projection.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@inventory_projection.errors.count, "error") %> prohibited this inventory_projection from being saved:</h2>
+
+      <ul>
+      <% @inventory_projection.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :location_id %><br>
+    <%= f.number_field :location_id %>
+  </div>
+  <div class="field">
+    <%= f.label :product_id %><br>
+    <%= f.number_field :product_id %>
+  </div>
+  <div class="field">
+    <%= f.label :projected_for %><br>
+    <%= f.date_select :projected_for %>
+  </div>
+  <div class="field">
+    <%= f.label :available_quantity %><br>
+    <%= f.text_field :available_quantity %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

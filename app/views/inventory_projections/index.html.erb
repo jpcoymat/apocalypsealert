@@ -1,0 +1,31 @@
+<h1>Listing inventory_projections</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Location</th>
+      <th>Product</th>
+      <th>Projected for</th>
+      <th>Available quantity</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @inventory_projections.each do |inventory_projection| %>
+      <tr>
+        <td><%= inventory_projection.location_id %></td>
+        <td><%= inventory_projection.product_id %></td>
+        <td><%= inventory_projection.projected_for %></td>
+        <td><%= inventory_projection.available_quantity %></td>
+        <td><%= link_to 'Show', inventory_projection %></td>
+        <td><%= link_to 'Edit', edit_inventory_projection_path(inventory_projection) %></td>
+        <td><%= link_to 'Destroy', inventory_projection, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Inventory projection', new_inventory_projection_path %>

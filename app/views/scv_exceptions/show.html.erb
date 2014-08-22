@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Type:</strong>
+  <%= @scv_exception.type %>
+</p>
+
+<p>
+  <strong>Priority:</strong>
+  <%= @scv_exception.priority %>
+</p>
+
+<p>
+  <strong>Status:</strong>
+  <%= @scv_exception.status %>
+</p>
+
+<%= link_to 'Edit', edit_scv_exception_path(@scv_exception) %> |
+<%= link_to 'Back', scv_exceptions_path %>

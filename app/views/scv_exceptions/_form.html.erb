@@ -1,0 +1,29 @@
+<%= form_for(@scv_exception) do |f| %>
+  <% if @scv_exception.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@scv_exception.errors.count, "error") %> prohibited this scv_exception from being saved:</h2>
+
+      <ul>
+      <% @scv_exception.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :type %><br>
+    <%= f.text_field :type %>
+  </div>
+  <div class="field">
+    <%= f.label :priority %><br>
+    <%= f.number_field :priority %>
+  </div>
+  <div class="field">
+    <%= f.label :status %><br>
+    <%= f.number_field :status %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

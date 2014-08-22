@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  shipment_line_number: MyString
+  quantity: 9.99
+  eta: 2014-08-21
+  etd: 2014-08-21
+  origin_location_id: 1
+  destination_location_id: 1
+  order_line_id: 1
+
+two:
+  shipment_line_number: MyString
+  quantity: 9.99
+  eta: 2014-08-21
+  etd: 2014-08-21
+  origin_location_id: 1
+  destination_location_id: 1
+  order_line_id: 1

@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @inventory_projection.location_id %>
+</p>
+
+<p>
+  <strong>Product:</strong>
+  <%= @inventory_projection.product_id %>
+</p>
+
+<p>
+  <strong>Projected for:</strong>
+  <%= @inventory_projection.projected_for %>
+</p>
+
+<p>
+  <strong>Available quantity:</strong>
+  <%= @inventory_projection.available_quantity %>
+</p>
+
+<%= link_to 'Edit', edit_inventory_projection_path(@inventory_projection) %> |
+<%= link_to 'Back', inventory_projections_path %>
