@@ -1,4 +1,5 @@
 class ScvExceptionsController < ApplicationController
+  before_filter :authorize
   before_action :set_scv_exception, only: [:show, :edit, :update, :destroy]
 
   # GET /scv_exceptions

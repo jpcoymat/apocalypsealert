@@ -1,4 +1,5 @@
 class InventoryProjectionsController < ApplicationController
+  before_filter :authorize
   before_action :set_inventory_projection, only: [:show, :edit, :update, :destroy]
 
   # GET /inventory_projections

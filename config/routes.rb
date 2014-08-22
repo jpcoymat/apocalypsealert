@@ -26,7 +26,12 @@ Rails.application.routes.draw do
   end
 
 
-  resources :users
+  resources :users do
+    member do
+      get 'reset_password'
+    end
+  end
+
 
   resources :organizations
 

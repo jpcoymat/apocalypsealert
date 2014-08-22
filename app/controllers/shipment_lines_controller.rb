@@ -1,4 +1,5 @@
 class ShipmentLinesController < ApplicationController
+  before_filter :authorize
   before_action :set_shipment_line, only: [:show, :edit, :update, :destroy]
 
   # GET /shipment_lines

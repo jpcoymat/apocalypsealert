@@ -1,5 +1,8 @@
 class LocationGroupsController < ApplicationController
+
+  before_filter :authorize
   before_action :set_location_group, only: [:show, :edit, :update, :destroy]
+  before_action :set_user
 
   # GET /location_groups
   # GET /location_groups.json
@@ -71,4 +74,9 @@ class LocationGroupsController < ApplicationController
     def location_group_params
       params.require(:location_group).permit(:code, :name, :organization_id)
     end
+
+    def set_user
+      @user = User.find(session[:user_id])
+    end
+
 end

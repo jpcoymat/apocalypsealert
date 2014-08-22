@@ -15,7 +15,7 @@
       </div>
       <%= form.label "Product Category", class: "col-sm-2 control-label" %>
       <div class="col-sm-2">
-        <%= form.text_field :product_category, class: "form-control" %>
+        <%= form.text_field :category, class: "form-control" %>
       </div>
     </div>
     <div class="form-group">
@@ -40,7 +40,7 @@
           <% for product in @products %>
           <tr><td><%= product.name %></td>
             <td><%= product.code %></td>
-            <td><%= product.product_category %></td>
+            <td><%= product.category %></td>
             <td><%= link_to "Edit", edit_product_path(product) %></td>
           </tr>
           <% end %>

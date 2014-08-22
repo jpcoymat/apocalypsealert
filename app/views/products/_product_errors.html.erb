@@ -1,0 +1,12 @@
+        <% if @product.errors.any? %>
+                <div id="error_explanation">
+                <h2>This Product contains <%= pluralize(@product.errors.count, "error") %>  :</h2>
+
+                <ul>
+                        <% @product.errors.each do |key,value| %>
+                                <li><%= key.to_s.capitalize + " " + value %></li>
+                        <% end %>
+                </ul>
+                </div>
+        <% end %>
+

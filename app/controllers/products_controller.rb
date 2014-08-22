@@ -2,6 +2,7 @@ class ProductsController < ApplicationController
 
   before_filter :authorize
   before_action :set_product, only: [:show, :edit, :update, :destroy]
+  before_action :set_user
 
   # GET /products
   # GET /products.json
@@ -67,7 +68,7 @@ class ProductsController < ApplicationController
     @user = User.find(session[:user_id])
     if request.post?
       params[:product].delete_if {|k,v| v.blank?}
-      @products = Product.where(params[:product]).order_by(:name.asc)
+      @products = Product.where(params[:product]).order(name: :asc)
     end
   end
 
@@ -82,4 +83,9 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :code, :category, :organization_id)
     end
+   
+    def set_user
+      @user = User.find(session[:user_id])
+    end
+
 end

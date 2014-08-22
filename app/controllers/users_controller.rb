@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
+  before_filter :authorize
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-
+  before_action :set_current_user, only: [:new, :edit,:update,:destroy, :reset_password]
   # GET /users
   # GET /users.json
   def index
@@ -61,6 +62,10 @@ class UsersController < ApplicationController
     end
   end
 
+  def reset_password
+  end
+
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
@@ -71,4 +76,9 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(:email, :encrypted_password, :first_name, :last_name, :username, :organization_id)
     end
+
+    def set_current_user
+      @current_user = User.find(session[:user_id])
+    end
+
 end

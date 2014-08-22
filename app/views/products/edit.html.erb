@@ -1,6 +1,10 @@
-<h1>Editing product</h1>
+<h1>Edit Product </h1>
 
-<%= render 'form' %>
+        <%= render partial: "product_errors" %>
 
-<%= link_to 'Show', @product %> |
-<%= link_to 'Back', products_path %>
+	<%= form_for @product, html: {class: "form-horizontal"} do |form| %>
+		<%= render partial: "product", locals: {form: form} %>
+		<%= submit_tag "Update", {class: "btn btn-primary"} %>
+	<% end %>
+	<br /> <br />
+	<%= link_to "Products", lookup_products_path %>

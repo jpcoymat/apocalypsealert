@@ -1,4 +1,5 @@
 class OrderLinesController < ApplicationController
+  before_filter :authorize
   before_action :set_order_line, only: [:show, :edit, :update, :destroy]
 
   # GET /order_lines

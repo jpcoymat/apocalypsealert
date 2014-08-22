@@ -1,0 +1,63 @@
+<div class="form-group">
+  <%= form.label "Location Group",  class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.select :location_group_id, @location_groups.collect {|lg| [lg.name,  lg.id]}, {include_blank: true}, class: "form-control" %>  
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Location Name", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.text_field :name, class: "form-control" 			%>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Location Code", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.text_field :code, class: "form-control"			%>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Address", class: "col-sm-2 control-label" %>		
+  <div class="col-xs-4">
+    <%= form.text_field :address, class: "form-control"		%>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "City",  class: "col-sm-2 control-label" %>		
+  <div class="col-xs-4">
+    <%= form.text_field :city, class: "form-control"			%>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "State/Prov", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+     <%= form.text_field :state_providence, class: "form-control"	%>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Country", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+     <%= form.text_field :country, class: "form-control"       %>
+  </div>
+</div>
+
+<div class="form-group">
+  <%= form.label "Postal Code" ,  class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.text_field :postal_code, class: "form-control"		%>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Latitude" ,  class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.text_field :latitude, class: "form-control"             %>
+  </div>
+</div>
+
+<div class="form-group">
+  <%= form.label "Longitude" ,  class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.text_field :longitude, class: "form-control"             %>
+  </div>
+</div>
+

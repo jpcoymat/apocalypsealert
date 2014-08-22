@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140821232339) do
+ActiveRecord::Schema.define(version: 20140822183300) do
 
   create_table "inventory_projections", force: true do |t|
     t.integer  "location_id"
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 20140821232339) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "supplier_organization_id"
+    t.integer  "customer_organization_id"
   end
 
   create_table "organizations", force: true do |t|
@@ -110,6 +111,7 @@ ActiveRecord::Schema.define(version: 20140821232339) do
     t.string   "mode"
     t.integer  "carrier_organization_id"
     t.integer  "forwarder_organization_id"
+    t.integer  "customer_organization_id"
   end
 
   create_table "users", force: true do |t|
