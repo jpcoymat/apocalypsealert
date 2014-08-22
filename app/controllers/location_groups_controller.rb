@@ -31,7 +31,7 @@ class LocationGroupsController < ApplicationController
 
     respond_to do |format|
       if @location_group.save
-        format.html { redirect_to @location_group, notice: 'Location group was successfully created.' }
+        format.html { redirect_to location_groups_path, notice: 'Location group was successfully created.' }
         format.json { render :show, status: :created, location: @location_group }
       else
         format.html { render :new }
@@ -45,7 +45,7 @@ class LocationGroupsController < ApplicationController
   def update
     respond_to do |format|
       if @location_group.update(location_group_params)
-        format.html { redirect_to @location_group, notice: 'Location group was successfully updated.' }
+        format.html { redirect_to location_groups_path, notice: 'Location group was successfully updated.' }
         format.json { render :show, status: :ok, location: @location_group }
       else
         format.html { render :edit }
