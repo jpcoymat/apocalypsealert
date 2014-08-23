@@ -1,9 +1,8 @@
 class User < ActiveRecord::Base
 
-  validates :first_name, :last_name, :email, :organization_id, presence: true
+  validates :first_name, :last_name, :email, :organization_id, :encrypted_password, presence: true
 
   validates     :username, :length => {:within => 3..40}
-  validates     :username, :first_name, :last_name, :email, :encrypted_password, :presence => true
   validates     :username, :uniqueness => true
   validates     :password, :confirmation => true
   validate      :password_must_be_present
@@ -27,6 +26,11 @@ class User < ActiveRecord::Base
     return if pwd.blank?
     self.encrypted_password = Digest::SHA1.hexdigest(self.password)
   end
+
+  def password_must_be_present
+    errors.add(:password, "Missing password" ) unless encrypted_password.present?
+  end
+
 
   def self.authenticate(username, password)
     user = User.where(username: username).first

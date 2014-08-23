@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_filter :authorize
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :set_current_user, only: [:new, :edit,:update,:destroy, :reset_password]
+  before_action :set_current_user, only: [:new, :edit,:update,:destroy, :reset_password, :create]
   # GET /users
   # GET /users.json
   def index
@@ -16,6 +16,7 @@ class UsersController < ApplicationController
   # GET /users/new
   def new
     @user = User.new
+    @current_user = User.find(session[:user_id])
   end
 
   # GET /users/1/edit
@@ -74,7 +75,7 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:email, :encrypted_password, :first_name, :last_name, :username, :organization_id)
+      params.require(:user).permit(:email, :password, :password_confirmation, :first_name, :last_name, :username, :organization_id)
     end
 
     def set_current_user
