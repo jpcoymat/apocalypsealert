@@ -21,7 +21,9 @@ Rails.application.routes.draw do
     collection do
       get 'lookup'
       post 'lookup'
-    end
+      get 'csv_upload'
+      post 'csv_upload'
+    end 
   end
 
   resources :location_groups

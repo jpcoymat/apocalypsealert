@@ -1,12 +1,11 @@
 class OrderLine < ActiveRecord::Base
 
-  belongs_to :organization
   belongs_to :product
 
-  validates :order_line_number, :quantity, :organization_id, :product_id, :eta, :etd, presence: true
-  validates_uniqueness_of :order_line_number, scope: :organization_id
+  validates :order_line_number, :quantity, :customer_organization_id, :product_id, :eta, :etd, presence: true
+  validates_uniqueness_of :order_line_number, scope: :customer_organization_id
   validate :origin_or_destination
-  validate :parent_child_match
+  validate :different_customer_and_supplier
   validate :arrival_after_departure
   validate :different_locations
 
@@ -41,7 +40,7 @@ class OrderLine < ActiveRecord::Base
   end
 
   def supplier_organization_name
-    @supplier_organization.try(:name)
+    supplier_organization.try(:name)
   end
 
   def supplier_organization_name=(organization_name)
@@ -61,7 +60,7 @@ class OrderLine < ActiveRecord::Base
   end
 
   def customer_organization_name
-    @customer_organization.try(:name)
+    customer_organization.try(:name)
   end
 
   def customer_organization_name=(organization_name)
@@ -90,6 +89,10 @@ class OrderLine < ActiveRecord::Base
       end
     end
 
-
+    def different_customer_and_supplier
+      if customer_organization == supplier_organization
+        errors.add(:base, "Supplier and Customer must be different orgs")
+      end
+    end
 
 end

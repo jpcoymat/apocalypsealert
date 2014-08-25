@@ -7,13 +7,13 @@
 <div class="form-group">
   <%= form.label "Customer Organization", class: "col-sm-2 control-label" %>
   <div class="col-xs-4">
-    <%= form.select :customer_organization_id, @organizations.collect {|org| [org.name, o.id]}, class: "form-control"        %>
+    <%= form.select :customer_organization_id, @organizations.collect {|org| [org.name, org.id]}, {}, class: "form-control"        %>
   </div>
 </div>
 <div class="form-group">
   <%= form.label "Supplier Organization", class: "col-sm-2 control-label" %>
   <div class="col-xs-4">
-    <%= form.select :supplier_organization_id, @organizations.collect{|org| [org.name, org.id], {include_blank: true}, class: "form-control"        %>
+    <%= form.select :supplier_organization_id, @organizations.collect{|org| [org.name, org.id]}, {include_blank: true}, class: "form-control"        %>
   </div>
 </div>
 

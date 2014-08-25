@@ -1,10 +1,10 @@
 
-  <%= form.label "Reference Number", {class: "col-sm-1 control-label"} %>
+  <%= form.label "Line Number", {class: "col-sm-1 control-label"} %>
   <script>
     $(function() {
       var movement_sources = [
         <% movement_sources.each do |ms| %>
-          "<%= ms.object_reference_number %>",
+          "<%= ms.attributes[object_reference_number] %>",
         <% end %>
       ""];
       $( "#<%= source_type%>_object_reference_number" ).autocomplete({
@@ -13,5 +13,5 @@
     });
   </script>
   <div class="col-sm-2"> 
-    <%= form.text_field :object_reference_number, class: "form-control" %>
+    <%= form.text_field object_reference_number, class: "form-control" %>
   </div>

@@ -15,7 +15,7 @@
       <li><a href="#dashboard-tab">Dashboard</a></li>
       <li><a href="#exceptions-tab">Exceptions</a></li>
       <li><a href="#shipment-lines-tab">Shipment Lines</a></li>
-      <li><a href="#order-lines-tab-tab">Order Lines</a></li>
+      <li><a href="#order-lines-tab">Order Lines</a></li>
       <li><a href="#configuration-tab">Configuration</a></li>
     </ul>
 	<div id="configuration-tab">
@@ -35,22 +35,17 @@
 	<div id="exceptions-tab">
 		<ul class="nav">
 
-
-
-
-
 		</ul>
 	</div>
 	<div id="shipment-lines-tab">
 		<ul class="nav">
-
-
 
 		</ul>
 	</div>
   	<div id="order-lines-tab">
 		<ul class="nav">
 			<li><%= link_to "Order Lines", lookup_order_lines_path %></li>
+			<li><%= link_to "Order Line Upload", csv_upload_order_lines_path %></li>
 		</ul>
 	</div>
   </div>

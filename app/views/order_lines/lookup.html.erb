@@ -3,8 +3,8 @@
 <div class="container-fluid">
 <%= form_for :order_line, url: lookup_order_lines_path, html: {class: "form-horizontal"}   do |form| %>
   <div class="form-group">
-    <%= form.hidden_field :organization_id, value: @user.organization_id %>
-    <%= render partial: "shared/reference_number_autocomplete", locals: {form: form, movement_sources: @all_order_lines, source_type: "order_line"} %>
+
+    <%= render partial: "shared/reference_number_autocomplete", locals: {form: form, movement_sources: @all_order_lines, object_reference_number: "order_line_number", source_type: "order_line"} %>
     <%= render partial: "shared/product_autocomplete", locals: {form: form} %>
     <%= form.label "Origin Location", class: "col-sm-1 control-label" %>
     <div class="col-sm-2">
@@ -32,9 +32,11 @@
     <p>No Order Lines have been created yet.</p>
   <% else %>
     <table class="table table-striped">
-      <tr><th>Order Line Reference Number </th> <th>ETD</th> <th>ETA</th> <th>Product</th> <th>Origin Location </th> <th>Destination Location</th> <th>Quantity</th></tr>
+      <tr><th>Customer Organization</th> <th>Supplier Organization</th><th>Order Line Number </th> <th>ETD</th> <th>ETA</th> <th>Product</th> <th>Origin Location </th> <th>Destination Location</th> <th>Quantity</th></tr>
         <% @order_lines.each do |order_line| %>
-          <tr><td><%= order_line.object_reference_number %></td>
+          <tr><td><%= order_line.customer_organization_name %></td>
+	      <td><%= order_line.supplier_organization_name %></td>
+	      <td><%= order_line.order_line_number %></td>
               <td><%= order_line.etd.to_s %></td>
               <td><%= order_line.eta.to_s %></td>
               <td><%= order_line.product.name %></td>
