@@ -1,35 +1,25 @@
-<h1>Listing order_lines</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>Order line number</th>
-      <th>Quantity</th>
-      <th>Eta</th>
-      <th>Etd</th>
-      <th>Origin location</th>
-      <th>Destination location</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @order_lines.each do |order_line| %>
-      <tr>
-        <td><%= order_line.order_line_number %></td>
-        <td><%= order_line.quantity %></td>
-        <td><%= order_line.eta %></td>
-        <td><%= order_line.etd %></td>
-        <td><%= order_line.origin_location_id %></td>
-        <td><%= order_line.destination_location_id %></td>
-        <td><%= link_to 'Show', order_line %></td>
-        <td><%= link_to 'Edit', edit_order_line_path(order_line) %></td>
-        <td><%= link_to 'Destroy', order_line, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New Order line', new_order_line_path %>
+<h1>Order Lines </h1>
+<% if @order_lines.empty? %>
+  <p>No Order Lines have been created yet.</p>
+<% else %>
+   <table class="table table-striped">
+	<tr><th>Order Line Reference Number </th> <th>ETD</th> <th>ETA</th> <th>Product</th> <th>Origin Location </th> <th>Destination Location</th> <th>Quantity</th></tr>
+     	<% @order_lines.each do |order_line| %>
+		<tr><td><%= order_line.object_reference_number %></td>
+		<td><%= order_line.etd.to_s %></td>
+		<td><%= order_line.eta.to_s %></td> 
+		<td><%= order_line.product.name %></td>
+		<td><%= order_line.origin_location.try(:name) %></td>
+		<td><%= order_line.destination_location.try(:name) %></td>
+		<td><%= order_line.quantity.to_s	%></td>
+		<td><%= link_to "Details", order_line_path(order_line)	%></td>
+		<td><%= link_to "Edit", edit_order_line_path(order_line) %></td>
+		</tr>
+   	<% end %>
+  </table %>
+<% end %>
+<br /> <br /> 
+<%= link_to "Create New Order Line", new_order_line_path %>
+<br /> <br />
+<%= link_to "Main Menu", main_index_path %>
+ 

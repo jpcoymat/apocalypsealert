@@ -4,8 +4,26 @@ class OrderLinesController < ApplicationController
 
   # GET /order_lines
   # GET /order_lines.json
+
+  def lookup
+    @user = User.find(session[:user_id])
+    @products = @user.organization.products
+    @locations = @user.organization.locations
+    @all_order_lines = OrderLine.where(organization: @user.organization)
+    @organizations = Organization.all
+    if request.post?
+      @order_lines = OrderLine.where(search_params)
+      respond_to do |format|
+        format.html
+        format.json {render json: @order_lines}
+      end
+    end
+  end
+
+
   def index
-    @order_lines = OrderLine.all
+    @user = User.find(session[:user_id])
+    @order_lines = OrderLine.where(organization_id: @user.organization_id).all
   end
 
   # GET /order_lines/1
@@ -16,10 +34,18 @@ class OrderLinesController < ApplicationController
   # GET /order_lines/new
   def new
     @order_line = OrderLine.new
+    @user = User.find(session[:user_id])
+    @products = @user.organization.products
+    @locations = @user.organization.locations
+    @organizations = Organization.all
   end
 
   # GET /order_lines/1/edit
   def edit
+    @user = User.find(session[:user_id])
+    @products = @user.organization.products
+    @locations = @user.organization.locations
+    @organizations = Organization.all
   end
 
   # POST /order_lines
@@ -57,7 +83,7 @@ class OrderLinesController < ApplicationController
   def destroy
     @order_line.destroy
     respond_to do |format|
-      format.html { redirect_to order_lines_url, notice: 'Order line was successfully destroyed.' }
+      format.html { redirect_to lookup_order_lines_url, notice: 'Order line was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -70,6 +96,6 @@ class OrderLinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_line_params
-      params.require(:order_line).permit(:order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id)
+      params.require(:order_line).permit(:order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :supplier_organization_id, :customer_organization_id)
     end
 end

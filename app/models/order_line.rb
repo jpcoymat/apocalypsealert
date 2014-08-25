@@ -10,6 +10,8 @@ class OrderLine < ActiveRecord::Base
   validate :arrival_after_departure
   validate :different_locations
 
+  has_many :shipment_lines
+
   def origin_location
     @origin_location = Location.where(id: self.origin_location_id).first
   end
@@ -30,8 +32,40 @@ class OrderLine < ActiveRecord::Base
     self.product.try(:name)
   end
 
-  def product_name=(name)
-    self.product_id = Product.where(name: name).first.id
+  def product_name=(product_name)
+    self.product_id = Product.where(name: product_name).first.id
+  end
+
+  def supplier_organization
+    @supplier_organization = Organization.find(self.supplier_organization_id)
+  end
+
+  def supplier_organization_name
+    @supplier_organization.try(:name)
+  end
+
+  def supplier_organization_name=(organization_name)
+    self.supplier_organization_id = Organization.where(name: organization_name).first.id
+  end
+
+  def supplier_organization=(organization)
+    self.supplier_organization_id = organization.try(:id)
+  end 
+
+  def customer_organization
+    @customer_organization = Organization.find(self.customer_organization_id)
+  end
+
+  def customer_organization=(organization)
+    self.customer_organization_id = organization.try(:id)
+  end
+
+  def customer_organization_name
+    @customer_organization.try(:name)
+  end
+
+  def customer_organization_name=(organization_name)
+    self.customer_organization_id = Organization.where(name: organization_name).first.id
   end
 
   protected

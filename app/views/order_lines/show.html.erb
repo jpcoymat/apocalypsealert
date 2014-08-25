@@ -1,34 +1,40 @@
-<p id="notice"><%= notice %></p>
+<h1>Order Line Details</h1>
+<dl class="dl-horizontal">
+                <dt>Order Line Number    	</dt>   <dd><%= @order_line.order_line_number  	%></dd>
+  		<dt>Customer Organization	</dt>	<dd><%= @order_line.customer_organization_name	%></dd>
+		<dt>Supplier Organization	</dt>	<dd><%= @order_line.supplier_organization_name 	%></dd>
+                <dt>ETA    			</dt>   <dd><%= @order_line.eta.to_formatted_s(:short)			%></dd>
+                <dt>ETD	 			</dt>   <dd><%= @order_line.etd.to_formatted_s(:short)			%></dd>
+                <dt>Product             	</dt>   <dd><%= @order_line.product.name             		%></dd>
+                <dt>Origin Location     	</dt>   <dd><%= @order_line.origin_location.try(:name)        	%></dd>
+		<dt>Destination Location	</dt>	<dd><%= @order_line.destination_location.try(:name)	%></dd>	
+                <dt>Quantity			</dt>	<dd><%= @order_line.quantity.to_s	%></dd>
+        </dl>
+<br /><br />
+<h4>Associated Ship Lines</h4>
 
-<p>
-  <strong>Order line number:</strong>
-  <%= @order_line.order_line_number %>
-</p>
+	<% if @order_line.shipment_lines.empty? %>
+		<p>No Ship Lines for this Order Line were found.</p>
+	<% else %>
+		<table class="table table-striped">
+			<tr><th>Reference Number</th>	<th>Product</th> <th>Origin Location</th> <th>Destination Location</th> <th>Ship Quantity</th> <th> Remaining Quantity</th></tr>
+			<% @order_line.shipment_lines.each do |ship_line| %>
+				<tr>
+					<td><%= ship_line.object_reference_number	%></td>
+					<td><%= ship_line.product.name			%></td>
+					<td><%= ship_line.origin_location.try(:name) %></td>
+					<td><%= ship_line.destination_location.try(:name) %></td>
+					<td><%= ship_line.original_quantity.to_s	%></td>
+					<td><%= ship_line.quantity.to_s			%></td>
+					<td><%= link_to("Details", ship_line_path(ship_line)) %></td>
+				</tr>
+			<% end %>
+		</table>
+	<% end %>
+<br /><br />
+<%= link_to "Edit Order Line", edit_order_line_path(@order_line) %>
+<br /><br />
+<%= link_to "Return to Order Lines", lookup_order_lines_path %>
+<br /><br />
 
-<p>
-  <strong>Quantity:</strong>
-  <%= @order_line.quantity %>
-</p>
 
-<p>
-  <strong>Eta:</strong>
-  <%= @order_line.eta %>
-</p>
-
-<p>
-  <strong>Etd:</strong>
-  <%= @order_line.etd %>
-</p>
-
-<p>
-  <strong>Origin location:</strong>
-  <%= @order_line.origin_location_id %>
-</p>
-
-<p>
-  <strong>Destination location:</strong>
-  <%= @order_line.destination_location_id %>
-</p>
-
-<%= link_to 'Edit', edit_order_line_path(@order_line) %> |
-<%= link_to 'Back', order_lines_path %>

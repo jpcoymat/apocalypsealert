@@ -1,6 +1,10 @@
-<h1>Editing order_line</h1>
-
-<%= render 'form' %>
-
-<%= link_to 'Show', @order_line %> |
-<%= link_to 'Back', order_lines_path %>
+<h1>Edit Order Line Details</h1>
+<h3> Enter Updated Order Line Details</h3>
+<%= render partial: "order_line_errors" %>
+<%= form_for @order_line, html: {class: "form-horizontal"} do |form| %>
+  <%= render partial: "order_line", locals: {form: form} %>
+  <%= submit_tag "Update Order Line", class: "btn btn-primary" %>
+<% end %>
+<br \> <br\>
+<%= link_to "Order Line Search", lookup_order_lines_path %> | <%= link_to "Order Line Details", order_line_path(@order_line) %>
+<br \><br \>

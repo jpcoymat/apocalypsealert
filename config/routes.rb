@@ -10,9 +10,19 @@ Rails.application.routes.draw do
 
   resources :scv_exceptions
 
-  resources :shipment_lines
+  resources :shipment_lines do
+    collection do
+      get 'lookup'
+      post 'lookup'
+    end
+  end
 
-  resources :order_lines
+  resources :order_lines do
+    collection do
+      get 'lookup'
+      post 'lookup'
+    end
+  end
 
   resources :location_groups
 
@@ -24,7 +34,6 @@ Rails.application.routes.draw do
       post 'lookup'
     end
   end
-
 
   resources :users do
     member do
