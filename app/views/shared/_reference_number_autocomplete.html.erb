@@ -7,7 +7,7 @@
           "<%= ms.attributes[object_reference_number] %>",
         <% end %>
       ""];
-      $( "#<%= source_type%>_object_reference_number" ).autocomplete({
+      $( "#<%= source_type%>_<%= object_reference_number%>" ).autocomplete({
         source: movement_sources
       });
     });
