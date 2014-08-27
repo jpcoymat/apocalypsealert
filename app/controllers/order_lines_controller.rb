@@ -1,7 +1,10 @@
 class OrderLinesController < ApplicationController
+
+
   before_filter :authorize
   before_action :set_order_line, only: [:show, :edit, :update, :destroy]
 
+ 
   # GET /order_lines
   # GET /order_lines.json
 
@@ -13,7 +16,7 @@ class OrderLinesController < ApplicationController
     @all_order_lines = @user_org.order_lines
     @organizations = Organization.all
     if request.post?
-      @order_lines = @user_org.order_lines.where(search_params)
+      @order_lines = @all_order_lines.where(search_params)
       respond_to do |format|
         format.html
         format.json {render json: @order_lines}
@@ -21,9 +24,18 @@ class OrderLinesController < ApplicationController
     end
   end
 
-  def csv_upload
+  def file_upload
   end
 
+  def import_file
+    logger.debug "Import starting"
+    order_line_file = params[:file]
+    logger.debug "copying file"
+    copy_order_line_file(order_line_file)    
+    logger.debug "Calling OrderLine class method"
+    OrderLine.import(Rails.root.join('public','order_line_uploads').to_s + "/"+order_line_file.original_filename)
+    redirect_to lookup_order_lines_url 
+  end
 
   def index
     @user = User.find(session[:user_id])
@@ -128,6 +140,14 @@ class OrderLinesController < ApplicationController
       search_params
     end
 
+    def copy_order_line_file(order_line_file)
+      logger.debug "in copy method"
+      File.open(Rails.root.join('public','order_line_uploads',order_line_file.original_filename),"wb") do |file|
+        logger.debug "Copying .. "
+        file.write(order_line_file.read)
+      end
+      logger.debug "Copying complete"
+    end
 
 
 end

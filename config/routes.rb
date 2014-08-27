@@ -21,8 +21,8 @@ Rails.application.routes.draw do
     collection do
       get 'lookup'
       post 'lookup'
-      get 'csv_upload'
-      post 'csv_upload'
+      get 'file_upload'
+      post 'import_file'
     end 
   end
 
