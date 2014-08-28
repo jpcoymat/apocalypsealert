@@ -1,0 +1,72 @@
+<div class="form-group">
+  <%= form.label "Shipment Line Number", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.text_field :shipment_line_number, class: "form-control" %>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Mode", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.select :mode, ShipmentLine.modes.collect {|mode| [mode, mode]}, {}, class: "form-control" %>
+  </div>
+</div>
+
+<%= render partial: "order_line_autocomplete", locals: {form: form} %>
+<div class="form-group">
+  <%= form.label "Customer Organization", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.select :customer_organization_id, @organizations.collect {|org| [org.name, org.id]}, {}, class: "form-control" %>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Carrier Organization", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.select :carrier_organization_id, @organizations.collect {|org| [org.name, org.id]}, {}, class: "form-control" %>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Forwarder Organization", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.select :forwarder_organization_id, @organizations.collect {|org| [org.name, org.id]}, {}, class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-group">
+  <%= form.label "ETD", class: "col-sm-2 control-label" %>
+  <div class="col-xs-2">
+    <%= form.text_field :etd %>
+    <script>
+      $( "#shipment_line_etd" ).datepicker({minDate: 0, dateFormat: "yy-mm-dd"});
+    </script>
+  </div>
+</div>
+
+<div class="form-group">
+  <%= form.label "ETA", class: "col-sm-2 control-label" %>
+  <div class="col-xs-2"> 
+    <%= form.text_field :eta %>
+    <script>
+      $( "#shipment_line_eta" ).datepicker({minDate: 0, dateFormat: "yy-mm-dd"});
+    </script>  
+  </div> 
+</div>
+<%= render partial: "shared/product_form_auto", locals: {form: form} %>
+<div class="form-group">
+  <%= form.label "Origin Location", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.select :origin_location_id, @locations.collect {|loc| [loc.name, loc.id]}, {include_blank: true}, class: "form-control" %>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Destination Location", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.select :destination_location_id, @locations.collect {|loc| [loc.name, loc.id]}, {include_blank: true}, class: "form-control" %>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Quantity", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.text_field :quantity, class: "form-control" %>
+  </div>
+</div>
+

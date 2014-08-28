@@ -1,19 +1,47 @@
 class ShipmentLine < ActiveRecord::Base
 
-  belongs_to :organization
+
   belongs_to :product
   belongs_to :order_line
 
-  validates :shipment_line_number, :quantity, :organization_id, :product_id, :eta, :etd, presence: true
-  validates_uniqueness_of :shipment_line_number, scope: :organization_id
+  validates :shipment_line_number, :mode, :quantity, :customer_organization_id, :product_id, :eta, :etd, presence: true
+  validates_uniqueness_of :shipment_line_number, scope: :customer_organization_id
   validate :origin_or_destination
   validate :parent_child_match
   validate :arrival_after_departure
   validate :different_locations
 
+  def self.modes
+    @@modes = ["Ocean", "Truck", "Air", "Rail", "Intermodal", "Parcel"]
+  end
+
   def origin_location
     @origin_location = Location.where(id: self.origin_location_id).first
   end
+
+  def self.import(file_path)
+    spreadsheet = open_spreadsheet(file_path)
+    header = spreadsheet.row(1)
+    (2..spreadsheet.last_row).each do |i|
+      row = Hash[[header, spreadsheet.row(i)].transpose]
+      shipment_line = where(shipment_line_number: row["shipment_line_number"]).first || new
+      shipment_line.attributes = row
+      shipment_line.save
+    end
+  end
+
+  def self.open_spreadsheet(file_path)
+    case File.extname(file_path)
+      when ".csv"
+        Roo::CSV.new(file_path)
+      when ".xls"
+        Roo::Excel.new(file_path)
+      when ".xlsx"
+        Roo::Excelx.new(file_path)
+      else raise "Unknown file type: #{file.original_filename}"
+    end
+  end
+
 
   def destination_location
     @destination_location = Location.where(id: self.destination_location_id).first
@@ -25,6 +53,87 @@ class ShipmentLine < ActiveRecord::Base
 
   def destination_location=(location)
     self.destination_location_id = location.try(:id)
+  end
+
+  def origin_location_name  
+    origin_location.try(:name)
+  end
+
+  def origin_location_name=(location_name)
+    self.origin_location_id = Location.where(name: location_name).first.try(:id)
+  end
+
+  def destination_location_name
+    destination_location.try(:name)
+  end
+
+  def destination_location_name=(location_name)
+    self.destination_location_id = Location.where(name: location_name).first.try(:id)
+  end
+
+
+  def order_line_number
+    order_line.try(:order_line_number)
+  end
+  
+  def order_line_number=(order_line_number)
+    self.order_line_id = OrderLine.where(order_line_number: order_line_number).first.try(:id)
+  end
+
+  def product_name
+    product.try(:name)
+  end
+
+  def product_name=(product_name)
+    self.product_id = Product.where(name: product_name).first.try(:id)
+  end
+
+  def carrier_organization
+    @carrier_organization = Organization.find(self.carrier_organization_id)
+  end
+
+  def carrier_organization=(organization)
+    self.carrier_organization_id = organization.try(:id)
+  end
+
+  def carrier_organization_name
+    carrier_organization.try(:name)
+  end
+
+  def carrier_organization_name=(carrier_name)
+    self.carrier_organization_id = Organization.where(name: carrier_name).first.try(:id)
+  end
+
+  def forwarder_organization
+    @forwarder_organization = Organization.find(self.forwarder_organization_id)
+  end
+
+  def forwarder_organization=(organization)
+    self.forwarder_organization_id = organization.try(:id)
+  end
+
+  def forwarder_organization_name
+    forwarder_organization.try(:name)
+  end
+
+  def forwarder_organization_name=(forwarder_name)
+    self.forwarder_organization_id = Organization.where(name: forwarder_name).first.try(:id)
+  end
+
+  def customer_organization
+    @customer_organization = Organization.find(self.customer_organization_id)
+  end
+
+  def customer_organization=(organization)
+    self.customer_organization_id = organization.try(:id)
+  end
+
+  def customer_organization_name
+    customer_organization.try(:name)
+  end
+
+  def customer_organization_name=(customer_name)
+    self.customer_organization_id = Organization.where(name: customer_name).first.try(:id)
   end
 
   protected

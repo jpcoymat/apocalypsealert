@@ -37,8 +37,8 @@
           <tr><td><%= order_line.customer_organization_name %></td>
 	      <td><%= order_line.supplier_organization_name %></td>
 	      <td><%= order_line.order_line_number %></td>
-              <td><%= order_line.etd.to_s %></td>
-              <td><%= order_line.eta.to_s %></td>
+              <td><%= order_line.etd.to_formatted_s(:short) %></td>
+              <td><%= order_line.eta.to_formatted_s(:short) %></td>
               <td><%= order_line.product.name %></td>
               <td><%= order_line.origin_location.try(:name) %></td>
               <td><%= order_line.destination_location.try(:name) %></td>

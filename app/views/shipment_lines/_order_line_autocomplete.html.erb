@@ -1,0 +1,33 @@
+ <div class="form-group">
+   <%= form.label "Order Line Number", class: "col-sm-2 control-label" %>
+   <script>
+    var order_lines = [
+      <% @order_lines.each do |order_line| %>
+        "<%= order_line.order_line_number %>",
+      <% end %>
+    ""];
+
+    var order_lines_ids = new Object();
+    <% @order_lines.each do |order_line| %>
+      order_lines_ids["<%= order_line.order_line_number %>"] = "<%= order_line.id.to_s %>";
+    <% end %>
+
+    $(function() {
+      $( "#shipment_line_order_line_number" ).autocomplete({
+        source: order_lines
+      });
+    });
+	
+    $(function() {
+      $( "#shipment_line_order_line_number" ).change(function() {
+        var order_ref_number = this.value;
+	var order_id = order_lines_ids[order_ref_number];
+	var order_json = $.getJSON('/order_lines/' + order_id);
+	console.log(order_json);
+      });
+    });
+  </script>
+  <div class="col-xs-4">
+    <%= form.text_field :order_line_number, class: "form-control"  %>
+  </div>
+</div>

@@ -12,34 +12,23 @@ class OrderLine < ActiveRecord::Base
   has_many :shipment_lines
 
   def self.import(file_path)
-    logger.debug "Calling open_spreadsheet"
     spreadsheet = open_spreadsheet(file_path)
-    logger.debug "Getting header"
     header = spreadsheet.row(1)
-    logger.debug "Starting to loop"
     (2..spreadsheet.last_row).each do |i|
-      logger.debug "Now in row " + i.to_s
       row = Hash[[header, spreadsheet.row(i)].transpose]
-      logger.debug "resulting hash: " + row.to_s
       order_line = where(order_line_number: row["order_line_number"]).first || new
-      logger.debug "resulting order line: " + order_line.to_s
-      logger.debug "now setting attributes"
       order_line.attributes = row
       order_line.save
     end
   end
 
   def self.open_spreadsheet(file_path)
-    logger.debug "Open spreadsheet started"
     case File.extname(file_path)
       when ".csv" 
-        logger.debug "CSV file input"
         Roo::CSV.new(file_path)
       when ".xls" 
-        logger.debug "XLS file input"
         Roo::Excel.new(file_path)
       when ".xlsx" 
-        logger.debug "XLST file input"
         Roo::Excelx.new(file_path)
       else raise "Unknown file type: #{file.original_filename}"
     end

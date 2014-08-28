@@ -1,0 +1,54 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Associated object type:</strong>
+  <%= @milestone.associated_object_type %>
+</p>
+
+<p>
+  <strong>Associated object:</strong>
+  <%= @milestone.associated_object_id %>
+</p>
+
+<p>
+  <strong>Milestone type:</strong>
+  <%= @milestone.milestone_type %>
+</p>
+
+<p>
+  <strong>Reason code:</strong>
+  <%= @milestone.reason_code %>
+</p>
+
+<p>
+  <strong>City:</strong>
+  <%= @milestone.city %>
+</p>
+
+<p>
+  <strong>Country:</strong>
+  <%= @milestone.country %>
+</p>
+
+<p>
+  <strong>Quantity:</strong>
+  <%= @milestone.quantity %>
+</p>
+
+<p>
+  <strong>Customer organization:</strong>
+  <%= @milestone.customer_organization_id %>
+</p>
+
+<p>
+  <strong>Create organization:</strong>
+  <%= @milestone.create_organization_id %>
+</p>
+
+<p>
+  <strong>Create user:</strong>
+  <%= @milestone.create_user_id %>
+</p>
+
+<%= link_to 'Edit', edit_milestone_path(@milestone) %> |
+<%= link_to 'Back', milestones_path %>

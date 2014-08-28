@@ -28,11 +28,8 @@ class OrderLinesController < ApplicationController
   end
 
   def import_file
-    logger.debug "Import starting"
     order_line_file = params[:file]
-    logger.debug "copying file"
     copy_order_line_file(order_line_file)    
-    logger.debug "Calling OrderLine class method"
     OrderLine.import(Rails.root.join('public','order_line_uploads').to_s + "/"+order_line_file.original_filename)
     redirect_to lookup_order_lines_url 
   end
@@ -141,12 +138,9 @@ class OrderLinesController < ApplicationController
     end
 
     def copy_order_line_file(order_line_file)
-      logger.debug "in copy method"
       File.open(Rails.root.join('public','order_line_uploads',order_line_file.original_filename),"wb") do |file|
-        logger.debug "Copying .. "
         file.write(order_line_file.read)
       end
-      logger.debug "Copying complete"
     end
 
 

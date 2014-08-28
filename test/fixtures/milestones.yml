@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  associated_object_type: MyString
+  associated_object_id: 1
+  milestone_type: MyString
+  reason_code: MyString
+  city: MyString
+  country: MyString
+  quantity: 9.99
+  customer_organization_id: 1
+  create_organization_id: 1
+  create_user_id: 1
+
+two:
+  associated_object_type: MyString
+  associated_object_id: 1
+  milestone_type: MyString
+  reason_code: MyString
+  city: MyString
+  country: MyString
+  quantity: 9.99
+  customer_organization_id: 1
+  create_organization_id: 1
+  create_user_id: 1

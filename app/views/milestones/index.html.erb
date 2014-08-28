@@ -1,0 +1,43 @@
+<h1>Listing milestones</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Associated object type</th>
+      <th>Associated object</th>
+      <th>Milestone type</th>
+      <th>Reason code</th>
+      <th>City</th>
+      <th>Country</th>
+      <th>Quantity</th>
+      <th>Customer organization</th>
+      <th>Create organization</th>
+      <th>Create user</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @milestones.each do |milestone| %>
+      <tr>
+        <td><%= milestone.associated_object_type %></td>
+        <td><%= milestone.associated_object_id %></td>
+        <td><%= milestone.milestone_type %></td>
+        <td><%= milestone.reason_code %></td>
+        <td><%= milestone.city %></td>
+        <td><%= milestone.country %></td>
+        <td><%= milestone.quantity %></td>
+        <td><%= milestone.customer_organization_id %></td>
+        <td><%= milestone.create_organization_id %></td>
+        <td><%= milestone.create_user_id %></td>
+        <td><%= link_to 'Show', milestone %></td>
+        <td><%= link_to 'Edit', edit_milestone_path(milestone) %></td>
+        <td><%= link_to 'Destroy', milestone, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Milestone', new_milestone_path %>

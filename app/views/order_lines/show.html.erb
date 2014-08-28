@@ -20,13 +20,13 @@
 			<tr><th>Reference Number</th>	<th>Product</th> <th>Origin Location</th> <th>Destination Location</th> <th>Ship Quantity</th> <th> Remaining Quantity</th></tr>
 			<% @order_line.shipment_lines.each do |ship_line| %>
 				<tr>
-					<td><%= ship_line.object_reference_number	%></td>
+					<td><%= ship_line.shipment_line_number	%></td>
 					<td><%= ship_line.product.name			%></td>
 					<td><%= ship_line.origin_location.try(:name) %></td>
 					<td><%= ship_line.destination_location.try(:name) %></td>
-					<td><%= ship_line.original_quantity.to_s	%></td>
+					<td><%= ship_line.quantity.to_s	%></td>
 					<td><%= ship_line.quantity.to_s			%></td>
-					<td><%= link_to("Details", ship_line_path(ship_line)) %></td>
+					<td><%= link_to("Details", shipment_line_path(ship_line)) %></td>
 				</tr>
 			<% end %>
 		</table>

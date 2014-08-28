@@ -16,6 +16,7 @@
       <li><a href="#exceptions-tab">Exceptions</a></li>
       <li><a href="#shipment-lines-tab">Shipment Lines</a></li>
       <li><a href="#order-lines-tab">Order Lines</a></li>
+      <li><a href="#milestones-tab">Milestones</a></li>
       <li><a href="#configuration-tab">Configuration</a></li>
     </ul>
 	<div id="configuration-tab">
@@ -27,6 +28,10 @@
 			<li><%= link_to "Organizations", organizations_path %></li>
 		</ul>
 	</div>
+        <div id="milestones-tab">
+      		<ul class="nav">
+			<li><%= link_to "Milestones", milestones_path %></li>
+        </div>
 	<div id="dashboard-tab">
 		<ul class="nav">
 
@@ -39,7 +44,8 @@
 	</div>
 	<div id="shipment-lines-tab">
 		<ul class="nav">
-
+			<li><%= link_to "Shipment Lines", lookup_shipment_lines_path %></li>
+			<li><%= link_to "Shipment Lines Upload", file_upload_shipment_lines_path %></li>
 		</ul>
 	</div>
   	<div id="order-lines-tab">

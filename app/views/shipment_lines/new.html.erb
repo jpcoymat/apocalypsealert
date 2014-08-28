@@ -1,5 +1,12 @@
-<h1>New shipment_line</h1>
+<h1>Add Ship Line </h1>
+	<h3> Enter Ship Line Details</h3>
+	<%= render partial: "shipment_line_errors" %>
+	<%= form_for @shipment_line, html: {class: "form-horizontal"} do |form| %>
+       	  <%= render partial: 'shipment_line', locals: {form: form} %>
+	  <%= submit_tag "Create Ship Line", class: "btn btn-primary" %>
+        <% end %>
 
-<%= render 'form' %>
+<br /><br />
+<%= link_to "Return to Shipment Lines", lookup_shipment_lines_path %>
 
-<%= link_to 'Back', shipment_lines_path %>
+

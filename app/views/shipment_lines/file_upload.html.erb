@@ -1,0 +1,6 @@
+<h1>Excel File upload</h1>
+<h3>Please make sure your file is in CSV format</h3>
+<%= form_tag import_file_shipment_lines_path, multipart: true do %>
+<%= file_field_tag :file %>
+<%= submit_tag "Import File" %>
+<% end %>

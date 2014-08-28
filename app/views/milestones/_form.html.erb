@@ -1,0 +1,57 @@
+<%= form_for(@milestone) do |f| %>
+  <% if @milestone.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@milestone.errors.count, "error") %> prohibited this milestone from being saved:</h2>
+
+      <ul>
+      <% @milestone.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :associated_object_type %><br>
+    <%= f.text_field :associated_object_type %>
+  </div>
+  <div class="field">
+    <%= f.label :associated_object_id %><br>
+    <%= f.number_field :associated_object_id %>
+  </div>
+  <div class="field">
+    <%= f.label :milestone_type %><br>
+    <%= f.text_field :milestone_type %>
+  </div>
+  <div class="field">
+    <%= f.label :reason_code %><br>
+    <%= f.text_field :reason_code %>
+  </div>
+  <div class="field">
+    <%= f.label :city %><br>
+    <%= f.text_field :city %>
+  </div>
+  <div class="field">
+    <%= f.label :country %><br>
+    <%= f.text_field :country %>
+  </div>
+  <div class="field">
+    <%= f.label :quantity %><br>
+    <%= f.text_field :quantity %>
+  </div>
+  <div class="field">
+    <%= f.label :customer_organization_id %><br>
+    <%= f.number_field :customer_organization_id %>
+  </div>
+  <div class="field">
+    <%= f.label :create_organization_id %><br>
+    <%= f.number_field :create_organization_id %>
+  </div>
+  <div class="field">
+    <%= f.label :create_user_id %><br>
+    <%= f.number_field :create_user_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

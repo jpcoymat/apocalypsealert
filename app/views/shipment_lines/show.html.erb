@@ -1,39 +1,26 @@
-<p id="notice"><%= notice %></p>
+<h1>Ship Line Details</h1>
+<dl class="dl-horizontal">
+           
+                <dt>Shipment Line Number    	</dt>   <dd><%= @shipment_line.shipment_line_number  		%></dd>
+ 		<dt>Mode			</dt>	<dd><%= @shipment_line.mode				%></dd>
+                <dt>Customer Organization	</dt>	<dd><%= @shipment_line.customer_organization_name	%></dd>
+  		<dt>Forwarder Organization	</dt>	<dd><%= @shipment_line.forwarder_organization_name	%></dd>
+		<dt>Carrier Organization	</dt>	<dd><%= @shipment_line.carrier_organization_name	%></dd>
+                <dt>ETD    			</dt>   <dd><%= @shipment_line.etd.to_formatted_s(:short)	%></dd>
+                <dt>ETA	 			</dt>   <dd><%= @shipment_line.eta.to_formatted_s(:short)	%></dd>
+                <dt>Product             	</dt>   <dd><%= @shipment_line.product.name             	%></dd>
+                <dt>Origin Location     	</dt>   <dd><%= @shipment_line.origin_location.try(:name)        %></dd>
+		<dt>Destination Location	</dt>	<dd><%= @shipment_line.destination_location.try(:name)	%></dd>	
+                <dt>Quantity			</dt>	<dd><%= @shipment_line.quantity.to_s			%></dd>
+                <dt>Order Line                  </dt>   <dd><%= @shipment_line.order_line ? link_to(@shipment_line.order_line_number, order_line_path(@shipment_line.order_line)) : "" %>  </dd>
+        </dl>
 
-<p>
-  <strong>Shipment line number:</strong>
-  <%= @shipment_line.shipment_line_number %>
-</p>
+<br /><br />
 
-<p>
-  <strong>Quantity:</strong>
-  <%= @shipment_line.quantity %>
-</p>
+<br /><br />
+<%= link_to "Edit Ship Line", edit_shipment_line_path(@shipment_line) %> 
+<br /><br />
+<%= link_to "Return to Ship Lines", lookup_shipment_lines_path %>
+<br /><br />
 
-<p>
-  <strong>Eta:</strong>
-  <%= @shipment_line.eta %>
-</p>
 
-<p>
-  <strong>Etd:</strong>
-  <%= @shipment_line.etd %>
-</p>
-
-<p>
-  <strong>Origin location:</strong>
-  <%= @shipment_line.origin_location_id %>
-</p>
-
-<p>
-  <strong>Destination location:</strong>
-  <%= @shipment_line.destination_location_id %>
-</p>
-
-<p>
-  <strong>Order line:</strong>
-  <%= @shipment_line.order_line_id %>
-</p>
-
-<%= link_to 'Edit', edit_shipment_line_path(@shipment_line) %> |
-<%= link_to 'Back', shipment_lines_path %>
