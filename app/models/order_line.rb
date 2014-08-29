@@ -10,6 +10,7 @@ class OrderLine < ActiveRecord::Base
   validate :different_customer_and_supplier
   
   has_many :shipment_lines
+  has_many :milestones, as: :associated_object
 
   def self.import(file_path)
     spreadsheet = open_spreadsheet(file_path)
@@ -79,7 +80,7 @@ class OrderLine < ActiveRecord::Base
   end
 
   def supplier_organization
-    @supplier_organization = Organization.find(self.supplier_organization_id)
+    @supplier_organization = self.supplier_organization_id ? Organization.find(self.supplier_organization_id) : nil
   end
 
   def supplier_organization_name

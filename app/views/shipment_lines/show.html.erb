@@ -16,6 +16,8 @@
         </dl>
 
 <br /><br />
+<h4>Shipment Line Milestones </h4>
+<%= render partial: "shared/milestones", locals: {milestones: @shipment_line.milestones} %>
 
 <br /><br />
 <%= link_to "Edit Ship Line", edit_shipment_line_path(@shipment_line) %> 

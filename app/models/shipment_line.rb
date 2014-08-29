@@ -11,6 +11,9 @@ class ShipmentLine < ActiveRecord::Base
   validate :arrival_after_departure
   validate :different_locations
 
+  has_many :milestones, as: :associated_object
+
+
   def self.modes
     @@modes = ["Ocean", "Truck", "Air", "Rail", "Intermodal", "Parcel"]
   end
@@ -89,7 +92,7 @@ class ShipmentLine < ActiveRecord::Base
   end
 
   def carrier_organization
-    @carrier_organization = Organization.find(self.carrier_organization_id)
+    @carrier_organization = self.carrier_organization_id ? Organization.find(self.carrier_organization_id) : nil
   end
 
   def carrier_organization=(organization)
@@ -105,7 +108,7 @@ class ShipmentLine < ActiveRecord::Base
   end
 
   def forwarder_organization
-    @forwarder_organization = Organization.find(self.forwarder_organization_id)
+    @forwarder_organization = self.forwarder_organization_id ? Organization.find(self.forwarder_organization_id) : nil
   end
 
   def forwarder_organization=(organization)

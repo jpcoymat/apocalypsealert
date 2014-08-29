@@ -1,0 +1,18 @@
+<% if milestones.empty? %>
+ <p>No Milestones have been processed for this record.</p>
+<% else %>
+  <table class="table table-striped">
+    <tr><th>Reference Number </th><th>Event Date</th><th>Milestone Type</th> <th>Reason Code</th> <th>City</th> <th>Country</th> <th>Quantity</th> <th>Created By</th></tr>
+    <% milestones.each do |milestone| %>
+      <tr>
+        <td><%= milestone.reference_number %></td>
+	<td><%= milestone.created_at.to_formatted_s(:short) %></td>
+        <td><%= milestone.milestone_type %></td>
+	<td><%= milestone.reason_code %></td>
+	<td><%= milestone.city %></td>
+	<td><%= milestone.country %></td>
+	<td><%= milestone.quantity %></td>
+	<td><%= milestone.create_organization_name %></td>
+    <% end %>
+  </table> 
+<% end %>

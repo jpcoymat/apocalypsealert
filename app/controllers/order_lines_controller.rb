@@ -25,6 +25,7 @@ class OrderLinesController < ApplicationController
   end
 
   def file_upload
+   render partial: "shared/file_upload", locals: {target_path: import_file_order_lines_path}
   end
 
   def import_file

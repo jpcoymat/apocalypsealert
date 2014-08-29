@@ -1,5 +1,21 @@
 class MilestonesController < ApplicationController
+
   before_action :set_milestone, only: [:show, :edit, :update, :destroy]
+
+  def file_upload
+   render partial: "shared/file_upload", locals: {target_path: import_file_milestones_path}
+  end
+
+  def import_file
+    milestone_file = params[:file]
+    copy_milestone_file(milestone_file)
+    Milestone.import(Rails.root.join('public','milestone_uploads').to_s + "/" + milestone_file.original_filename)
+    redirect_to main_index_path 
+  end
+
+
+  def lookup
+  end
 
   # GET /milestones
   # GET /milestones.json
@@ -71,4 +87,13 @@ class MilestonesController < ApplicationController
     def milestone_params
       params.require(:milestone).permit(:associated_object_type, :associated_object_id, :milestone_type, :reason_code, :city, :country, :quantity, :customer_organization_id, :create_organization_id, :create_user_id)
     end
+
+    def copy_milestone_file(milestone_file)
+      File.open(Rails.root.join('public','milestone_uploads',milestone_file.original_filename),"wb") do |file|
+        file.write(milestone_file.read)
+      end
+    end
+
+
+
 end

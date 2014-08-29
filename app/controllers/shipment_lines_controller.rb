@@ -1,7 +1,7 @@
 class ShipmentLinesController < ApplicationController
+
   before_filter :authorize
   before_action :set_shipment_line, only: [:show, :edit, :update, :destroy]
-
 
   def lookup
     @user = User.find(session[:user_id])
@@ -101,6 +101,7 @@ class ShipmentLinesController < ApplicationController
 
 
   def file_upload
+    render partial: "shared/file_upload", locals: {target_path: import_file_shipment_lines_path}
   end
 
   def import_file
@@ -124,6 +125,10 @@ class ShipmentLinesController < ApplicationController
 
     def search_params
       search_params = shipment_line_params.delete_if {|k,v| v.blank?}
+      if search_params.key?("product_name")
+        search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.id
+        search_params.delete("product_name")
+      end
       search_params
     end
 

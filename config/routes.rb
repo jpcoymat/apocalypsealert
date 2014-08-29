@@ -1,6 +1,14 @@
 Rails.application.routes.draw do
 
-  resources :milestones
+  resources :milestones do
+    collection do
+      get 'lookup'
+      post 'lookup'
+      get 'file_upload'
+      post 'import_file'
+    end
+  end
+
 
   get "login/login"
   get "main/index"

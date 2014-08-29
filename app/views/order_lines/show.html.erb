@@ -31,6 +31,8 @@
 			<% end %>
 		</table>
 	<% end %>
+<h4>Order Line Milestones </h4>
+<%= render partial: "shared/milestones", locals: {milestones: @order_line.milestones} %>
 <br /><br />
 <%= link_to "Edit Order Line", edit_order_line_path(@order_line) %>
 <br /><br />
