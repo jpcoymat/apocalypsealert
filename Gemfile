@@ -20,7 +20,7 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 
 gem 'roo'
-
+gem 'rails_12factor', group: :production
 
 
 gem "resque"
