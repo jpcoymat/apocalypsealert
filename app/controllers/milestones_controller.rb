@@ -10,9 +10,11 @@ class MilestonesController < ApplicationController
     milestone_file = params[:file]
     copy_milestone_file(milestone_file)
     Milestone.import(Rails.root.join('public','milestone_uploads').to_s + "/" + milestone_file.original_filename)
-    redirect_to main_index_path 
+    redirect_to file_upload_milestones_path, notice: "File has been uploaded succesfully" 
   end
 
+  def upload_complete
+  end
 
   def lookup
   end

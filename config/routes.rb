@@ -11,7 +11,7 @@ Rails.application.routes.draw do
 
 
   get "login/login"
-  get "main/index"
+
   get "login/logout"
   post "login/logout"
   post "login/login"
@@ -113,6 +113,11 @@ Rails.application.routes.draw do
   #     resources :products
   #   end
 
-  root to: 'main#index'
+  controller :dashboard do
+    get 'dashboard', action: "index"
+  end
+
+
+  root to: 'dashboard#index'
 
 end
