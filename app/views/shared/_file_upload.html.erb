@@ -18,7 +18,7 @@
 <h3>Supported formats: .xls, .xlsx, .csv</h3>
 <%= form_tag target_path, {class: "form-horizontal", role: "form", multipart: true} do %>
 <div class="form-group">
-  <%= label_tag "Please select file", nil, class: "col-sm-4 control-label" %>
+  <%= label_tag "Please select file", nil, class: "col-sm-2 control-label" %>
   <div class="col-xs-4">
     <%= file_field_tag :file %>
   </div>
@@ -30,6 +30,7 @@
 </div>
 <% end %>
 <br /><br />
+<%= link_to "Log Out", login_logout_path, method: :post %>
 </div>
 </body>
 </html>

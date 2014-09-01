@@ -1,27 +1,4 @@
 <div class="btn-group btn-group-justified">
-  <div class="btn-group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-      Configuration
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-      <li role="presentation"><%= link_to "Users", users_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-      <li role="presentation"><%= link_to "Products", lookup_products_path, html_options: {role: "menuitem", tabindex: "-1"} %></li> 
-      <li role="presentation"><%= link_to "Locations", locations_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-      <li role="presentation"><%= link_to "Location Groups", location_groups_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-      <li role="presentation"><%= link_to "Organizations", organizations_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-    </ul>  
-  </div> 
-
-  <div class="btn-group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-      Exceptions
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-      <li role="presentation"><%= link_to "Exceptions", scv_exceptions_path, html_options: {role: "menuitem", tabindex: "-1"} %></li> 
-    </ul>
-  </div>
 
   <div class="btn-group">
     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
@@ -30,6 +7,16 @@
     </button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
       <li role="presentation"><%= link_to "Dashboard", dashboard_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+      Exceptions
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+      <li role="presentation"><%= link_to "Exceptions", scv_exceptions_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
     </ul>
   </div>
 
@@ -64,4 +51,21 @@
       <li role="presentation"><%= link_to "Order Line Upload", file_upload_order_lines_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
     </ul>
   </div>
+
+  <div class="btn-group">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+      Configuration
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+      <li role="presentation"><%= link_to "Users", users_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
+      <li role="presentation"><%= link_to "Products", lookup_products_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
+      <li role="presentation"><%= link_to "Locations", locations_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
+      <li role="presentation"><%= link_to "Location Groups", location_groups_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
+      <li role="presentation"><%= link_to "Organizations", organizations_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
+    </ul>
+  </div>
+
+
+
 </div>
