@@ -1,71 +1,45 @@
-<div class="btn-group btn-group-justified">
+<div class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">SCV Demo</a>
+    </div>
 
-  <div class="btn-group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-      Dashboard
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-      <li role="presentation"><%= link_to "Dashboard", dashboard_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-    </ul>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li> <%= link_to "Dashboard", dashboard_path %></li>
+        <li> <%= link_to "Exceptions", scv_exceptions_path %></li>
+        <li> <%= link_to "Milestone Uploads", file_upload_milestones_path %></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Shipment Lines <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><%= link_to "Shipment Line Lookup", lookup_shipment_lines_path %></li>
+            <li><%= link_to "Shipment Line Upload", file_upload_shipment_lines_path %></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Order Lines <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><%= link_to "Order Line Lookup", lookup_order_lines_path %></li>
+            <li><%= link_to "Order Line Upload", file_upload_order_lines_path %></li>
+          </ul>
+        </li> 
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuration <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><%= link_to "Users", users_path  %></li>
+            <li><%= link_to "Products", lookup_products_path %></li>
+            <li><%= link_to "Locations", locations_path %></li>
+            <li><%= link_to "Location Groups", location_groups_path %></li>
+            <li><%= link_to "Organizations", organizations_path %></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
   </div>
-
-  <div class="btn-group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-      Exceptions
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-      <li role="presentation"><%= link_to "Exceptions", scv_exceptions_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-    </ul>
-  </div>
-
-  <div class="btn-group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-      Milestones
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-      <li role="presentation"><%= link_to "Milestone Upload", file_upload_milestones_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-    </ul>
-  </div>
-
-  <div class="btn-group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-      Shipment Lines
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-      <li role="presentation"><%= link_to "Shipment Line Lookup", lookup_shipment_lines_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-      <li role="presentation"><%= link_to "Shipment Line Upload", file_upload_shipment_lines_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-    </ul>
-  </div>
-
-  <div class="btn-group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-      Order Lines
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-      <li role="presentation"><%= link_to "Order Line Lookup", lookup_order_lines_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-      <li role="presentation"><%= link_to "Order Line Upload", file_upload_order_lines_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-    </ul>
-  </div>
-
-  <div class="btn-group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-      Configuration
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-      <li role="presentation"><%= link_to "Users", users_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-      <li role="presentation"><%= link_to "Products", lookup_products_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-      <li role="presentation"><%= link_to "Locations", locations_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-      <li role="presentation"><%= link_to "Location Groups", location_groups_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-      <li role="presentation"><%= link_to "Organizations", organizations_path, html_options: {role: "menuitem", tabindex: "-1"} %></li>
-    </ul>
-  </div>
-
-
-
 </div>
