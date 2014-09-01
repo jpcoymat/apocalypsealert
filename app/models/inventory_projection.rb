@@ -26,7 +26,7 @@ class InventoryProjection < ActiveRecord::Base
     header = spreadsheet.row(1)
     (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
-      inventory_projection = where(: row["order_line_number"]).first || new
+      inventory_projection = new
       inventory_projection.attributes = row
       inventory_projection.save
     end
