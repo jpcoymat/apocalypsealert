@@ -2,6 +2,24 @@ class InventoryProjectionsController < ApplicationController
   before_filter :authorize
   before_action :set_inventory_projection, only: [:show, :edit, :update, :destroy]
 
+  def lookup
+    @user_org = User.find(session[:user_id])
+    @locations = @user_org.locations
+    @products = @user_org.products
+  end
+
+
+  def file_upload
+   render partial: "shared/file_upload", locals: {target_path: import_file_inventory_projections_path}
+  end
+
+  def import_file
+    inventory_file = params[:file]
+    copy_inventory_file(order_line_file)
+    InventoryProjection.import(Rails.root.join('public','inventory_uploads').to_s + "/" + inventory_file.original_filename)
+    redirect_to lookup_inventory_projections_path
+  end
+
   # GET /inventory_projections
   # GET /inventory_projections.json
   def index
@@ -16,10 +34,17 @@ class InventoryProjectionsController < ApplicationController
   # GET /inventory_projections/new
   def new
     @inventory_projection = InventoryProjection.new
+    @user_org = User.find(session[:user_id])
+    @locations = @user_org.locations
+    @products = @user_org.products
   end
 
   # GET /inventory_projections/1/edit
   def edit
+    @user_org = User.find(session[:user_id]).organization
+    @user_org = User.find(session[:user_id])
+    @locations = @user_org.locations
+    @products = @user_org.products
   end
 
   # POST /inventory_projections
@@ -32,7 +57,12 @@ class InventoryProjectionsController < ApplicationController
         format.html { redirect_to @inventory_projection, notice: 'Inventory projection was successfully created.' }
         format.json { render :show, status: :created, location: @inventory_projection }
       else
-        format.html { render :new }
+        format.html do
+          @user_org = User.find(session[:user_id])
+          @locations = @user_org.locations
+          @products = @user_org.products
+          render :new  
+        end
         format.json { render json: @inventory_projection.errors, status: :unprocessable_entity }
       end
     end
@@ -46,7 +76,12 @@ class InventoryProjectionsController < ApplicationController
         format.html { redirect_to @inventory_projection, notice: 'Inventory projection was successfully updated.' }
         format.json { render :show, status: :ok, location: @inventory_projection }
       else
-        format.html { render :edit }
+        format.html do
+          @user_org = User.find(session[:user_id])
+          @locations = @user_org.locations
+          @products = @user_org.products
+          render :edit 
+        end
         format.json { render json: @inventory_projection.errors, status: :unprocessable_entity }
       end
     end
@@ -70,6 +105,25 @@ class InventoryProjectionsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def inventory_projection_params
-      params.require(:inventory_projection).permit(:location_id, :product_id, :projected_for, :available_quantity)
+      params.require(:inventory_projection).permit(:location_name, :product_name, :location_id, :product_id, :projected_for, :available_quantity)
     end
+
+    def search_params
+      search_params = inventory_projection_params.delete_if {|k,v| v.blank?}
+      if search_params.key?("product_name")
+        search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.id
+        search_params.delete("product_name")
+      end
+      search_params
+    end
+
+    def copy_inventory_file(inventory_file)
+      File.open(Rails.root.join('public','inventory_uploads',inventory_file.original_filename),"wb") do |file|
+        file.write(inventory_file.read)
+      end
+    end
+
+
+
+
 end

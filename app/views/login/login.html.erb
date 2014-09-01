@@ -42,7 +42,7 @@ body {
 
 </style>
 
-  	<div class="container">
+
         <h1>SCV Demo</h1>
 	<%= form_for :user_login, url: login_login_path, html: {class: "form-signin", role: "form"} do |form| %>
 	  <h2 class="form-signin-heading">Please sign in</h2>
@@ -50,5 +50,5 @@ body {
           <%= form.password_field :password, class: "form-control",  placeholder: "Password"	%>
           <%= submit_tag "Login", {class: "btn btn-lg btn-primary btn-block"}	%>
 	<% end %>
-	</div>
-	</div>
+
+
