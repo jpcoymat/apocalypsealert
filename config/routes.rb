@@ -16,9 +16,22 @@ Rails.application.routes.draw do
   post "login/logout"
   post "login/login"
 
-  resources :inventory_projections
+  resources :inventory_projections do
+    collection do
+      get 'lookup'
+      post 'lookup'
+      get 'file_upload'
+      post 'import_file'
+    end
+  end
 
-  resources :scv_exceptions
+  resources :scv_exceptions do
+    collection do
+      get 'file_upload'
+      post 'import_file'
+    end
+  end
+
 
   resources :shipment_lines do
     collection do

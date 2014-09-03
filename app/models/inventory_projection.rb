@@ -10,7 +10,7 @@ class InventoryProjection < ActiveRecord::Base
   end
 
   def product_name=(product_name)
-    self.product_id = Product.where(name: product_name).try(:id)
+    self.product_id = Product.where(name: product_name).first.try(:id)
   end
 
   def location_name
@@ -18,7 +18,7 @@ class InventoryProjection < ActiveRecord::Base
   end
 
   def location_name=(location_name)
-    self.location_id = Location.where(name: location_name).try(:id)
+    self.location_id = Location.where(name: location_name).first.try(:id)
   end
 
   def self.import(file_path)
@@ -26,7 +26,7 @@ class InventoryProjection < ActiveRecord::Base
     header = spreadsheet.row(1)
     (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
-      inventory_projection = new
+      inventory_projection = find_import_match(row) || new
       inventory_projection.attributes = row
       inventory_projection.save
     end
@@ -43,5 +43,20 @@ class InventoryProjection < ActiveRecord::Base
       else raise "Unknown file type: #{file.original_filename}"
     end
   end    
+
+  def self.find_import_match(row)
+    p = Product.where(name: row["product_name"])
+    if p
+      l = Location.where(name: row["location_name"])
+      if l
+        ip = InventoryProjection.where(product: p, location: l, projected_for: row["projected_for"]).first
+        return ip
+      else
+        return nil
+      end
+    else
+      return nil
+    end
+  end
 
 end

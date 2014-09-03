@@ -2,6 +2,21 @@ class ScvExceptionsController < ApplicationController
   before_filter :authorize
   before_action :set_scv_exception, only: [:show, :edit, :update, :destroy]
 
+
+  def file_upload
+   render partial: "shared/file_upload", locals: {target_path: import_file_scv_exceptions_path}
+  end
+
+  def import_file
+    scv_exceptions_file = params[:file]
+    copy_scv_exceptions_file(scv_exceptions_file)
+    ScvException.import(Rails.root.join('public','scv_exception_uploads').to_s + "/" + scv_exceptions_file.original_filename)
+    redirect_to scv_exceptions_path
+  end
+
+
+
+
   # GET /scv_exceptions
   # GET /scv_exceptions.json
   def index
@@ -72,4 +87,12 @@ class ScvExceptionsController < ApplicationController
     def scv_exception_params
       params.require(:scv_exception).permit(:type, :priority, :status)
     end
+
+    def copy_scv_exceptions_file(scv_exceptions_file)
+      File.open(Rails.root.join('public','scv_exception_uploads',scv_exceptions_file.original_filename),"wb") do |file|
+        file.write(scv_exceptions_file.read)
+      end
+    end
+
+
 end

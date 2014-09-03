@@ -3,20 +3,33 @@ class InventoryProjectionsController < ApplicationController
   before_action :set_inventory_projection, only: [:show, :edit, :update, :destroy]
 
   def lookup
-    @user_org = User.find(session[:user_id])
+    @user_org = User.find(session[:user_id]).organization
     @locations = @user_org.locations
     @products = @user_org.products
+    if request.post?
+      @inventory_projections = InventoryProjection.where(search_params(inventory_projection_search_params)).order(:projected_for)
+      @product = @inventory_projections.first.product 
+      @location = @inventory_projections.first.location  
+      dates, @available_quantity = [], []
+      @inventory_projections.each do |ip|
+        @available_quantity << ip.available_quantity.to_i
+        dates << ip.projected_for
+      end
+      @begin_date = dates.min
+      @end_date = dates.max
+    end
   end
 
 
   def file_upload
-   render partial: "shared/file_upload", locals: {target_path: import_file_inventory_projections_path}
+    render partial: "shared/file_upload", locals: {target_path: import_file_inventory_projections_path}
   end
 
   def import_file
     inventory_file = params[:file]
-    copy_inventory_file(order_line_file)
+    copy_inventory_file(inventory_file)
     InventoryProjection.import(Rails.root.join('public','inventory_uploads').to_s + "/" + inventory_file.original_filename)
+    notice = "File has been processed"
     redirect_to lookup_inventory_projections_path
   end
 
@@ -108,8 +121,12 @@ class InventoryProjectionsController < ApplicationController
       params.require(:inventory_projection).permit(:location_name, :product_name, :location_id, :product_id, :projected_for, :available_quantity)
     end
 
-    def search_params
-      search_params = inventory_projection_params.delete_if {|k,v| v.blank?}
+    def inventory_projection_search_params
+      params.require(:inventory_position_search).permit( :location_id, :product_id, :product_name)
+    end
+
+    def search_params(params)
+      search_params = params.delete_if {|k,v| v.blank?}
       if search_params.key?("product_name")
         search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.id
         search_params.delete("product_name")

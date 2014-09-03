@@ -1,29 +1,55 @@
-<h1>Listing scv_exceptions</h1>
+<h1>SCV Exceptions</h1>
 
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Priority</th>
-      <th>Status</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @scv_exceptions.each do |scv_exception| %>
+<% if @scv_exceptions.empty? %>
+  <p>No SCV Exceptions created.</p>
+<% else %>
+  <table class="table table-striped">
+    <thead>
       <tr>
-        <td><%= scv_exception.type %></td>
-        <td><%= scv_exception.priority %></td>
-        <td><%= scv_exception.status %></td>
-        <td><%= link_to 'Show', scv_exception %></td>
-        <td><%= link_to 'Edit', edit_scv_exception_path(scv_exception) %></td>
-        <td><%= link_to 'Destroy', scv_exception, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <th>Exception Type</th>
+        <th>Priority</th>
+        <th>Affected Object Type</th>
+        <th>Affected Object Reference</th>
+        <th>Affected Object Quantity Type</th>
+        <th>Affected Object Quantity </th>
+        <th>Affected Object Date Type</th>
+        <th>Affected Object Date </th>
+        <th>Cause Object Type</th>
+        <th>Cause Object Reference</th>
+        <th>Cause Object Quantity Type</th>
+        <th>Cause Object Quantity </th>
+        <th>Cause Object Date Type</th>
+        <th>Cause Object Date </th>
+        <th>Status</th>
+        <th colspan="3"></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
-
+    </thead>
+  
+    <tbody>
+      <% @scv_exceptions.each do |scv_exception| %>
+        <tr>
+          <td><%= scv_exception.exception_type %></td>
+          <td><%= scv_exception.priority %></td>
+          <td><%= scv_exception.affected_object_type.titleize %></td>
+          <td><%= scv_exception.affected_object_reference_number %></td>
+    	  <td><%= scv_exception.affected_object_quantity_type %></td>
+          <td><%= scv_exception.affected_object_quantity %></td>
+          <td><%= scv_exception.affected_object_date_type %></td>
+          <td><%= scv_exception.cause_object_type.titleize %></td>
+          <td><%= scv_exception.cause_object_reference_number %></td>
+          <td><%= scv_exception.cause_object_quantity_type %></td>
+          <td><%= scv_exception.cause_object_quantity %></td>
+          <td><%= scv_exception.cause_object_date_type %></td>
+          <td><%= scv_exception.cause_object_date %></td>
+          <td><%= scv_exception.status.titleize %></td>
+          <td><%= link_to 'Show', scv_exception %></td>
+          <td><%= link_to 'Edit', edit_scv_exception_path(scv_exception) %></td>
+          <td><%= link_to 'Destroy', scv_exception, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
 <br>
 
 <%= link_to 'New Scv exception', new_scv_exception_path %>

@@ -1,0 +1,62 @@
+
+<div id="highcart_container"></div>
+<div id="report" style="font: 0.8em sans-serif"></div>
+<script type="text/javascript" src="http://code.highcharts.com/stock/highstock.src.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/stock/modules/exporting.src.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/highcharts.src.js"></script>
+<script type="text/javascript" src="https://rawgithub.com/d-nation/highstock-beyond-extremes/master/beyond-extremes.js"></script>
+<script type="text/javascript">
+
+$(function () {
+  $('#highcart_container').highcharts('StockChart',{
+    chart: {
+      height: 500
+    },
+    rangeSelector: {
+      selected: 1,
+      beyondExtremes: true
+    },
+    title: {
+      text: 'Inventory Projections for Product <%= @product.name %> at Location <%= @location.name %>'
+      //enabled: false
+    },
+    subtitle: {
+      text: document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+    },
+    legend: {
+      enabled: true
+    },
+    xAxis: {
+      type: 'datetime',
+      events: {
+        setExtremes: function(e) {
+   			/*Could fetch new data for the new extremes here*/                    
+           $('#report').html('<b>Set extremes:</b> e.min: '+ Highcharts.dateFormat(null, e.min) + ' | e.max: '+ Highcharts.dateFormat(null, e.max) + ' | e.trigger: ' + e.trigger);
+	}
+      },
+      ordinal: false,
+      minRange: 2 * 24 * 3600000 // 2 days
+    },
+    yAxis: [
+      {title: {text: 'Quantity'}, opposite: false}, 
+      {title: {text: 'Quantity'}, opposite: true}
+    ],
+    tooltip: {
+      shared: false
+    },
+	series: [
+	  {type: 'spline',
+          pointInterval: 24 * 3600 * 1000,
+          pointStart: Date.UTC(<%= @begin_date.year %>, <%= @begin_date.month - 1%>, <%= @begin_date.day %>, 12,0),
+          name: 'Available Quantity',
+          color: "#336699",
+          marker: {enabled: false},
+          data: <%= @available_quantity %>
+          }
+	]
+  });
+});
+</script>
+	  
+	  
+	  

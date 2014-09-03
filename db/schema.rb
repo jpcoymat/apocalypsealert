@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140828191502) do
+ActiveRecord::Schema.define(version: 20140903004612) do
 
   create_table "inventory_projections", force: true do |t|
     t.integer  "location_id"
@@ -96,7 +96,7 @@ ActiveRecord::Schema.define(version: 20140828191502) do
   end
 
   create_table "scv_exceptions", force: true do |t|
-    t.string   "type"
+    t.string   "exception_type"
     t.integer  "priority"
     t.integer  "status"
     t.integer  "affected_object_id"
