@@ -4,34 +4,34 @@
   <div class="form-group">
     <%= render partial: "shared/reference_number_autocomplete", locals: {form: form, movement_sources: @all_shipment_lines, object_reference_number: "shipment_line_number", source_type: "shipment_line"} %>
     <%= render partial: "shared/product_autocomplete", locals: {form: form} %>
-    <%= form.label "Origin Location", class: "col-sm-1 control-label" %>
+    <%= form.label "Origin Location", class: "col-sm-2 control-label" %>
     <div class="col-sm-2">
       <%= form.select :origin_location_id, @locations.collect {|loc| [loc.name, loc.id]}, {include_blank: true}, {class: "form-control"} %>
-    </div>
-    <%= form.label "Destination Location" , class: "col-sm-1 control-label" %>
-    <div class="col-sm-2">
-      <%= form.select :destination_location_id,  @locations.collect {|loc| [loc.name, loc.id]}, {include_blank: true}, class: "form-control" %>
-    </div>
+    </div> 
   </div>
   <div class="form-group">
-    <%= form.label "Carrier" , class: "col-sm-1 control-label"%>
+    <%= form.label "Destination Location" , class: "col-sm-2 control-label" %>
+    <div class="col-sm-2">
+      <%= form.select :destination_location_id,  @locations.collect {|loc| [loc.name, loc.id]}, {include_blank: true}, class: "form-control" %>
+    </div> 
+    <%= form.label "Carrier Org" , class: "col-sm-2 control-label"%>
     <div class="col-sm-2">
       <%= form.select :carrier_organization_id, @organizations.collect {|org| [org.name, org.id]}, {include_blank: true}, {class: "form-control"} %>
     </div>
-    <%= form.label "Forwarder" , class: "col-sm-1 control-label"%>
+    <%= form.label "Forwarder Org" , class: "col-sm-2 control-label"%>
     <div class="col-sm-2">
       <%= form.select :forwarder_organization_id, @organizations.collect {|org| [org.name, org.id]}, {include_blank: true}, {class: "form-control"} %>
     </div>
-    <%= form.label "Customer" , class: "col-sm-1 control-label"%>
+    </div>
+  <div class="form-group">
+    <%= form.label "Customer Org" , class: "col-sm-2 control-label"%>
     <div class="col-sm-2">
       <%= form.select :customer_organization_id, @organizations.collect {|org| [org.name, org.id]}, {include_blank: true}, {class: "form-control"} %>
     </div>
-    <%= form.label "Mode", class: "col-sm-1 control-label" %>
+    <%= form.label "Mode", class: "col-sm-2 control-label" %>
     <div class="col-sm-2">
       <%= form.select :mode, ShipmentLine.modes.collect {|mode| [mode, mode]}, {include_blank: true}, {class: "form-control"} %>
     </div>
-  </div>
-  <div class="form-group">  
     <div class="col-sm-1"></div>
     <div class="col-sm-2">
       <%= submit_tag "Search", {class: "btn btn-primary"} %>
