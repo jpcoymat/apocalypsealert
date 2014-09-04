@@ -47,18 +47,18 @@ class ScvException < ActiveRecord::Base
   end
 
   def self.find_object_by(object_type, object_reference)
-    matchin_object = nil
+    matching_object = nil
     case object_type
       when "OrderLine"
-        matchin_object = OrderLine.where(order_line_number: object_reference)
+        matching_object = OrderLine.where(order_line_number: object_reference)
       when "ShipmentLine"
         matchin_object = ShipmentLine.where(shipment_line_number: object_reference)
       when "Milestone"
-        matchin_object = Milestone.where(reference_number: object_reference)
+        matching_object = Milestone.where(reference_number: object_reference)
       else
         nil
     end
-    return matchin_object
+    return matching_object
   end
 
   def object_reference_number(affected_or_cause)
@@ -110,6 +110,19 @@ class ScvException < ActiveRecord::Base
       when "InventoryProjection"
         nil
       end
+  end
+
+  def full_reference_number(affected_or_cause)
+    object_type = affected_or_cause + "_object_type"
+    self.attributes[object_type].titleize + " " + object_reference_number(affected_or_cause)
+  end
+  
+  def affected_object_full_reference
+    full_reference_number("affected")   
+  end
+  
+  def cause_object_full_reference
+    full_reference_number("cause")   
   end
 
 

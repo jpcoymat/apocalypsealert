@@ -8,14 +8,12 @@
       <tr>
         <th>Exception Type</th>
         <th>Priority</th>
-        <th>Affected Object Type</th>
-        <th>Affected Object Reference</th>
+        <th>Affected Object </th>
         <th>Affected Object Quantity Type</th>
         <th>Affected Object Quantity </th>
         <th>Affected Object Date Type</th>
         <th>Affected Object Date </th>
-        <th>Cause Object Type</th>
-        <th>Cause Object Reference</th>
+        <th>Cause Object </th>
         <th>Cause Object Quantity Type</th>
         <th>Cause Object Quantity </th>
         <th>Cause Object Date Type</th>
@@ -30,13 +28,11 @@
         <tr>
           <td><%= scv_exception.exception_type %></td>
           <td><%= scv_exception.priority %></td>
-          <td><%= scv_exception.affected_object_type.titleize %></td>
-          <td><%= scv_exception.affected_object_reference_number %></td>
+          <td><%= scv_exception.affected_object_full_reference %></td>
     	  <td><%= scv_exception.affected_object_quantity_type %></td>
           <td><%= scv_exception.affected_object_quantity %></td>
           <td><%= scv_exception.affected_object_date_type %></td>
-          <td><%= scv_exception.cause_object_type.titleize %></td>
-          <td><%= scv_exception.cause_object_reference_number %></td>
+          <td><%= scv_exception.cause_object_full_reference %></td>
           <td><%= scv_exception.cause_object_quantity_type %></td>
           <td><%= scv_exception.cause_object_quantity %></td>
           <td><%= scv_exception.cause_object_date_type %></td>
