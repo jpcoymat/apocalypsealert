@@ -7,17 +7,22 @@ class InventoryProjectionsController < ApplicationController
     @locations = @user_org.locations
     @products = @user_org.products
     if request.post?
-      @inventory_projections = InventoryProjection.where(search_params(inventory_projection_search_params)).order(:projected_for)
-      if @inventory_projections.count> 0 
-        @product = @inventory_projections.first.product 
-        @location = @inventory_projections.first.location  
-        dates, @available_quantity = [], []
-        @inventory_projections.each do |ip|
-          @available_quantity << ip.available_quantity.to_i
-          dates << ip.projected_for
+      user_params = search_params(inventory_projection_search_params)
+      if user_params.include?("product_id") and user_params.include?("location_id")
+        @inventory_projections = InventoryProjection.where(user_params).order(:projected_for)
+        if @inventory_projections.count> 0 
+          @product = @inventory_projections.first.product 
+          @location = @inventory_projections.first.location  
+          dates, @available_quantity = [], []
+          @inventory_projections.each do |ip|
+            @available_quantity << ip.available_quantity.to_i
+            dates << ip.projected_for
+          end
+          @begin_date = dates.min
+          @end_date = dates.max
         end
-        @begin_date = dates.min
-        @end_date = dates.max
+      else
+        @inventory_projections = []
       end
     end
   end
