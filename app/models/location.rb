@@ -45,7 +45,11 @@ class Location < ActiveRecord::Base
 
   def inventory_exceptions(options = {})
     @inventory_exceptions = []
-    inventory(options).each {|ip| @inventory_exceptions << ip.affected_scv_exceptions.all}
+    projections = inventory_projections
+    projections = projections.where(product_id: options[:product_id]) if options[:product_id]
+    projections = projections.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
+    projections = projections.where("product_id in (select id from products where category = '#{options[:product_category]}'") if options[:product_category]
+    projections.each {|ip| @inventory_exceptions << ip.affected_scv_exceptions.all}
     @inventory_exceptions.flatten!
     @inventory_exceptions  
   end
@@ -121,7 +125,7 @@ class Location < ActiveRecord::Base
 
   def outbound_shipment_at_risk_quantity(options = {})
     @outbound_shipment_at_risk_quantity = shipment_at_risk_quantity("origin", options)
-    @inbound_shipment_at_risk_quantity
+    @outbound_shipment_at_risk_quantity
   end
 
   def inbound_order_at_risk_quantity(options = {})
@@ -167,7 +171,7 @@ class Location < ActiveRecord::Base
     def shipment_lines(direction, options = {})
       attribute_name = direction + "_location_id"
       shipment_lines = ShipmentLine.where("#{attribute_name} = #{self.id}")
-      shipment_lines = shipment_lines.where(product_id = options[:product_id]) if options[:product_id]
+      shipment_lines = shipment_lines.where(product_id: options[:product_id]) if options[:product_id]
       shipment_lines = shipment_lines.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
       shipment_lines = shipment_lines.where("product_id in (select id from products where category = '#{options[:product_category]}')") if options[:product_category]
       return shipment_lines
@@ -176,7 +180,7 @@ class Location < ActiveRecord::Base
     def order_lines(direction, options = {})
       attribute_name = direction + "_location_id"
       order_lines = OrderLine.where("#{attribute_name} = #{self.id}")
-      order_lines = order_lines.where(product_id = options[:product_id]) if options[:product_id]
+      order_lines = order_lines.where(product_id: options[:product_id]) if options[:product_id]
       order_lines = order_lines.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
       order_lines = order_lines.where("product_id in (select id from products where category = '#{options[:product_category]}')") if options[:product_category]
       return order_lines
