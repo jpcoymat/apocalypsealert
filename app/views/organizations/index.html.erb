@@ -21,7 +21,10 @@
         <td><%= organization.state %></td>
         <td><%= organization.country %></td>
         <td><%= link_to 'Show', organization %></td>
-        <td><%= link_to 'Edit', edit_organization_path(organization) %></td>
+        <td><%= link_to 'Edit', edit_organization_path(organization) %></td>  
+        <% if organization.deleteable? %>
+          <td><%= button_to "Destroy", organization_path(organization), method: :delete %></td>
+        <% end %>
       </tr>
     <% end %>
   </tbody>

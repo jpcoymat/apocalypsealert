@@ -12,6 +12,9 @@
           <tr><td><%= location_group.code %> </td>
 	    <td><%= location_group.name %> </td>
             <td><%= link_to "Edit", edit_location_group_path(location_group) %></td>
+	    <% if location_group.deleteable? %>
+              <td><%= button_to "Destroy", location_group_path(location_group), method: :delete %></td>
+            <% end %>
           </tr>
         <% end %>
       </table>

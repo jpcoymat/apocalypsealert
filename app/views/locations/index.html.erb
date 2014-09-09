@@ -14,6 +14,9 @@
 				<td><%= location.country	%></td>
 				<td><%= link_to "View", location_path(location) %></td>
 				<td><%= link_to "Edit", edit_location_path(location) %></td>
+				<% if location.deleteable? %>
+				  <td><%= button_to "Destroy", location_path(location), method: :delete %></td>
+                                <% end %>
 			</tr>
 		<% end %>
 		</table>

@@ -165,6 +165,10 @@ class Location < ActiveRecord::Base
     @percentage_outbound_quantity_at_risk
   end
 
+  def deleteable?
+    origin_shipment_lines.empty? and destination_shipment_lines.empty? and origin_order_lines.empty? and destination_order_lines.empty? and inventory_positions.empty?
+  end
+
 
   protected 
 

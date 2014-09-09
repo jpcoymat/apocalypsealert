@@ -41,6 +41,9 @@
           <td><%= product.code %></td>
           <td><%= product.category %></td>
           <td><%= link_to "Edit", edit_product_path(product) %></td>
+          <% if product.deleteable? %>
+           <td><%= button_to "Destroy", product_path(product), method: :delete %></td>
+          <% end %>
         </tr>
         <% end %>
       </table>
