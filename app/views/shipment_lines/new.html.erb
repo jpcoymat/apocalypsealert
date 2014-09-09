@@ -2,6 +2,7 @@
 	<h3> Enter Ship Line Details</h3>
 	<%= render partial: "shipment_line_errors" %>
 	<%= form_for @shipment_line, html: {class: "form-horizontal"} do |form| %>
+          <%= form.hidden_field :is_active, value: true %>
        	  <%= render partial: 'shipment_line', locals: {form: form} %>
 	  <%= submit_tag "Create Ship Line", class: "btn btn-primary" %>
         <% end %>
