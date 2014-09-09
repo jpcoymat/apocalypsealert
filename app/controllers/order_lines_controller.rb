@@ -15,7 +15,7 @@ class OrderLinesController < ApplicationController
     @locations = @user_org.locations
     @all_order_lines = @user_org.order_lines
     @organizations = Organization.all
-    if request.post?
+    if request.post? 
       @order_lines = @all_order_lines.where(search_params)
       respond_to do |format|
         format.html
@@ -126,7 +126,7 @@ class OrderLinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_line_params
-      params.require(:order_line).permit(:product_name, :order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :supplier_organization_id, :customer_organization_id)
+      params.require(:order_line).permit(:is_active, :product_name, :order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :supplier_organization_id, :customer_organization_id)
     end
 
     def search_params
@@ -143,6 +143,5 @@ class OrderLinesController < ApplicationController
         file.write(order_line_file.read)
       end
     end
-
 
 end

@@ -19,6 +19,7 @@ class OrderLine < ActiveRecord::Base
       row = Hash[[header, spreadsheet.row(i)].transpose]
       order_line = where(order_line_number: row["order_line_number"]).first || new
       order_line.attributes = row
+      order_line.is_active = true
       order_line.save
     end
   end

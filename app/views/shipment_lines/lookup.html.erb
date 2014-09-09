@@ -17,7 +17,8 @@
 </button>
 
 <%= form_for :shipment_line, url: lookup_shipment_lines_path, html: {class: "form-horizontal", id: "search_form"}   do |form| %>
-<%= form.submit "Search", {class: "btn btn-primary", id: "submit_search_form"} %>
+  <%= form.hidden_field :is_active, value: true %>
+  <%= form.submit "Search", {class: "btn btn-primary", id: "submit_search_form"} %>
 <% end %>
 </div>
 <br \>
@@ -211,8 +212,8 @@
     }
     else {
       var htmlToAdd = '<div class="form-group" id="mode_div"><label class="col-sm-2 control-label" for="shipment_line_Mode">Mode</label><div class="col-sm-2"><select class="form-control" id="shipment_line_mode" name="shipment_line[mode]">';
-      <% ShipmentLine.modes do |mode| %>
-        htmlToAdd +=  '<option value="' + '<%= mode %>' + '">' + '<%= mode %>' + '</option>';
+      <% ShipmentLine.modes.each do |md| %>
+        htmlToAdd +=  '<option value="' + '<%= md %>' + '">' + '<%= md %>' + '</option>';
       <% end %>
       htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'mode_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
       $('#search_form').append(htmlToAdd);

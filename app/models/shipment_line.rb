@@ -29,6 +29,7 @@ class ShipmentLine < ActiveRecord::Base
       row = Hash[[header, spreadsheet.row(i)].transpose]
       shipment_line = where(shipment_line_number: row["shipment_line_number"]).first || new
       shipment_line.attributes = row
+      shipment_line.is_active = true
       shipment_line.save
     end
   end

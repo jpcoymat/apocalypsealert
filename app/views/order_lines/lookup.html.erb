@@ -15,7 +15,8 @@
 </button>
 
 <%= form_for :order_line, url: lookup_order_lines_path, html: {class: "form-horizontal", id: "search_form"}   do |form| %>
-<%= form.submit "Search", {class: "btn btn-primary", id: "submit_search_form"} %>
+  <%= form.hidden_field :is_active, value: true %>
+  <%= form.submit "Search", {class: "btn btn-primary", id: "submit_search_form"} %>
 <% end %>
 </div>
 <br \>
