@@ -14,6 +14,15 @@ class InventoryProjection < ActiveRecord::Base
     self.product_id = Product.where(name: product_name).first.try(:id)
   end
 
+  def product_code
+    self.product.try(:code)
+  end
+
+ def product_code=(product_code)
+    self.product_id = Product.where(code: product_code).first.try(:id)
+  end
+
+
   def location_name
     location.try(:name)
   end
@@ -22,7 +31,7 @@ class InventoryProjection < ActiveRecord::Base
     self.location_id = Location.where(name: location_name).first.try(:id)
   end
 
-  def self.find_by_reference_number(refernce_number)
+  def self.find_by_reference_number(reference_number)
     inventory_projection = nil
     references = reference_number.split("/")
     if references.count == 3
@@ -75,6 +84,10 @@ class InventoryProjection < ActiveRecord::Base
     end
   end
 
+  def self.inventory_position(location, product)
+    @inventory_position = where(location: location, product: product).order(projected_for: :asc).first
+  end
+
   def reference_number
     product.code + "/" + location.code + "/" + self.projected_for.to_s
   end
@@ -86,6 +99,14 @@ class InventoryProjection < ActiveRecord::Base
       self.location_id = Location.where(code: references[1]).first.try(:id)
       self.projected_for = Date.parse(references[2])
     end
+  end
+
+  def affected_scv_exceptions
+    @affected_scv_exceptions = ScvException.where(affected_object_type: self.class.to_s, affected_object_id: self.id)
+  end
+
+  def cause_scv_exceptions
+    @cause_scv_exceptions = ScvException.where(cause_object_type: self.class.to_s, cause_object_id: self.id)
   end
 
 end

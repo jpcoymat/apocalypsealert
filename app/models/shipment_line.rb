@@ -12,7 +12,7 @@ class ShipmentLine < ActiveRecord::Base
   validate :different_locations
 
   has_many :milestones, as: :associated_object
-
+ 
 
   def self.modes
     @@modes = ["Ocean", "Truck", "Air", "Rail", "Intermodal", "Parcel"]
@@ -91,6 +91,15 @@ class ShipmentLine < ActiveRecord::Base
     self.product_id = Product.where(name: product_name).first.try(:id)
   end
 
+  def product_code
+    self.product.try(:code)
+  end
+
+  def product_code=(product_code)
+    self.product_id = Product.where(code: product_code).first.try(:id)
+  end
+
+
   def carrier_organization
     @carrier_organization = self.carrier_organization_id ? Organization.find(self.carrier_organization_id) : nil
   end
@@ -138,6 +147,15 @@ class ShipmentLine < ActiveRecord::Base
   def customer_organization_name=(customer_name)
     self.customer_organization_id = Organization.where(name: customer_name).first.try(:id)
   end
+
+  def affected_scv_exceptions
+    @affected_scv_exceptions = ScvException.where(affected_object_type: self.class.to_s, affected_object_id: self.id)
+  end
+
+  def cause_scv_exceptions
+    @cause_scv_exceptions = ScvException.where(cause_object_type: self.class.to_s, cause_object_id: self.id)
+  end
+
 
   protected
 

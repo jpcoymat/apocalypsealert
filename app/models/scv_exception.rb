@@ -95,7 +95,7 @@ class ScvException < ActiveRecord::Base
       when "Milestone"
         self.affected_object_id = Milestone.where(reference_number: ref_number).first.try(:id)
       when "InventoryProjection"
-        nil
+        self.affected_object_id = InventoryPosition.find_by_reference_number(ref_number)
       end        
   end
 
@@ -108,7 +108,7 @@ class ScvException < ActiveRecord::Base
       when "Milestone"
         self.cause_object_id = Milestone.where(reference_number: ref_number).first.try(:id)
       when "InventoryProjection"
-        nil
+        self.cause_object_id = InventoryProjection.find_by_reference_number(ref_number)
       end
   end
 
@@ -123,6 +123,11 @@ class ScvException < ActiveRecord::Base
   
   def cause_object_full_reference
     full_reference_number("cause")   
+  end
+
+  def quantity_at_risk
+    @quantity_at_risk = (self.affected_object_quantity - self.cause_object_quantity).abs
+    @quantity_at_risk
   end
 
 

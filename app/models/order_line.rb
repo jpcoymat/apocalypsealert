@@ -79,6 +79,15 @@ class OrderLine < ActiveRecord::Base
     self.product_id = Product.where(name: product_name).first.try(:id)
   end
 
+  def product_code
+    self.product.try(:code)
+  end
+
+  def product_code=(product_code)
+    self.product_id = Product.where(code: product_code).first.try(:id)
+  end
+
+
   def supplier_organization
     @supplier_organization = self.supplier_organization_id ? Organization.find(self.supplier_organization_id) : nil
   end
@@ -112,6 +121,16 @@ class OrderLine < ActiveRecord::Base
   def customer_organization_name=(organization_name)
     self.customer_organization_id = Organization.where(name: organization_name).first.try(:id)
   end
+
+  def affected_scv_exceptions
+    @affected_scv_exceptions = ScvException.where(affected_object_type: self.class.to_s, affected_object_id: self.id)
+  end
+
+  def cause_scv_exceptions
+    @cause_scv_exceptions = ScvException.where(cause_object_type: self.class.to_s, cause_object_id: self.id)
+  end
+
+
 
   protected
 
