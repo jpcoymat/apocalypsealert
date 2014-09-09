@@ -1,19 +1,26 @@
-<p id="notice"><%= notice %></p>
+<h1>SCV Exception Details</h1>
 
-<p>
-  <strong>Type:</strong>
-  <%= @scv_exception.type %>
-</p>
+<dl>
+  <dt>Exception Type 			</dt> <dd><%= @scv_exception.exception_type 				%></dd>
+  <dt>Priority    			</dt> <dd><%= @scv_exception.priority 					%></dd>
+  <dt>Status    			</dt> <dd><%= @scv_exception.status 					%></dd>
+  <dt>Affected Object Type    		</dt> <dd><%= @scv_exception.affected_object_type.titleize 		%></dd>
+  <dt>Affected Object Reference    	</dt> <dd><%= @scv_exception.affected_object_reference_number 		%></dd>
+  <dt>Affected Object Quantity Type	</dt> <dd><%= @scv_exception.affected_object_quantity_type.titleize	%></dd>
+  <dt>Affected Object Quantity 		</dt> <dd><%= @scv_exception.affected_object_quantity 			%></dd>
+  <dt>Affected Object Date Type 	</dt> <dd><%= @scv_exception.affected_object_date_type 			%></dd>
+  <dt>Affected Object Date 		</dt> <dd><%= @scv_exception.humanized_affected_object_date		%></dd>
+  <dt>Cause Object Type    		</dt> <dd><%= @scv_exception.cause_object_type.titleize 		%></dd>
+  <dt>Cause Object Reference    	</dt> <dd><%= @scv_exception.cause_object_reference_number 		%></dd>
+  <dt>Cause Object Quantity Type     	</dt> <dd><%= @scv_exception.cause_object_quantity_type.titleize 	%></dd>
+  <dt>Cause Object Quantity 		</dt> <dd><%= @scv_exception.cause_object_quantity 			%></dd>
+  <dt>Cause Object Date Type 		</dt> <dd><%= @scv_exception.cause_object_date_type 			%></dd>
+  <dt>Cause Object Date 		</dt> <dd><%= @scv_exception.humanized_cause_object_date		%></dd>
+  <dt>Quantity at Risk 			</dt> <dd><%= @scv_exception.quantity_at_risk 				%></dd>
+</dl>
 
-<p>
-  <strong>Priority:</strong>
-  <%= @scv_exception.priority %>
-</p>
 
-<p>
-  <strong>Status:</strong>
-  <%= @scv_exception.status %>
-</p>
+
 
 <%= link_to 'Edit', edit_scv_exception_path(@scv_exception) %> |
 <%= link_to 'Back', scv_exceptions_path %>

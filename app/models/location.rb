@@ -147,7 +147,7 @@ class Location < ActiveRecord::Base
     @percentage_inbound_quantity_at_risk = 0.0 
     denominator = total_inbound_quantity(options).to_f
     if denominator > 0.0
-      @percentage_inbound_quantity_at_risk = total_inbound_quantity_at_risk(options).to_f/denominator
+      @percentage_inbound_quantity_at_risk = ((total_inbound_quantity_at_risk(options).to_f/denominator)*100).round(2)
     end
     @percentage_inbound_quantity_at_risk
   end 

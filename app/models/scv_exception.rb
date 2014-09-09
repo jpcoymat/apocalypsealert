@@ -130,6 +130,15 @@ class ScvException < ActiveRecord::Base
     @quantity_at_risk
   end
 
+  def humanized_affected_object_date
+    @humanize_affected_object_date = humanized_date_format("affected_object_date")
+    @humanize_affected_object_date
+  end
+ 
+  def humanized_cause_object_date
+    @humanized_cause_object_date = humanized_date_format("cause_object_date")
+    @humanized_cause_object_date
+  end
 
   protected
 
@@ -143,6 +152,12 @@ class ScvException < ActiveRecord::Base
       unless ScvException.exception_types.include?(self.exception_type)
         errors.add(:base, "Invalid Exception Type")
       end
+    end
+
+    def humanized_date_format(attribute)
+      formatted_date = nil
+      formatted_date = self.attributes[attribute].to_formatted_s(:short) if self.attributes[attribute]
+      return formatted_date
     end
 
 end

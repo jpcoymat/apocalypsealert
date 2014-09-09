@@ -13,7 +13,7 @@
     data.addColumn('number', 'Longitude');
     data.addColumn('string', 'Loc Code');
     data.addColumn('number', 'Exception Count');
-    data.addColumn('number', 'Share at Risk');
+    data.addColumn('number', 'Percentage at Risk');
 
     <% @locations.each do |loc| %>
       <% if loc.latitude and loc.longitude %>

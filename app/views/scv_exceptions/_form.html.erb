@@ -18,42 +18,42 @@
     </div>
   </div>
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :priority, class: "col-sm-2 control-label" %> 
     <div class="col-xs-4">
       <%= f.select :priority, ScvException.priorities.collect {|prty| [prty, prty]}, {}, class: "form-control" %>
     </div>
   </div>
   
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :affected_object_type, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.select :affected_object_type, [["Shipment Line", "ShipmentLine"], ["Order Line", "OrderLine"], ["Inventory Projection", "InventoryProjection"]], {}, class: "form-control" %>
     </div>
   </div>
 
-  <div class="from_group">
+  <div class="form-group">
     <%= f.label :affected_object_reference , class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.text_field :affected_object_reference_number, class: "form-control" %>
     </div>
   </div>
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :affected_object_quantity_type, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.select :affected_object_quantity_type, [["Quantity", "quantity"]], {}, class: "form-control" %>
     </div>
   </div>
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :affected_object_quantity, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.text_field :affected_object_quantity, class: "form-control" %>
     </div>
   </div>
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :affected_object_date_type, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.select :affected_object_date_type, [["ETA", "eta"], ["ETD", "etd"]], {}, class: "form-control" %>
@@ -61,7 +61,7 @@
   </div>
 
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :affected_object_date, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.text_field :affected_object_date, class: "form-control" %>
@@ -72,28 +72,28 @@
   </div>
 
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :cause_object_type, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.select :cause_object_type, [["Milestone", "milestone"],["Shipment Line", "ShipmentLine"], ["Order Line", "OrderLine"], ["Inventory Projection", "InventoryProjection"]], {}, class: "form-control" %>
     </div>
   </div>
 
-  <div class="from_group">
+  <div class="form-group">
     <%= f.label :cause_object_reference , class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.text_field :cause_object_reference_number, class: "form-control" %>
     </div>
   </div>
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :cause_object_quantity_type, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.select :cause_object_quantity_type, [["Quantity", "quantity"]], {}, class: "form-control" %>
     </div>
   </div>
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :cause_object_quantity, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.text_field :cause_object_quantity, class: "form-control" %>
@@ -101,7 +101,7 @@
   </div>
 
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :cause_object_date_type, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.select :cause_object_date_type, [["ETA", "eta"], ["ETD", "etd"]], {}, class: "form-control" %>
@@ -109,7 +109,7 @@
   </div>
 
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.label :cause_object_date, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
       <%= f.text_field :cause_object_date, class: "form-control" %>
@@ -120,7 +120,7 @@
   </div>
 
 
-  <div class="form_group">
+  <div class="form-group">
     <%= f.submit %>
   </div>
 <% end %>

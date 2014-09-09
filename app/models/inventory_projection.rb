@@ -31,6 +31,14 @@ class InventoryProjection < ActiveRecord::Base
     self.location_id = Location.where(name: location_name).first.try(:id)
   end
 
+  def location_code
+    location.try(:code)
+  end
+
+  def location_code=(location_code)
+    self.location_id = Location.where(code: location_code).first.try(:id)
+  end
+
   def self.find_by_reference_number(reference_number)
     inventory_projection = nil
     references = reference_number.split("/")

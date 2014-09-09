@@ -85,7 +85,7 @@ class ScvExceptionsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def scv_exception_params
-      params.require(:scv_exception).permit(:type, :priority, :status)
+      params.require(:scv_exception).permit(:exception_type, :priority, :status, :affected_object_type, :affected_object_reference_number, :affected_object_quantity_type, :affected_object_quantity, :affected_object_date_type, :affected_object_date, :cause_object_type, :cause_object_reference_number, :cause_object_quantity_type, :cause_object_quantity, :cause_object_date_type, :cause_object_date, :affected_object_id, :cause_object_id )
     end
 
     def copy_scv_exceptions_file(scv_exceptions_file)

@@ -70,6 +70,23 @@ class OrderLine < ActiveRecord::Base
   end
 
 
+  def origin_location_code
+    origin_location.try(:code)
+  end
+
+
+  def destination_location_code
+    destination_location.try(:code)
+  end
+
+  def origin_location_code=(location_code)
+    self.origin_location_id = Location.where(code: location_code).first.try(:id)
+  end
+
+  def destination_location_code=(location_code)
+    self.destination_location_id = Location.where(code: location_code).first.try(:id)
+  end
+
   def product_name
     self.product.try(:name)
   end
