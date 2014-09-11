@@ -47,7 +47,7 @@ class InventoryProjection < ActiveRecord::Base
       if product
         location = Location.where(code: references[1]).first
         if location  
-          inventory_projection = where(product: product, location: locaiton, projected_for: Date.parse(references[2])).first
+          inventory_projection = where(product: product, location: location, projected_for: Date.parse(references[2])).first
         end
       end
     end

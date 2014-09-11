@@ -75,5 +75,21 @@ class WorkOrder < ActiveRecord::Base
     self.organization_id = Organization.where(name: organization_name).first.try(:id)
   end
 
+  def humanized_production_begin_date
+    humanized_date_format("production_begin_date")
+  end
+
+  def humanized_production_end_date
+    humanized_date_format("production_end_date")
+  end
+
+  protected
+   
+    def humanized_date_format(attribute)
+      formatted_date = nil
+      formatted_date = self.attributes[attribute].to_formatted_s(:short) if self.attributes[attribute]
+      return formatted_date
+    end 
+
 
 end

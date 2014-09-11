@@ -43,20 +43,21 @@ class ScvException < ActiveRecord::Base
   def self.find_import_match(row)
     affected_object = find_object_by(row["affected_object_type"], row["affected_object_reference_number"])
     cause_object = find_object_by(row["cause_object_type"], row["cause_object_reference_number"])
-    scv_exception = where(affected_object: affected_object, cause_object: cause_object).first
+    scv_exception = where(affected_object: affected_object, cause_object: cause_object, exception_type: row["exception_type"]).first
+    return scv_exception
   end
 
   def self.find_object_by(object_type, object_reference)
     matching_object = nil
     case object_type
       when "OrderLine"
-        matching_object = OrderLine.where(order_line_number: object_reference)
+        matching_object = OrderLine.where(order_line_number: object_reference).first
       when "ShipmentLine"
-        matchin_object = ShipmentLine.where(shipment_line_number: object_reference)
+        matchin_object = ShipmentLine.where(shipment_line_number: object_reference).first
       when "Milestone"
-        matching_object = Milestone.where(reference_number: object_reference)
-      else
-        nil
+        matching_object = Milestone.where(reference_number: object_reference).first
+      when "WorkOrder"
+        matching_object = WorkOrder.where(work_order_number: object_reference).first
     end
     return matching_object
   end
@@ -73,7 +74,9 @@ class ScvException < ActiveRecord::Base
         @object_reference_number = Milestone.find(attributes[object_id]).try(:reference_number)
       when "InventoryProjection" 
         ip = InventoryProjection.find(attributes[object_id])
-        @object_reference_number = ip.product.try(:code) + "-" + ip.location.try(:code) + "-" + ip.projected_for.to_s
+        @object_reference_number = ip.reference_number
+      when "WorkOrder"
+        @object_reference_number = WorkOrder.find(attributes[object_id]).try(:work_order_number)
     end
     @object_reference_number
   end
@@ -95,8 +98,10 @@ class ScvException < ActiveRecord::Base
       when "Milestone"
         self.affected_object_id = Milestone.where(reference_number: ref_number).first.try(:id)
       when "InventoryProjection"
-        self.affected_object_id = InventoryPosition.find_by_reference_number(ref_number)
-      end        
+        self.affected_object_id = InventoryProjection.find_by_reference_number(ref_number).try(:id)
+      when "WorkOrder"
+        self.affected_object_id = WorkOrder.where(work_order_number: ref_number).first.try(:id)
+    end        
   end
 
   def cause_object_reference_number=(ref_number)
@@ -108,7 +113,9 @@ class ScvException < ActiveRecord::Base
       when "Milestone"
         self.cause_object_id = Milestone.where(reference_number: ref_number).first.try(:id)
       when "InventoryProjection"
-        self.cause_object_id = InventoryProjection.find_by_reference_number(ref_number)
+        self.cause_object_id = InventoryProjection.find_by_reference_number(ref_number).try(:id)
+      when "WorkOrder"
+        self.cause_object_id = WorkOrder.where(work_order_number: ref_number).first.try(:id)
       end
   end
 

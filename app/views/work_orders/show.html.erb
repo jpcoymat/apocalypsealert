@@ -1,34 +1,19 @@
+<h1>Work Order Details</h1>
 <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Work order number:</strong>
-  <%= @work_order.work_order_number %>
-</p>
+<dl class="dl-horizontal">
+                <dt>Work Order  Number          </dt>   <dd><%= @work_order.work_order_number   		%></dd>
+                <dt>Production Begin Date       </dt>   <dd><%= @work_order.humanized_production_begin_date	%></dd>
+                <dt>Production End Date		</dt>   <dd><%= @work_order.humanized_production_end_date       %></dd>
+                <dt>Product                     </dt>   <dd><%= @work_order.product.name                        %></dd>
+                <dt>Location             	</dt>   <dd><%= @work_order.location_name         		%></dd>
+                <dt>Quantity                    </dt>   <dd><%= @work_order.quantity.to_s       		%></dd>
+        </dl>
+<br /><br />
+<h4>Work Order Milestones </h4>
+<%= render partial: "shared/milestones", locals: {milestones: @work_order.milestones} %>
 
-<p>
-  <strong>Product:</strong>
-  <%= @work_order.product_id %>
-</p>
 
-<p>
-  <strong>Location:</strong>
-  <%= @work_order.location_id %>
-</p>
-
-<p>
-  <strong>Production date:</strong>
-  <%= @work_order.production_date %>
-</p>
-
-<p>
-  <strong>Quantity:</strong>
-  <%= @work_order.quantity %>
-</p>
-
-<p>
-  <strong>Organization:</strong>
-  <%= @work_order.organization_id %>
-</p>
 
 <%= link_to 'Edit', edit_work_order_path(@work_order) %> |
-<%= link_to 'Back', work_orders_path %>
+<%= link_to 'Back', lookup_work_orders_path %>

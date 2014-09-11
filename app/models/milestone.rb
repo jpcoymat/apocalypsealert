@@ -53,14 +53,30 @@ class Milestone < ActiveRecord::Base
   end
 
   def associated_object_reference
-    self.associated_object_type == "OrderLine" ? OrderLine.find(self.associated_object_id).order_line_number : ShipmentLine.find(self.associated_object_id).shipment_line_number
+     case self.associated_object_type
+      when "OrderLine"
+        @associated_object_reference = OrderLine.find(self.associated_object_id).order_line_number
+       when "ShipmentLine"
+        @associated_object_reference = ShipmentLine.find(self.associated_object_id).shipment_line_number
+      when "WorkOrder"
+        @associated_object_reference = WorkOrder.find(self.associated_object_id).work_order_number
+      when "InventoryProjection"
+        @associated_object_reference = InventoryProjection.find(self.associated_object_id).reference_number
+      else
+        @associated_object_reference = nil
+    end
   end
 
   def associated_object_reference=(reference_number)
-    if self.associated_object_type == "OrderLine"
-      self.associated_object_id = OrderLine.where(order_line_number: reference_number).first.try(:id)
-    else
-      self.associated_object_id = ShipmentLine.where(shipment_line_number: reference_number).first.try(:id)
+    case self.associated_object_type
+      when "OrderLine"
+        self.associated_object_id = OrderLine.where(order_line_number: reference_number).first.try(:id)
+      when "ShipmentLine"
+        self.associated_object_id = ShipmentLine.where(shipment_line_number: reference_number).first.try(:id)
+      when "WorkOrder"
+        self.associated_object_id = WorkOrder.where(work_order_number: reference_number).first.try(:id)
+      when "InventoryProjection"
+        self.associated_object_id = InventoryProjection.find_by_reference_number(reference_number)
     end
   end
 
