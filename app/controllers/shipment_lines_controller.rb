@@ -126,7 +126,7 @@ class ShipmentLinesController < ApplicationController
     def search_params
       search_params = shipment_line_params.delete_if {|k,v| v.blank?}
       if search_params.key?("product_name")
-        search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.id
+        search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.try(:id)
         search_params.delete("product_name")
       end
       search_params
