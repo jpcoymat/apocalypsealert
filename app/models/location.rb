@@ -2,6 +2,7 @@ class Location < ActiveRecord::Base
 
   belongs_to :organization
   belongs_to :location_group
+  belongs_to :work_orders
 
   has_many :inventory_projections
 
@@ -54,9 +55,9 @@ class Location < ActiveRecord::Base
     @inventory_exceptions  
   end
 
-  def inbound_shipmment_line_exceptions(options = {})
-    @inbound_shipmment_line_exceptions = shipment_line_exceptions("destination", options)
-    @inbound_shipmment_line_exceptions
+  def inbound_shipment_line_exceptions(options = {})
+    @inbound_shipment_line_exceptions = shipment_line_exceptions("destination", options)
+    @inbound_shipment_line_exceptions
   end
  
   def outbound_shipment_line_exceptions(options = {})
@@ -105,7 +106,7 @@ class Location < ActiveRecord::Base
   end
 
   def inbound_exceptions(options = {})
-    @inbound_exceptions = inbound_shipmment_line_exceptions(options)
+    @inbound_exceptions = inbound_shipment_line_exceptions(options)
     @inbound_exceptions << inbound_order_line_exceptions(options)
     @inbound_exceptions.flatten!
     @inbound_exceptions

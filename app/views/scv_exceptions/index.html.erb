@@ -32,11 +32,12 @@
     	  <td><%= scv_exception.affected_object_quantity_type %></td>
           <td><%= scv_exception.affected_object_quantity %></td>
           <td><%= scv_exception.affected_object_date_type %></td>
+          <td><%= scv_exception.humanized_affected_object_date %></td>
           <td><%= scv_exception.cause_object_full_reference %></td>
           <td><%= scv_exception.cause_object_quantity_type %></td>
           <td><%= scv_exception.cause_object_quantity %></td>
           <td><%= scv_exception.cause_object_date_type %></td>
-          <td><%= scv_exception.cause_object_date %></td>
+          <td><%= scv_exception.humanized_cause_object_date %></td>
           <td><%= scv_exception.status.titleize %></td>
           <td><%= link_to 'Show', scv_exception %></td>
           <td><%= link_to 'Edit', edit_scv_exception_path(scv_exception) %></td>

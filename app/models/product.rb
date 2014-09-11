@@ -6,6 +6,7 @@ class Product < ActiveRecord::Base
   has_many :order_lines
   has_many :shipment_lines
   has_many :inventory_projections
+  has_many :work_orders
 
 
   def deleteable?

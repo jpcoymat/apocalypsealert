@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140909212122) do
+ActiveRecord::Schema.define(version: 20140911004157) do
 
   create_table "inventory_projections", force: true do |t|
     t.integer  "location_id"
@@ -143,6 +143,19 @@ ActiveRecord::Schema.define(version: 20140909212122) do
     t.integer  "organization_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "work_orders", force: true do |t|
+    t.string   "work_order_number"
+    t.integer  "product_id"
+    t.integer  "location_id"
+    t.date     "production_begin_date"
+    t.integer  "quantity"
+    t.integer  "organization_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "is_active"
+    t.date     "production_end_date"
   end
 
 end

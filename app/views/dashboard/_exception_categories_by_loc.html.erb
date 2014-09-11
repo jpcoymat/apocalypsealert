@@ -1,22 +1,14 @@
 <div id="exceptions_graph">
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
-<%= form_for :category_parameters, url: reset_category_exceptions_path do |form| %>
-  <%= render partial: "shared/product_form_auto", locals: {form: form, form_element_id: "categories_product_name"} %>
-  <%= form.select :location_id, @locations.collect {|loc| [loc.name, loc.id]} %>
-  <%= submit_tag "Reset Category Summary" %>
-<% end %>
-<div>
- <p>Category Exception Sumary for Product <%= @category_product.name %> and Location <%= @category_location.name %></p>
-</div>
-<div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+<div id="loc_exception_container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
 
 
 <script type="text/javascript">
   $(function () {
-    $('#container').highcharts({
+    $('#loc_exception_container').highcharts({
         chart: {
-            type: 'bar'
+            type: 'column'
         },
         title: {
             text: 'Exception By Category'
@@ -38,10 +30,16 @@
             }
         },
         plotOptions: {
-            bar: {
-                dataLabels: {
-                    enabled: true
+            series: {
+              cursor: 'pointer', 
+              point: {
+                events:{ 
+                  click: function () {
+                    var s = '/summary_views?summary_parameters%5Blocation_name5D=' + this.y;
+                    location.href = s;
+                  }
                 }
+              } 
             }
         },
         legend: {
@@ -58,9 +56,17 @@
         credits: {
             enabled: false
         },
-        series: [{
-            name: 'Exception Counts',
-            data: [<%= @source_exceptions.count %>, <%= @move_exceptions.count %>, <%= @store_exceptions.count %>, <%= @deliver_exceptions.count %>]}]
+        series: [
+          <% @locations.each do |loc| %>
+            <% if loc == @locations.last %>
+              {name: '<%= loc.name %>',
+              data: [<%= loc.inbound_order_line_exceptions.count %>, <%= loc.inbound_shipment_line_exceptions.count %>, <%= loc.inventory_exceptions.count %>, <%= loc.outbound_order_line_exceptions.count %>]}
+            <% else %>
+             {name: '<%= loc.name %>',
+              data: [<%= loc.inbound_order_line_exceptions.count %>, <%= loc.inbound_shipment_line_exceptions.count %>, <%= loc.inventory_exceptions.count %>, <%= loc.outbound_order_line_exceptions.count %>]},
+            <% end %> 
+          <% end %>
+          ]
     });
   });
 

@@ -1,4 +1,10 @@
 <h1>Welcome to SCV</h1>
-
-  <%= render partial: "map_chart", locals: {data_array: @data_array} %>
-  <%= render partial: "exception_categories" %>
+  <div id="map_div">
+    <%= render partial: "map_chart" %>
+  </div>
+  <div>
+    <%= render partial: "exception_categories" %>
+  </div>
+  <div>
+    <%= render partial: "exception_categories_by_loc" %>
+  </div>

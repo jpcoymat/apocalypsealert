@@ -1,5 +1,14 @@
 Rails.application.routes.draw do
 
+  resources :work_orders do
+    collection do
+      get 'lookup'
+      post 'lookup'
+      get 'file_upload'
+      post 'import_file'
+    end
+  end
+
   resources :milestones do
     collection do
       get 'lookup'
@@ -128,8 +137,15 @@ Rails.application.routes.draw do
 
   controller :dashboard do
     get 'dashboard', action: "index"
+    get 'reset_map', action: "reset_map"
+    post 'reset_map', action: "reset_map"
+    get 'reset_category_exceptions', action: "reset_category_exceptions"
+    post 'reset_category_exceptions', action: "reset_category_exceptions"
   end
 
+  controller :summary_views do
+    get 'summary_view', action: "index"
+  end
 
   root to: 'dashboard#index'
 

@@ -1,0 +1,147 @@
+<h1> Work Orders</h1>
+
+<div class="container-fluid">
+
+<select id="form_criteria">
+  <option value="work_order_number">Work Order Number</option>
+  <option value="product">Product</option>
+  <option value="location">Location</option>
+</select> 
+<button type="button" class="btn btn-primary" onclick="addCriteria()">
+  <span class="glyphicon glyphicon-plus">
+</button>
+
+<%= form_for :work_order, url: lookup_work_orders_path, html: {class: "form-horizontal", id: "search_form"}   do |form| %>
+  <%= form.hidden_field :organization_id, value: @user_org.id %>
+  <%= form.submit "Search", {class: "btn btn-primary", id: "submit_search_form"} %>
+<% end %>
+</div>
+<br \>
+<hr>
+<br \>
+<% if request.post? %>
+
+  <% if @work_orders.empty? %>
+    <p>No Work Orders have been created yet.</p>
+  <% else %>
+    <table class="table table-striped">
+      <tr><th>Work Order Number </th> <th>Product</th> <th>Location </th> <th>Production Begin Date</th> <th>Production End Date</th> <th>Quantity</th></tr>
+        <% @work_orders.each do |work_order| %>
+          <tr><td><%= work_order.work_order_number 					%></td>
+	      <td><%= work_order.product_name 						%></td>
+	      <td><%= work_order.location_name						%></td>
+              <td><%= work_order.production_begin_date.to_formatted_s(:short) 		%></td>
+              <td><%= work_order.production_end_date.to_formatted_s(:short)		%></td>
+	      <td><%= work_order.quantity						%></td>
+              <td><%= link_to "Edit", edit_work_order_path(work_order) 			%></td>
+	      <td><%= button_to "Destroy", work_order_path(work_order), method: :delete %></td>
+          </tr>
+        <% end %>
+    </table %>
+  <% end %>
+<% end %>
+<br /> <br />
+<%= link_to "Create New Work Order", new_work_order_path %>
+<br /> <br />
+<script>
+$(function() {
+    var product_names = [
+      <% @products.each do |product| %>
+        "<%= product.name %>",
+      <% end %>
+    ""];
+    $( "#product_names" ).autocomplete({
+      source: product_names
+    });
+});
+</script>
+
+<script type="text/javascript">
+ 
+  function checkExistingElement(form_element) {
+    var form_selector = '#' + form_element;
+    if ( $(form_selector).length == 0)
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+ 
+  function addCriteria() {
+    var criteriaType = $('#form_criteria').val();
+	switch(criteriaType) {
+	  case "work_order_number":
+	    addWorkOrderCriteria();
+            break;
+	  case "product":
+	    addProductCritera();
+            break;
+	  case "location":
+	    addLocationCriteria();
+            break;
+	}
+  }
+  
+  function addWorkOrderCriteria() {
+
+    var elementExists = checkExistingElement('work_order_work_order_number');
+    if (elementExists) {
+      null;
+    }
+    else {    
+      var htmlToAdd = '<div class="form-group" id="work_order_div"><label class="col-sm-2 control-label" for="work_order_Work Order Number">Work Order Number</label><div class="col-sm-2"><input class="form-control" id="work_order_work_order_number" name="work_order[work_order_number]" type="text" /></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'work_order_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
+      $('#search_form').append(htmlToAdd);
+      var movement_sources = [
+      <% @all_work_orders.each do |wo| %>
+          "<%= wo.work_order_number %>",
+      <% end %>
+      ""];
+      $( "#work_order_work_order_number" ).autocomplete({source: movement_sources});
+    }
+  }
+
+  function addProductCritera() {
+    var elementExists = checkExistingElement('product_names');
+    if (elementExists) {
+      null;
+    }
+    else {
+      var htmlToAdd = '<div class="form-group" id="product_div"><label class="col-sm-2 control-label" for="work_order_Product Name">Product name</label><div class="col-sm-2"><input class="form-control" id="product_names" name="work_order[product_name]" type="text" /></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'product_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
+      $('#search_form').append(htmlToAdd);
+      var product_names = [
+      <% @products.each do |product| %>
+        "<%= product.name %>",
+      <% end %>
+    ""];
+    $( "#product_names" ).autocomplete({
+      source: product_names
+    });
+
+    } 
+  }
+  
+  function addLocationCriteria() {
+    var elementExists = checkExistingElement('work_order_location_id');
+    if (elementExists) {
+      null;
+    }
+    else {
+      var htmlToAdd = '<div class="form-group" id="location_div"><label class="col-sm-2 control-label" for="work_order_Location">Location</label><div class="col-sm-2"><select class="form-control" id="work_order_location_id" name="work_order[location_id]">';
+      <% @locations.each do |location| %>
+        htmlToAdd += '<option value="' + '<%= location.id.to_s %>' + '">' + '<%= location.name %>' + '</option>';
+      <% end %>
+      htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'location_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
+      $('#search_form').append(htmlToAdd);
+    }
+  }
+
+  function removeCriteria(form_element) {
+    var form_selector = '#' + form_element;
+    $(form_selector).remove();
+  }
+  
+  
+</script>

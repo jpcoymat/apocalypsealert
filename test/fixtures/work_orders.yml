@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  work_order_number: MyString
+  product_id: 1
+  location_id: 1
+  production_date: 2014-09-10
+  quantity: 1
+  organization_id: 1
+
+two:
+  work_order_number: MyString
+  product_id: 1
+  location_id: 1
+  production_date: 2014-09-10
+  quantity: 1
+  organization_id: 1

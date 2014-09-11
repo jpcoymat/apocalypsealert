@@ -1,10 +1,16 @@
-<div id="chart_div" style="width: 900px; height: 500px; align: center"></div>
 
+<div id="chart_form">
+<%= form_for :map_parameters, url: reset_map_path do |form| %>
+  <%= render partial: "shared/product_form_auto", locals: {form: form, form_element_id: "map_product_name"} %>
+  <%= submit_tag "Reset Map" %>
+<% end %>
+</div>
+<h4>Exceptions for product <%= @map_product.name %></h4>
+<div id="chart_div" style="width: 900px; height: 500px; align: center"></div>
 <script type='text/javascript' src='https://www.google.com/jsapi'></script>
 <script type='text/javascript'>
   google.load('visualization', '1', {'packages': ['geochart']});
   google.setOnLoadCallback(drawMarkersMap);
-
 
   function drawMarkersMap() {
 
@@ -17,7 +23,7 @@
 
     <% @locations.each do |loc| %>
       <% if loc.latitude and loc.longitude %>
-        data.addRow([ <%= loc.latitude %>, <%= loc.longitude %>, '<%= loc.code %>', <%= loc.inbound_exceptions.count %>, <%= loc.percentage_inbound_quantity_at_risk %>]);
+        data.addRow([ <%= loc.latitude %>, <%= loc.longitude %>, '<%= loc.code %>', <%= loc.inbound_exceptions(product_id: @map_product.id).count %>, <%= loc.percentage_inbound_quantity_at_risk(product_id: @map_product.id) %>]);
       <% end %>
     <% end %>
 

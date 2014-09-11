@@ -7,14 +7,14 @@
           "<%= product.name %>",
         <% end %>
       ""];
-      $( "#product_names" ).autocomplete({
+      $( '#<%= form_element_id %>' ).autocomplete({
         source: product_names
       });
     });
   </script>
 
   <div class="col-xs-4">
-    <%= form.text_field :product_name, {class: "form-control", id: "product_names"} %> 
+    <%= form.text_field :product_name, {class: "form-control", id: form_element_id} %> 
   </div>
 </div>
 

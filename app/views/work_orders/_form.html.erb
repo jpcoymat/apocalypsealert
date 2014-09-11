@@ -1,0 +1,64 @@
+<%= form_for(@work_order, html: {class: "form-horizontal"})  do |f| %>
+  <% if @work_order.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@work_order.errors.count, "error") %> prohibited this work_order from being saved:</h2>
+
+      <ul>
+      <% @work_order.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.hidden_field :organization_id, value: @user_org.id %>
+
+  <div class="form-group">
+    <%= f.label :work_order_number, class: "col-sm-2 control-label" %>
+    <div class="col-xs-4">
+      <%= f.text_field :work_order_number, class: "form-control" %>
+    </div>
+  </div> 
+
+  <%= render partial: "shared/product_form_auto", locals: {form: f, form_element_id: "work_order_product_name"} %>
+  
+  <div class="form-group">
+    <%= f.label "Location", class: "col-sm-2 control-label" %>
+    <div class="col-xs-4">
+      <%= f.select :location_id, @locations.collect {|loc| [loc.name, loc.id]}, {}, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label "Production Begin Date", class: "col-sm-2 control-label" %>
+    <div class="col-xs-4">
+      <%= f.text_field :production_begin_date, class: "form-control" %>
+    </div>
+  </div>
+  <script>
+    $( "#work_order_production_begin_date" ).datepicker({minDate: 0, dateFormat: "yy-mm-dd"});
+  </script>
+
+
+  <div class="form-group">
+    <%= f.label "Production End Date", class: "col-sm-2 control-label" %>
+    <div class="col-xs-4">
+      <%= f.text_field :production_end_date, class: "form-control" %>
+    </div>
+  </div>
+  <script>
+    $( "#work_order_production_end_date" ).datepicker({minDate: 0, dateFormat: "yy-mm-dd"});
+  </script>
+
+  <div class="form-group">
+    <%= f.label "Quantity", class: "col-sm-2 control-label" %>
+    <div class="col-xs-4">
+      <%= f.number_field :quantity, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-4">
+      <%= f.submit class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>

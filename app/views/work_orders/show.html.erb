@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Work order number:</strong>
+  <%= @work_order.work_order_number %>
+</p>
+
+<p>
+  <strong>Product:</strong>
+  <%= @work_order.product_id %>
+</p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @work_order.location_id %>
+</p>
+
+<p>
+  <strong>Production date:</strong>
+  <%= @work_order.production_date %>
+</p>
+
+<p>
+  <strong>Quantity:</strong>
+  <%= @work_order.quantity %>
+</p>
+
+<p>
+  <strong>Organization:</strong>
+  <%= @work_order.organization_id %>
+</p>
+
+<%= link_to 'Edit', edit_work_order_path(@work_order) %> |
+<%= link_to 'Back', work_orders_path %>

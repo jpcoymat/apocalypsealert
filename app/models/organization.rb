@@ -4,7 +4,7 @@ class Organization < ActiveRecord::Base
   has_many :location_groups
   has_many :products
   has_many :users
-
+  has_many :work_orders
 
   def order_lines
     @order_lines = OrderLine.where("customer_organization_id = ? or supplier_organization_id = ?", self.id, self.id)
