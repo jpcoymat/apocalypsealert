@@ -107,7 +107,8 @@ class InventoryProjection < ActiveRecord::Base
             inventory_positions << inv_pos if inv_pos
           end
         elsif product_id and Product.find(product_id)
-          inventory_positions << where(location: location, product: Product.find(product_id)).first 
+          inv_pos = where(location: location, product: Product.find(product_id)).first
+          inventory_positions << inv_pos if inv_pos
         end  
       end
     end
