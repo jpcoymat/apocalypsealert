@@ -3,7 +3,7 @@ class SummaryViewsController < ApplicationController
   before_filter :authorize
 
   def index
-    
+    @location = Location.where(name: params[:summary_parameters][:location_name]).first    
   end
 
   protected

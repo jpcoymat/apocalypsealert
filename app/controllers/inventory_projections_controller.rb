@@ -7,22 +7,23 @@ class InventoryProjectionsController < ApplicationController
     @locations = @user_org.locations
     @products = @user_org.products
     if request.post?
-      user_params = search_params(inventory_projection_search_params)
-      if user_params.include?("product_id") and user_params.include?("location_id")
-        @inventory_projections = InventoryProjection.where(user_params).order(:projected_for)
-        if @inventory_projections.count> 0 
-          @product = @inventory_projections.first.product 
-          @location = @inventory_projections.first.location  
-          dates, @available_quantity = [], []
-          @inventory_projections.each do |ip|
-            @available_quantity << ip.available_quantity.to_i
-            dates << ip.projected_for
-          end
-          @begin_date = dates.min
-          @end_date = dates.max
+      @user_params = search_params(inventory_projection_search_params)
+      @inventory_positions = InventoryProjection.inventory_positions(@user_params)
+      @series_data = []
+      if @inventory_positions.count > 0
+        @inventory_positions.each do |inv_pos|
+           inventory_data = []
+           dates = []
+           series = {product: inv_pos.product, location: inv_pos.location}
+           InventoryProjection.position_projections(inv_pos).each do |proj|
+             dates << proj.projected_for
+             inventory_data << proj.available_quantity.to_i
+           end
+           series[:begin_date] = dates.min
+           series[:end_date] = dates.max
+           series[:data] = inventory_data
+           @series_data << series
         end
-      else
-        @inventory_projections = []
       end
     end
   end
@@ -129,13 +130,13 @@ class InventoryProjectionsController < ApplicationController
     end
 
     def inventory_projection_search_params
-      params.require(:inventory_position_search).permit( :location_id, :product_id, :product_name)
+      params.require(:inventory_position_search).permit( :location_id, :product_id, :product_name, :product_code, :product_category)
     end
 
     def search_params(params)
       search_params = params.delete_if {|k,v| v.blank?}
       if search_params.key?("product_name")
-        search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.id
+        search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.try(:id)
         search_params.delete("product_name")
       end
       search_params

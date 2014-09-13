@@ -14,7 +14,12 @@
         </div>
 
         <%= render partial: "shared/product_autocomplete", locals: {form: form} %>
-
+        
+        <%= form.label "Product Category", {class: "col-sm-2 control-label"} %>
+        <div class="col-sm-2">
+          <%= form.text_field :product_category, class: "form-control" %>
+        </div> 
+        
     </div>
     <div class="form-group">
       <div class="col-sm-1">
@@ -26,8 +31,8 @@
   <% end %>
   <hr>
   <% if request.post? %>
-    <% if @inventory_projections.empty? %>
-      <p>No Inventory data found.</p>
+    <% if @inventory_positions.empty? %>
+      <p>No Inventory data match your search criteria.  Please try again with modified search criteria.</p>
     <% else %>
       <%= render partial: "shared/highchart" %>
     <% end %>

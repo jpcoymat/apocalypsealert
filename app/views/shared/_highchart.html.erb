@@ -17,7 +17,7 @@ $(function () {
       beyondExtremes: true
     },
     title: {
-      text: 'Inventory Projections for Product <%= @product.name %> at Location <%= @location.name %>'
+      text: 'Inventory Projections'
       //enabled: false
     },
     subtitle: {
@@ -38,21 +38,24 @@ $(function () {
       minRange: 2 * 24 * 3600000 // 2 days
     },
     yAxis: [
-      {title: {text: 'Quantity'}, opposite: false}, 
-      {title: {text: 'Quantity'}, opposite: true}
+      {title: {text: 'Quantity'}, opposite: false}
     ],
     tooltip: {
       shared: false
     },
 	series: [
-	  {type: 'spline',
-          pointInterval: 24 * 3600 * 1000,
-          pointStart: Date.UTC(<%= @begin_date.year %>, <%= @begin_date.month - 1%>, <%= @begin_date.day %>, 12,0),
-          name: 'Available Quantity',
-          color: "#336699",
-          marker: {enabled: false},
-          data: <%= @available_quantity %>
-          }
+          <% @series_data.each do |series| %>  
+	    {type: 'spline',
+            name: '<%= series[:product].try(:code) %>',
+            pointInterval: 24 * 3600 * 1000,
+            pointStart: Date.UTC(<%= series[:begin_date].year %>, <%= series[:begin_date].month - 1%>, <%= series[:begin_date].day %>, 12,0),
+            marker: {enabled: false},
+            data: <%= series[:data] %>
+            }
+            <% unless series == @series_data.last %>
+              ,
+            <% end %> 
+          <% end %>
 	]
   });
 });

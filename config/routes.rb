@@ -144,7 +144,7 @@ Rails.application.routes.draw do
   end
 
   controller :summary_views do
-    get 'summary_view', action: "index"
+    get 'summary_views', action: "index"
   end
 
   root to: 'dashboard#index'

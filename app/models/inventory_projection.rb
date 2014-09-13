@@ -92,8 +92,31 @@ class InventoryProjection < ActiveRecord::Base
     end
   end
 
-  def self.inventory_position(location, product)
-    @inventory_position = where(location: location, product: product).order(projected_for: :asc).first
+  def self.inventory_positions(search_params)
+    inventory_positions = []
+    location_id = search_params["location_id"]
+    product_category = search_params["product_category"]
+    product_id = search_params["product_id"]
+    if location_id 
+      location = Location.find(location_id)
+      if location 
+        if product_category and product_id.nil?
+          products = Product.where("upper(category) = upper('#{product_category}')").all
+          products.each do |prod|
+            inv_pos = where(location: location, product: prod).first
+            inventory_positions << inv_pos if inv_pos
+          end
+        elsif product_id and Product.find(product_id)
+          inventory_positions << where(location: location, product: Product.find(product_id)).first 
+        end  
+      end
+    end
+    return inventory_positions
+  end
+
+  def self.position_projections(inventory_position)
+    projections = where(product: inventory_position.product, location: inventory_position.location).order(projected_for: :asc)
+    return projections
   end
 
   def reference_number
