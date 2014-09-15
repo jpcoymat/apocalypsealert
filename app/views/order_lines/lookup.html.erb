@@ -14,8 +14,11 @@
   <span class="glyphicon glyphicon-plus">
 </button>
 
-<%= form_for :order_line, url: lookup_order_lines_path, html: {class: "form-horizontal", id: "search_form"}   do |form| %>
-  <%= form.hidden_field :is_active, value: true %>
+<%= form_for :order_line, url: lookup_order_lines_path, html: {class: "form-horizontal"}   do |form| %>
+  <div id ="search_params">
+    <%= form.hidden_field :is_active, value: true %>
+  </div>
+  
   <%= form.submit "Search", {class: "btn btn-primary", id: "submit_search_form"} %>
 <% end %>
 </div>
@@ -108,7 +111,7 @@ $(function() {
     }
     else {    
       var htmlToAdd = '<div class="form-group" id="order_line_div"><label class="col-sm-2 control-label" for="order_line_Line Number">Line number</label><div class="col-sm-2"><input class="form-control" id="order_line_order_line_number" name="order_line[order_line_number]" type="text" /></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'order_line_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
-      $('#search_form').append(htmlToAdd);
+      $('#search_params').append(htmlToAdd);
       var movement_sources = [
       <% @all_order_lines.each do |ol| %>
           "<%= ol.order_line_number %>",
@@ -125,7 +128,7 @@ $(function() {
     }
     else {
       var htmlToAdd = '<div class="form-group" id="product_div"><label class="col-sm-2 control-label" for="order_line_Product Name">Product name</label><div class="col-sm-2"><input class="form-control" id="product_names" name="order_line[product_name]" type="text" /></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'product_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
-      $('#search_form').append(htmlToAdd);
+      $('#search_params').append(htmlToAdd);
       var product_names = [
       <% @products.each do |product| %>
         "<%= product.name %>",
@@ -149,7 +152,7 @@ $(function() {
         htmlToAdd += '<option value="' + '<%= location.id.to_s %>' + '">' + '<%= location.name %>' + '</option>';
       <% end %>
       htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'origin_location_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
-      $('#search_form').append(htmlToAdd);
+      $('#search_params').append(htmlToAdd);
     }
   }
   
@@ -164,7 +167,7 @@ $(function() {
         htmlToAdd += '<option value="' + '<%= location.id.to_s %>' + '">' + '<%= location.name %>' + '</option>';
       <% end %>
       htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'destination_location_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
-      $('#search_form').append(htmlToAdd);	
+      $('#search_params').append(htmlToAdd);	
     }
   }
 
@@ -179,7 +182,7 @@ $(function() {
         htmlToAdd +=  '<option value="' + '<%= org.id.to_s %>' + '">' + '<%= org.name %>' + '</option>';   
       <% end %>
       htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'supplier_id_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
-      $('#search_form').append(htmlToAdd);	
+      $('#search_params').append(htmlToAdd);	
     }
   }
   
@@ -194,7 +197,7 @@ $(function() {
         htmlToAdd +=  '<option value="' + '<%= org.id.to_s %>' + '">' + '<%= org.name %>' + '</option>';   
       <% end %>
       htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'customer_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
-      $('#search_form').append(htmlToAdd);		  
+      $('#search_params').append(htmlToAdd);		  
     }
   }
 

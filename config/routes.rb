@@ -145,6 +145,7 @@ Rails.application.routes.draw do
 
   controller :summary_views do
     get 'summary_views', action: "index"
+    get 'location_exceptions', action: "location_exceptions"
   end
 
   root to: 'dashboard#index'

@@ -16,8 +16,10 @@
   <span class="glyphicon glyphicon-plus">
 </button>
 
-<%= form_for :shipment_line, url: lookup_shipment_lines_path, html: {class: "form-horizontal", id: "search_form"}   do |form| %>
+<%= form_for :shipment_line, url: lookup_shipment_lines_path, html: {class: "form-horizontal"}   do |form| %>
+  <div id="search_form">
   <%= form.hidden_field :is_active, value: true %>
+  </div>
   <%= form.submit "Search", {class: "btn btn-primary", id: "submit_search_form"} %>
 <% end %>
 </div>

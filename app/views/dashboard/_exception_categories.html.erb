@@ -1,20 +1,34 @@
-<div id="exceptions_graph">
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
-<%= form_for :category_parameters, url: reset_category_exceptions_path do |form| %>
-  <%= render partial: "shared/product_form_auto", locals: {form: form, form_element_id: "categories_product_name"} %>
-  <%= form.select :location_id, @locations.collect {|loc| [loc.name, loc.id]} %>
-  <%= submit_tag "Reset Category Summary" %>
-<% end %>
-<div>
- <p>Category Exception Sumary for Product <%= @category_product.name %> and Location <%= @category_location.name %></p>
+<div class="container">
+  <%= form_for :category_parameters, url: reset_category_exceptions_path , html: {class: "form-inline", role: "form"} do |form| %>
+    <div class="form-group">
+      <%= form.text_field :product_name, class: "form-control" , placeholder: "Product Name" %>
+      <script>
+         $(function() {
+          var product_names = [
+            <% @products.each do |product| %>
+              "<%= product.name %>", 
+            <% end %>
+            ""];
+          $( "#category_parameters_product_name" ).autocomplete({
+            source: product_names
+          });
+        });
+      </script>
+    </div>
+    <div class="form-group">
+      <%= form.select :location_id, @locations.collect {|loc| [loc.name, loc.id]},{}, class: "form-control"  %>
+    </div> 
+    <%= submit_tag "Reset Category Summary", class: "btn btn-default" %>
+  <% end %>
 </div>
-<div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+<div id="exception-chart-div" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
 
 
 <script type="text/javascript">
   $(function () {
-    $('#container').highcharts({
+    $('#exception-chart-div').highcharts({
         chart: {
             type: 'bar'
         },
@@ -65,4 +79,3 @@
   });
 
 </script>
-</div>

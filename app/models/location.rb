@@ -50,7 +50,7 @@ class Location < ActiveRecord::Base
     projections = projections.where(product_id: options[:product_id]) if options[:product_id]
     projections = projections.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
     projections = projections.where("product_id in (select id from products where category = '#{options[:product_category]}'") if options[:product_category]
-    projections.each {|ip| @inventory_exceptions << ip.affected_scv_exceptions.all}
+    projections.each {|ip| @inventory_exceptions << ip.affected_scv_exceptions}
     @inventory_exceptions.flatten!
     @inventory_exceptions  
   end
@@ -170,6 +170,8 @@ class Location < ActiveRecord::Base
     origin_shipment_lines.empty? and destination_shipment_lines.empty? and origin_order_lines.empty? and destination_order_lines.empty? and inventory_positions.empty?
   end
 
+  
+
 
   protected 
 
@@ -193,14 +195,14 @@ class Location < ActiveRecord::Base
 
     def shipment_line_exceptions(direction, options = {})
       shipment_exceptions = []
-      shipment_lines(direction, options).each {|shipment_line| shipment_exceptions << shipment_line.affected_scv_exceptions.all }
+      shipment_lines(direction, options).each {|shipment_line| shipment_exceptions << shipment_line.affected_scv_exceptions }
       shipment_exceptions.flatten!
       return shipment_exceptions
     end  
 
     def order_line_exceptions(direction, options = {})
       order_line_exceptions = []
-      order_lines(direction, options).each {|order_line| order_line_exceptions << order_line.affected_scv_exceptions.all}
+      order_lines(direction, options).each {|order_line| order_line_exceptions << order_line.affected_scv_exceptions}
       order_line_exceptions.flatten!
       return order_line_exceptions
     end  

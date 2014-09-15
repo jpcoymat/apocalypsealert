@@ -3,7 +3,7 @@
  <%= form_for :inventory_position_search, url: lookup_inventory_projections_path, html: {class: "form-horizontal", role: "form"}  do |form| %>
     <div class="form-group">
 
-        <%= form.label "Location", {class: "col-sm-2 control-label"} %>
+        <%= form.label "Location", {class: "col-sm-1 control-label"} %>
         <div class="col-sm-2">
           <%= form.select :location_id, @locations.collect {|location| [location.name, location.id]}, {}, {class: "form-control"} %>
           <% if @location %>
@@ -14,8 +14,10 @@
         </div>
 
         <%= render partial: "shared/product_autocomplete", locals: {form: form} %>
+
+        <%= render partial: "shared/prod_code_autocomplete", locals: {form: form} %>
         
-        <%= form.label "Product Category", {class: "col-sm-2 control-label"} %>
+        <%= form.label "Product Category", {class: "col-sm-1 control-label"} %>
         <div class="col-sm-2">
           <%= form.text_field :product_category, class: "form-control" %>
         </div> 

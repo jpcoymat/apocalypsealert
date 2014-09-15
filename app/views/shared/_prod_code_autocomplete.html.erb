@@ -1,0 +1,17 @@
+<%= form.label "Product Code", {class: "col-sm-1 control-label"} %>
+<script>
+$(function() {
+    var product_codes = [
+      <% @products.each do |product| %>
+        "<%= product.code %>", 
+      <% end %>
+    ""];
+    $( "#product_codes" ).autocomplete({
+      source: product_codes
+    });
+});
+</script>
+<div class="col-sm-2">
+  <%= form.text_field :product_code, id: "product_codes", value: @product.try(:name), class: "form-control" %>
+</div>
+

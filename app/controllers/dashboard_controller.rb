@@ -7,13 +7,11 @@ class DashboardController < ApplicationController
     @user_org = User.find(session[:user_id]).organization
     @locations = @user_org.locations
     @products = @user_org.products
-    @map_product = Product.first
-    @category_product = Product.first
     @category_location = Location.first  
-    @source_exceptions = @category_location.inbound_order_line_exceptions(product_id: @category_product.id)
-    @move_exceptions = @category_location.inbound_shipment_line_exceptions(product_id: @category_product.id)
-    @store_exceptions = @category_location.inventory_exceptions(product_id: @category_product.id)
-    @deliver_exceptions = @category_location.outbound_order_line_exceptions(product_id: @category_product.id)
+    @source_exceptions = @category_location.inbound_order_line_exceptions
+    @move_exceptions = @category_location.inbound_shipment_line_exceptions
+    @store_exceptions = @category_location.inventory_exceptions
+    @deliver_exceptions = @category_location.outbound_order_line_exceptions
   end
 
   def reset_map
@@ -44,6 +42,7 @@ class DashboardController < ApplicationController
     render action: 'index'
   end
 
+
   private
 
     def map_params
@@ -53,5 +52,6 @@ class DashboardController < ApplicationController
     def categories_params
       params.require(:category_parameters).permit(:product_id, :product_code, :location_id, :location_code, :product_name)
     end
+
 
 end

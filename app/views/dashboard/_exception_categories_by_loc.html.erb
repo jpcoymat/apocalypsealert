@@ -35,7 +35,7 @@
               point: {
                 events:{ 
                   click: function () {
-                    var s = '/summary_views?summary_parameters%5Blocation_name%5D=' + this.series.name;
+                    var s = '/summary_views?summary_parameters%5Blocation_name%5D=' + this.series.name + '&amp;summary_parameters%5Bexception_category%5D=' + this.category;
                     location.href = s;
                   }
                 }

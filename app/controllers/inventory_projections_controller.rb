@@ -139,6 +139,10 @@ class InventoryProjectionsController < ApplicationController
         search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.try(:id)
         search_params.delete("product_name")
       end
+      if search_params.key?("product_code")
+        search_params["product_id"] = Product.where(code: search_params["product_code"]).first.try(:id)
+        search_params.delete("product_code")
+      end
       search_params
     end
 
