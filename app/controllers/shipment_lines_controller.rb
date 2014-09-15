@@ -11,7 +11,7 @@ class ShipmentLinesController < ApplicationController
     @locations = @user_org.locations
     @all_shipment_lines = @user_org.shipment_lines
     if request.post?
-      @shipment_lines = @all_shipment_lines.where(search_params)
+      @shipment_lines = @all_shipment_lines.where(search_params).order(:shipment_line_number)
     end
   end
 

@@ -11,7 +11,7 @@ class WorkOrdersController < ApplicationController
     @locations = @user_org.locations
     @all_work_orders = @user_org.work_orders
     if request.post?
-      @work_orders = @all_work_orders.where(search_params)
+      @work_orders = @all_work_orders.where(search_params).order(:work_order_number)
       respond_to do |format|
         format.html
         format.json {render json: @work_orders}

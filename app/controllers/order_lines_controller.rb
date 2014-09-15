@@ -16,7 +16,7 @@ class OrderLinesController < ApplicationController
     @all_order_lines = @user_org.order_lines
     @organizations = Organization.all
     if request.post? 
-      @order_lines = @all_order_lines.where(search_params)
+      @order_lines = @all_order_lines.where(search_params).order(:order_line_number)
       respond_to do |format|
         format.html
         format.json {render json: @order_lines}
