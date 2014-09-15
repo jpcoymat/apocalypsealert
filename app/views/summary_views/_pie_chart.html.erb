@@ -34,8 +34,8 @@ $(function () {
             type: 'pie',
             name: 'Exception Type',
             data: [
-                ['Source',   <%= @pie_chart_data[:quantity_exceptions] %>],
-                ['Make', <%= @pie_chart_data[:date_exceptions] %>]
+                ['Quantity Exceptions',   <%= @pie_chart_data[:quantity_exceptions] %>],
+                ['Date Exceptions', <%= @pie_chart_data[:date_exceptions] %>]
             ]
         }]
     });
