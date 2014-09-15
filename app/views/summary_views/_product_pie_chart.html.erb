@@ -1,11 +1,11 @@
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
-<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+<div id="prod_excptn_container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
 
 <script type="text/javascript">
 $(function () {
-    $('#container').highcharts({
+    $('#prod_excptn_container').highcharts({
         chart: {
             plotBackgroundColor: null,
             plotBorderWidth: 1,//null,
@@ -34,8 +34,12 @@ $(function () {
             type: 'pie',
             name: 'Exception Type',
             data: [
-                ['Source',   <%= @pie_chart_data[:quantity_exceptions] %>],
-                ['Make', <%= @pie_chart_data[:date_exceptions] %>]
+              <% @location.housed_products.each do |product|  %>
+                ['<%= product.code %>',   <%= @location.all_exceptions(product_id: product.id).count %>]
+                <% unless product == @location.housed_products.last %>
+                  ,
+                <% end %>
+              <% end %>
             ]
         }]
     });

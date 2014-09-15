@@ -83,6 +83,14 @@ class WorkOrder < ActiveRecord::Base
     humanized_date_format("production_end_date")
   end
 
+  def affected_scv_exceptions
+    @affected_scv_exceptions = ScvException.where(affected_object_type: self.class.to_s, affected_object_id: self.id)
+  end
+
+  def cause_scv_exceptions
+    @cause_scv_exceptions = ScvException.where(cause_object_type: self.class.to_s, cause_object_id: self.id)
+  end
+
   protected
    
     def humanized_date_format(attribute)

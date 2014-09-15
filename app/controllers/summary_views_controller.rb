@@ -23,7 +23,13 @@ class SummaryViewsController < ApplicationController
 
   def location_exceptions
     @location = Location.where(code: params[:location_details][:location_code]).first
-    
+    @products = @location.housed_products
+    @all_exceptions = @location.all_exceptions
+    @grouped_by_priority = {p1: 0, p2: 0, p3: 0}
+    @all_exceptions.each do |excptn| 
+      key = ("p" + excptn.priority.to_s).to_sym
+      @grouped_by_priority[key] += 1    
+    end
   end
 
 

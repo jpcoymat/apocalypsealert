@@ -34,8 +34,11 @@ $(function () {
             type: 'pie',
             name: 'Exception Type',
             data: [
-                ['Source',   <%= @pie_chart_data[:quantity_exceptions] %>],
-                ['Make', <%= @pie_chart_data[:date_exceptions] %>]
+                ['Source',   <%= @location.inbound_order_line_exceptions.count %>],
+                ['Make', <%= @location.work_order_exceptions.count %>],
+                ['Move', <%= @location.inbound_shipment_line_exceptions.count %>],
+                ['Store', <%= @location.inventory_exceptions.count %>],
+                ['Deliver', <%= @location.outbound_order_line_exceptions.count %>]
             ]
         }]
     });

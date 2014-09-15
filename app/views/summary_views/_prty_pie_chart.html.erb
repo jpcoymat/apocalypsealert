@@ -1,18 +1,18 @@
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
-<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+<div id="prty_container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
 
 <script type="text/javascript">
 $(function () {
-    $('#container').highcharts({
+    $('#prty_container').highcharts({
         chart: {
             plotBackgroundColor: null,
             plotBorderWidth: 1,//null,
             plotShadow: false
         },
         title: {
-            text: 'Exception Type Breakdown'
+            text: 'Breakdown by Priority'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -34,8 +34,9 @@ $(function () {
             type: 'pie',
             name: 'Exception Type',
             data: [
-                ['Source',   <%= @pie_chart_data[:quantity_exceptions] %>],
-                ['Make', <%= @pie_chart_data[:date_exceptions] %>]
+                ['Priority 1',   <%= @grouped_by_priority[:p1] %>],
+                ['Priority 2', <%= @grouped_by_priority[:p2] %>],
+                ['Priority 3', <%= @grouped_by_priority[:p3] %>]
             ]
         }]
     });
