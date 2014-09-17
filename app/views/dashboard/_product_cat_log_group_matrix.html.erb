@@ -1,0 +1,17 @@
+<table class="table table-striped">
+  <tr>
+    <th>Product Category</th>
+  <% @location_groups.each do |lg| %>
+    <th><%= lg.name %></th>
+  <% end %>
+  </tr>
+  <% @product_categories.each do |pc| %>
+  <tr>
+    <td><%= pc.name %></td>
+    <% @location_groups.each do |lg| %>
+    <td><%= pc.all_exception_quantity(origin_location_group_id: lg.id, location_group_id: lg.id, destination_location_group_id: lg.id).to_i %>
+    <% end %>
+  </tr>
+  <% end %>
+</table>
+

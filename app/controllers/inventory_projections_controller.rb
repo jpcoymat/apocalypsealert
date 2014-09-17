@@ -130,7 +130,7 @@ class InventoryProjectionsController < ApplicationController
     end
 
     def inventory_projection_search_params
-      params.require(:inventory_position_search).permit( :location_id, :product_id, :product_name, :product_code, :product_category)
+      params.require(:inventory_position_search).permit( :location_id, :product_id, :product_name, :product_code, :product_category_id)
     end
 
     def search_params(params)

@@ -4,6 +4,7 @@
 
 <select id="form_criteria">
   <option value="order_line_number">Order Line Number</option>
+  <option value="order_type">Order Type</option>
   <option value="product">Product</option>
   <option value="origin_location">Origin Location</option>
   <option value="destination_location">Destination Location</option>
@@ -84,6 +85,9 @@ $(function() {
 	switch(criteriaType) {
 	  case "order_line_number":
 	    addOrderLineCriteria();
+            break;
+          case "order_type":
+            addOrderTypeCriteria(); 
             break;
 	  case "product":
 	    addProductCritera();
@@ -200,6 +204,22 @@ $(function() {
       $('#search_params').append(htmlToAdd);		  
     }
   }
+
+  function addOrderTypeCriteria() {
+    var elementExists = checkExistingElement('order_line_order_type');
+    if (elementExists) {
+      null;
+    }
+    else {
+      var htmlToAdd = '<div class="form-group" id="order_type"><label class="col-sm-2 control-label" for="order_line_Order Type">Order Type</label><div class="col-sm-2"><select class="form-control" id="order_line_order_type" name="order_line[order_type]">';
+      <% OrderLine.order_types.each do |ot| %>
+        htmlToAdd +=  '<option value="' + '<%= ot %>' + '">' + '<%= ot.titleize %>' + '</option>';
+      <% end %>
+      htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'order_type\')"><span class="glyphicon glyphicon-minus"></button></div>';
+      $('#search_params').append(htmlToAdd);
+    }
+  }
+
 
   function removeCriteria(form_element) {
     var form_selector = '#' + form_element;

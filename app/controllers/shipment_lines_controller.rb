@@ -120,7 +120,7 @@ class ShipmentLinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def shipment_line_params
-      params.require(:shipment_line).permit(:is_active, :mode, :order_line_number, :shipment_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :order_line_id, :product_id, :product_name, :customer_organization_id, :forwarder_organization_id, :carrier_organization_id)
+      params.require(:shipment_line).permit(:shipment_type, :is_active, :mode, :order_line_number, :shipment_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :order_line_id, :product_id, :product_name, :customer_organization_id, :forwarder_organization_id, :carrier_organization_id)
     end
 
     def search_params

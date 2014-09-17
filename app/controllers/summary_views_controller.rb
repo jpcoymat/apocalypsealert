@@ -5,31 +5,11 @@ class SummaryViewsController < ApplicationController
   def index
     @location = Location.where(name: params[:summary_parameters][:location_name]).first    
     @exceptions = []
-    case params[:summary_parameters][:exception_category]
-      when "Source"
-         @exceptions = @location.inbound_order_line_exceptions
-      when "Move"
-         @exceptions = @location.inbound_shipment_line_exceptions 
-      when "Store"
-         @exceptions = @location.inventory_exceptions
-      when "Deliver"  
-         @exceptions = @location.outbound_order_line_exceptions
-    end
-    quantity_exception_count = 0
-    date_exception_count = 0
-    @exceptions.each {|excptn| excptn.exception_type == 'Quantity' ? quantity_exception_count += 1 : date_exception_count += 1}
-    @pie_chart_data = {quantity_exceptions: quantity_exception_count, date_exceptions: date_exception_count}
   end
 
   def location_exceptions
     @location = Location.where(code: params[:location_details][:location_code]).first
-    @products = @location.housed_products
-    @all_exceptions = @location.all_exceptions
-    @grouped_by_priority = {p1: 0, p2: 0, p3: 0}
-    @all_exceptions.each do |excptn| 
-      key = ("p" + excptn.priority.to_s).to_sym
-      @grouped_by_priority[key] += 1    
-    end
+    @product_categories = User.find(session[:user_id]).organization.product_categories
   end
 
 

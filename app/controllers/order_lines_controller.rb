@@ -126,7 +126,7 @@ class OrderLinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_line_params
-      params.require(:order_line).permit(:is_active, :product_name, :order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :supplier_organization_id, :customer_organization_id)
+      params.require(:order_line).permit(:order_type, :is_active, :product_name, :order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :supplier_organization_id, :customer_organization_id)
     end
 
     def search_params

@@ -3,24 +3,20 @@
 <div class="container">
   <%= form_for :category_parameters, url: reset_category_exceptions_path , html: {class: "form-inline", role: "form"} do |form| %>
     <div class="form-group">
-      <%= form.text_field :product_name, class: "form-control" , placeholder: "Product Name" %>
-      <script>
-         $(function() {
-          var product_names = [
-            <% @products.each do |product| %>
-              "<%= product.name %>", 
-            <% end %>
-            ""];
-          $( "#category_parameters_product_name" ).autocomplete({
-            source: product_names
-          });
-        });
+      <%= form.select :product_categories, @product_categories.collect {|pc| [pc.name, pc.id]}, {}, {multiple: true, class: "form-control chosen-select"} %>
+      <script type="text/javascript">
+        $('#category_parameters_product_categories').chosen({search_contains: true});
       </script>
     </div>
     <div class="form-group">
-      <%= form.select :location_id, @locations.collect {|loc| [loc.name, loc.id]},{}, class: "form-control"  %>
+      <%= form.select :location_groups, @location_groups.collect {|lg| [lg.name, lg.id]},{}, {multiple: true, class: "form-control chosen-select"}  %>
+      <script type="text/javascript">
+        $('#category_parameters_location_groups').chosen({search_contains: true});
+      </script>
     </div> 
-    <%= submit_tag "Reset Category Summary", class: "btn btn-default" %>
+    <div class="form-group">
+      <%= submit_tag "Reset Category Summary", class: "btn btn-default" %>
+    </div>
   <% end %>
 </div>
 <div id="exception-chart-div" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>

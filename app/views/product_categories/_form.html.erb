@@ -1,0 +1,30 @@
+<%= form_for(@product_category, html: {class: "form-horizontal"}) do |f| %>
+  <% if @product_category.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@product_category.errors.count, "error") %> prohibited this product_category from being saved:</h2>
+
+      <ul>
+      <% @product_category.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= f.hidden_field :organization_id, value: @user_org.id%>
+ 
+  <div class="form-group">
+    <%= f.label :description, class: "col-sm-2 control-label"  %>
+    <div class="col-xs-4">
+      <%= f.text_field :description, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :name, class: "col-sm-2 control-label"  %>
+    <div class="col-xs-4">
+      <%= f.text_field :name, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group", class: "col-sm-2 control-label" >
+    <%= f.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

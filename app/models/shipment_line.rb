@@ -10,6 +10,7 @@ class ShipmentLine < ActiveRecord::Base
   validate :parent_child_match
   validate :arrival_after_departure
   validate :different_locations
+  validate :valid_shipment_type
 
   has_many :milestones, as: :associated_object
  
@@ -17,6 +18,11 @@ class ShipmentLine < ActiveRecord::Base
   def self.modes
     @@modes = ["Ocean", "Truck", "Air", "Rail", "Intermodal", "Parcel"]
   end
+
+  def self.shipment_types
+    @@shipment_types = ["Inbound", "Outbound"]
+  end
+
 
   def origin_location
     @origin_location = Location.where(id: self.origin_location_id).first
@@ -188,7 +194,9 @@ class ShipmentLine < ActiveRecord::Base
       end
     end
 
-
+    def valid_shipment_type
+      errors.add(:base, "Shipment Type not valid") unless ShipmentLine.shipment_types.include?(self.shipment_type)
+    end
 
 
 end

@@ -1,0 +1,83 @@
+<% content_for :head do %>
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script>
+<% end %>
+<div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+$(function () {
+    $('#container').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: '<%= @location.name %>'
+        },
+        xAxis: {
+            categories: [
+              <% @product_categories.each do |pc| %>
+                '<%= pc.name %>'
+                <% unless pc == @product_categories.last %>
+                  , 
+                <% end %>
+              <% end %>
+            ]
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Quantity at Risk'
+            }
+        },
+        legend: {
+            reversed: true
+        },
+        plotOptions: {
+            series: {
+                stacking: 'normal'
+            }
+        },
+        series: [
+          {name: "Source", data: [
+            <% @product_categories.each do |pc| %>
+              <%= pc.source_exception_quantity(origin_location_id: @location.id).to_i %>
+              <% unless pc == @product_categories.last %>
+                ,
+              <% end %>
+            <% end %>
+          ]},
+          {name: "Make", data: [
+            <% @product_categories.each do |pc| %>
+              <%= pc.make_exception_quantity(location_id: @location.id).to_i %>
+              <% unless pc == @product_categories.last %>
+                ,
+              <% end %>
+            <% end %>
+          ]},
+          {name: "Move", data: [
+            <% @product_categories.each do |pc| %>
+              <%= pc.move_exception_quantity(origin_location_id: @location.id).to_i %>
+              <% unless pc == @product_categories.last %>
+                ,
+              <% end %>
+            <% end %>
+          ]},
+          {name: "Store", data: [
+            <% @product_categories.each do |pc| %>
+              <%= pc.store_exception_quantity(location_id: @location.id).to_i %>
+              <% unless pc == @product_categories.last %>
+                ,
+              <% end %>
+            <% end %>
+          ]},
+          {name: "Deliver", data: [
+            <% @product_categories.each do |pc| %>
+              <%= pc.deliver_exception_quantity(destination_location_id: @location.id).to_i %>
+              <% unless pc == @product_categories.last %>
+                ,
+              <% end %>
+            <% end %>
+          ]}
+        ]
+    });
+});
+</script>

@@ -15,7 +15,7 @@
       </div>
       <%= form.label "Product Category", class: "col-sm-2 control-label" %>
       <div class="col-sm-2">
-        <%= form.text_field :category, class: "form-control" %>
+        <%= form.select :product_category_id, @user.organization.product_categories.collect {|pc| [pc.name, pc.id]}, {include_blank: true}, class: "form-control" %>
       </div>
     </div>
     <div class="form-group">
@@ -39,7 +39,7 @@
         <% for product in @products %>
         <tr><td><%= product.name %></td>
           <td><%= product.code %></td>
-          <td><%= product.category %></td>
+          <td><%= product.product_category.try(:name) %></td>
           <td><%= link_to "Edit", edit_product_path(product) %></td>
           <% if product.deleteable? %>
            <td><%= button_to "Destroy", product_path(product), method: :delete %></td>

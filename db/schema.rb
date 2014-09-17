@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140911004157) do
+ActiveRecord::Schema.define(version: 20140917000210) do
 
   create_table "inventory_projections", force: true do |t|
     t.integer  "location_id"
@@ -75,6 +75,7 @@ ActiveRecord::Schema.define(version: 20140911004157) do
     t.integer  "customer_organization_id"
     t.integer  "product_id"
     t.boolean  "is_active"
+    t.string   "order_type"
   end
 
   create_table "organizations", force: true do |t|
@@ -87,13 +88,21 @@ ActiveRecord::Schema.define(version: 20140911004157) do
     t.datetime "updated_at"
   end
 
-  create_table "products", force: true do |t|
+  create_table "product_categories", force: true do |t|
+    t.string   "description"
     t.string   "name"
-    t.string   "code"
-    t.string   "category"
     t.integer  "organization_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "products", force: true do |t|
+    t.string   "name"
+    t.string   "code"
+    t.integer  "organization_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "product_category_id"
   end
 
   create_table "scv_exceptions", force: true do |t|
@@ -132,6 +141,7 @@ ActiveRecord::Schema.define(version: 20140911004157) do
     t.integer  "customer_organization_id"
     t.integer  "product_id"
     t.boolean  "is_active"
+    t.string   "shipment_type"
   end
 
   create_table "users", force: true do |t|

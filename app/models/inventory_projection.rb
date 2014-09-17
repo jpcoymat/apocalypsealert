@@ -95,13 +95,13 @@ class InventoryProjection < ActiveRecord::Base
   def self.inventory_positions(search_params)
     inventory_positions = []
     location_id = search_params["location_id"]
-    product_category = search_params["product_category"]
+    product_category = search_params["product_category_id"]
     product_id = search_params["product_id"]
     if location_id 
       location = Location.find(location_id)
       if location 
         if product_category and product_id.nil?
-          products = Product.where("upper(category) = upper('#{product_category}')").all
+          products = Product.where(product_category_id: product_category).all
           products.each do |prod|
             inv_pos = where(location: location, product: prod).first
             inventory_positions << inv_pos if inv_pos

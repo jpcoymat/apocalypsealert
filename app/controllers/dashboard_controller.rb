@@ -5,13 +5,9 @@ class DashboardController < ApplicationController
 
   def index
     @user_org = User.find(session[:user_id]).organization
-    @locations = @user_org.locations
-    @products = @user_org.products
-    @category_location = Location.first  
-    @source_exceptions = @category_location.inbound_order_line_exceptions
-    @move_exceptions = @category_location.inbound_shipment_line_exceptions
-    @store_exceptions = @category_location.inventory_exceptions
-    @deliver_exceptions = @category_location.outbound_order_line_exceptions
+    @locations = @user_org.exception_locations
+    @product_categories = @user_org.product_categories
+    @location_groups  = @user_org.location_groups
   end
 
   def reset_map

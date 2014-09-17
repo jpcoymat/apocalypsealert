@@ -4,6 +4,7 @@
 
 <select id="form_criteria">
   <option value="shipment_line_number">Shipment Line Number</option>
+  <option value="shipment_type">Shipment Type</option>
   <option value="product">Product</option>
   <option value="origin_location">Origin Location</option>
   <option value="destination_location">Destination Location</option>
@@ -72,6 +73,9 @@
 	switch(criteriaType) {
 	  case "shipment_line_number":
 	    addShipmentLineCriteria();
+            break;
+          case "shipment_type":
+            addShipmentTypeCriteria();
             break;
 	  case "product":
 	    addProductCritera();
@@ -218,6 +222,21 @@
         htmlToAdd +=  '<option value="' + '<%= md %>' + '">' + '<%= md %>' + '</option>';
       <% end %>
       htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'mode_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
+      $('#search_form').append(htmlToAdd);
+    }
+  }
+
+  function addShipmentTypeCriteria() {
+    var elementExists = checkExistingElement('shipment_line_shipment_type');
+    if (elementExists) {
+      null;
+    }
+    else {
+      var htmlToAdd = '<div class="form-group" id="shipment_type_div"><label class="col-sm-2 control-label" for="shipment_line_Shipment Type">Shipment Type</label><div class="col-sm-2"><select class="form-control" id="shipment_line_shipment_type" name="shipment_line[shipment_type]">';
+      <% ShipmentLine.shipment_types.each do |st| %>
+        htmlToAdd +=  '<option value="' + '<%= st %>' + '">' + '<%= st %>' + '</option>';
+      <% end %>
+      htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'shipment_type_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
       $('#search_form').append(htmlToAdd);
     }
   }

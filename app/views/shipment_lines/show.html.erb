@@ -3,13 +3,14 @@
            
                 <dt>Shipment Line Number    	</dt>   <dd><%= @shipment_line.shipment_line_number  		%></dd>
  		<dt>Mode			</dt>	<dd><%= @shipment_line.mode				%></dd>
+		<dt>Shipment Type		</dt>	<dd><%= @shipment_line.shipment_type 			%></dd>
                 <dt>Customer Organization	</dt>	<dd><%= @shipment_line.customer_organization_name	%></dd>
   		<dt>Forwarder Organization	</dt>	<dd><%= @shipment_line.forwarder_organization_name	%></dd>
 		<dt>Carrier Organization	</dt>	<dd><%= @shipment_line.carrier_organization_name	%></dd>
                 <dt>ETD    			</dt>   <dd><%= @shipment_line.etd.to_formatted_s(:short)	%></dd>
                 <dt>ETA	 			</dt>   <dd><%= @shipment_line.eta.to_formatted_s(:short)	%></dd>
                 <dt>Product             	</dt>   <dd><%= @shipment_line.product.name             	%></dd>
-                <dt>Origin Location     	</dt>   <dd><%= @shipment_line.origin_location.try(:name)        %></dd>
+                <dt>Origin Location     	</dt>   <dd><%= @shipment_line.origin_location.try(:name)       %></dd>
 		<dt>Destination Location	</dt>	<dd><%= @shipment_line.destination_location.try(:name)	%></dd>	
                 <dt>Quantity			</dt>	<dd><%= @shipment_line.quantity.to_s			%></dd>
                 <dt>Order Line                  </dt>   <dd><%= @shipment_line.order_line ? link_to(@shipment_line.order_line_number, order_line_path(@shipment_line.order_line)) : "" %>  </dd>

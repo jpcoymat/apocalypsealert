@@ -1,6 +1,7 @@
 <h1>Order Line Details</h1>
 <dl class="dl-horizontal">
                 <dt>Order Line Number    	</dt>   <dd><%= @order_line.order_line_number  	%></dd>
+		<dt>Order Type			</dt>	<dd><%= @order_line.order_type.titleize %></dd>
   		<dt>Customer Organization	</dt>	<dd><%= @order_line.customer_organization_name	%></dd>
 		<dt>Supplier Organization	</dt>	<dd><%= @order_line.supplier_organization_name 	%></dd>
                 <dt>ETA    			</dt>   <dd><%= @order_line.eta.to_formatted_s(:short)			%></dd>

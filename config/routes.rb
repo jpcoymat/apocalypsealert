@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :product_categories
+
   resources :work_orders do
     collection do
       get 'lookup'

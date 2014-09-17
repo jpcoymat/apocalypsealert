@@ -8,7 +8,8 @@ class OrderLine < ActiveRecord::Base
   validate :arrival_after_departure
   validate :different_locations
   validate :different_customer_and_supplier
-  
+  validate :valid_order_type
+ 
   has_many :shipment_lines
   has_many :milestones, as: :associated_object
 
@@ -34,6 +35,11 @@ class OrderLine < ActiveRecord::Base
         Roo::Excelx.new(file_path)
       else raise "Unknown file type: #{file.original_filename}"
     end
+  end
+
+  def self.order_types
+    @@order_types = ["Inbound", "Outbound"]
+    @@order_types
   end
 
   def origin_location
@@ -176,6 +182,10 @@ class OrderLine < ActiveRecord::Base
       if self.customer_organization_id == self.supplier_organization_id
         errors.add(:base, "Supplier and Customer must be different orgs")
       end
+    end
+
+    def valid_order_type
+      errors.add(:base, "Invalid Order Type") unless OrderLine.order_types.include?(self.order_type)
     end
 
 end

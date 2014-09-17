@@ -1,12 +1,14 @@
-
+<%  content_for :head do %>
+  <%= javascript_include_tag "chosen-jquery" %>
+<% end %>
 <h1>Welcome to SCV</h1>
   <div class="container-fluid">
     <%= render partial: "map_chart" %>
   </div>
   <br \><br \>
   <div class="container-fluid">
-    <%= render partial: "exception_categories" %>
-  </div>
-  <div class="container-fluid">
-    <%= render partial: "exception_categories_by_loc" %>
-  </div>
+    <%= render partial: "product_cat_log_group_matrix" %>
+  </div> 
+
+
+
