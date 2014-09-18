@@ -11,18 +11,19 @@ class ProductCategory < ActiveRecord::Base
   end
    
   def work_orders(options = {})
-    options.delete(:destination_location_id) if options[:destination_location_id]
-    options.delete(:destination_location_group_id) if options[:destination_location_group_id]
-    options.delete(:destination_location_groups) if options[:destination_location_groups]
-    options.delete(:origin_location_id) if options[:origin_location_id]
-    options.delete(:origin_location_group_id) if options[:origin_location_group_id]
-    options.delete(:origin_location_groups) if options[:origin_location_groups]
+    opts = options.clone
+    opts.delete(:destination_location_id) if opts[:destination_location_id]
+    opts.delete(:destination_location_group_id) if opts[:destination_location_group_id]
+    opts.delete(:destination_location_groups) if opts[:destination_location_groups]
+    opts.delete(:origin_location_id) if opts[:origin_location_id]
+    opts.delete(:origin_location_group_id) if opts[:origin_location_group_id]
+    opts.delete(:origin_location_groups) if opts[:origin_location_groups]
     workorders = WorkOrder.where("product_id in (select id from products where product_category_id = #{self.id})")
-    workorders = workorders.where(location_id: options[:location_id]) if options[:location_id]
-    workorders = workorders.where("location_id in (select id from locations where location_group_id = #{options[:location_group_id]})") if options[:location_group_id]
-    if options[:location_groups]
+    workorders = workorders.where(location_id: opts[:location_id]) if opts[:location_id]
+    workorders = workorders.where("location_id in (select id from locations where location_group_id = #{opts[:location_group_id]})") if opts[:location_group_id]
+    if opts[:location_groups]
       list_of_grp_ids = ""
-      options[:location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
+      opts[:location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
       list_of_grp_ids.chop!
       workorders = workorders.where("location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
     end
@@ -74,12 +75,13 @@ class ProductCategory < ActiveRecord::Base
   end
 
   def inventory_projections(options = {})
+    opts = options.clone
     projections = InventoryProjection.where("product_id in (select id from products where product_category_id = #{self.id})")
-    projections = projections.where(location_id: options[:location_id]) if options[:location_id]
-    projections = projections.where("location_id in (select id from locations where location_group_id = #{options[:location_group_id]})") if options[:location_group_id]
-    if options[:location_groups]
+    projections = projections.where(location_id: opts[:location_id]) if opts[:location_id]
+    projections = projections.where("location_id in (select id from locations where location_group_id = #{opts[:location_group_id]})") if opts[:location_group_id]
+    if opts[:location_groups]
       list_of_grp_ids = ""
-      options[:location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
+      opts[:location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
       list_of_grp_ids.chop!
       projections = projections.where("location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
     end
@@ -87,10 +89,11 @@ class ProductCategory < ActiveRecord::Base
   end
 
   def source_exceptions(options = {})
-    options.delete(:destination_location_id) if options[:destination_location_id]
-    options.delete(:destination_location_group_id) if options[:destination_location_group_id]
-    options.delete(:destination_location_groups) if options[:destination_location_groups]
-    order_line_exceptions({order_type: "Inbound"}.merge(options))
+    opts = options.clone
+    opts.delete(:origin_location_id) if opts[:origin_location_id]
+    opts.delete(:origin_location_group_id) if opts[:origin_location_group_id]
+    opts.delete(:origin_location_groups) if opts[:origin_location_groups]
+    order_line_exceptions({order_type: "Inbound"}.merge(opts))
   end
 
   def source_exception_quantity(options = {})
@@ -113,10 +116,11 @@ class ProductCategory < ActiveRecord::Base
   end
 
   def move_exceptions(options = {})
-    options.delete(:destination_location_id) if options[:destination_location_id]
-    options.delete(:destination_location_group_id) if options[:destination_location_group_id]
-    options.delete(:destination_location_groups) if options[:destination_location_groups]
-    shipment_line_exceptions({shipment_type: "Inbound"}.merge(options)) 
+    opts = options.clone
+    opts.delete(:origin_location_id) if opts[:origin_location_id]
+    opts.delete(:origin_location_group_id) if opts[:origin_location_group_id]
+    opts.delete(:origin_location_groups) if opts[:origin_location_groups]
+    shipment_line_exceptions({shipment_type: "Inbound"}.merge(opts)) 
   end
   
   def move_exception_quantity(options = {})
@@ -139,10 +143,11 @@ class ProductCategory < ActiveRecord::Base
   end 
 
   def deliver_exceptions(options = {})
-    options.delete(:origin_location_id) if options[:origin_location_id]
-    options.delete(:origin_location_group_id) if options[:origin_location_group_id]
-    options.delete(:origin_location_groups) if options[:origin_location_groups]
-    order_line_exceptions({order_type: "Outbound"}.merge(options)) 
+    opts = options.clone
+    opts.delete(:destination_location_id) if opts[:destination_location_id]
+    opts.delete(:destination_location_group_id) if opts[:destination_location_group_id]
+    opts.delete(:destination_location_groups) if opts[:destination_location_groups]
+    order_line_exceptions({order_type: "Outbound"}.merge(opts)) 
   end
 
   def deliver_exception_quantity(options = {})
@@ -163,28 +168,29 @@ class ProductCategory < ActiveRecord::Base
   end
 
   def all_exception_quantity(options = {})
-    total_exception_qty = source_exception_quantity(options) + make_exception_quantity(options) + move_exception_quantity(options) + deliver_exception_quantity(options)
+    total_exception_qty = source_exception_quantity(options) + make_exception_quantity(options) + move_exception_quantity(options) + store_exception_quantity(options) + deliver_exception_quantity(options)
     return total_exception_qty
   end
 
   protected  
 
     def order_lines(options = {})
+      opts = options.clone
       orderlines = OrderLine.where("product_id in (select id from products where product_category_id = #{self.id})")
-      orderlines = orderlines.where(order_type: options[:order_type]) if options[:order_type]
-      orderlines = orderlines.where(origin_location_id: options[:origin_location_id]) if options[:origin_location_id]
-      orderlines = orderlines.where(destination_location_id: options[:destination_location_id]) if options[:destination_location_id]
-      orderlines = orderlines.where("origin_location_id in (select id from locations where location_group_id = #{options[:origin_location_group_id]})") if options[:origin_location_group_id]
-      if options[:origin_location_groups]
+      orderlines = orderlines.where(order_type: opts[:order_type]) if opts[:order_type]
+      orderlines = orderlines.where(origin_location_id: opts[:origin_location_id]) if opts[:origin_location_id]
+      orderlines = orderlines.where(destination_location_id: opts[:destination_location_id]) if opts[:destination_location_id]
+      orderlines = orderlines.where("origin_location_id in (select id from locations where location_group_id = #{opts[:origin_location_group_id]})") if opts[:origin_location_group_id]
+      if opts[:origin_location_groups]
        list_of_grp_ids = ""
-       options[:origin_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
+       opts[:origin_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
        list_of_grp_ids.chop!
        orderlines = orderlines.where("origin_location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
       end      
-      orderlines = orderlines.where("destination_location_id in (select id from locations where location_group_id = #{options[:destination_location_group_id]})") if options[:destination_location_group_id]
-      if options[:destination_location_groups]
+      orderlines = orderlines.where("destination_location_id in (select id from locations where location_group_id = #{opts[:destination_location_group_id]})") if opts[:destination_location_group_id]
+      if opts[:destination_location_groups]
        list_of_grp_ids = ""
-       options[:destination_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
+       opts[:destination_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
        list_of_grp_ids.chop!
        orderlines = orderlines.where("destination_location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
       end
@@ -192,21 +198,22 @@ class ProductCategory < ActiveRecord::Base
     end
 
     def shipment_lines(options = {})
+      opts = options.clone
       shipmentlines = ShipmentLine.where("product_id in (select id from products where product_category_id = #{self.id})")
-      shipmentlines = shipmentlines.where(shipment_type: options[:shipment_type]) if options[:shipment_type]
-      shipmentlines = shipmentlines.where(origin_location_id: options[:origin_location_id]) if options[:origin_location_id]
-      shipmentlines = shipmentlines.where(destination_location_id: options[:destination_location_id]) if options[:destination_location_id]
-      shipmentlines = shipmentlines.where("origin_location_id in (select id from locations where location_group_id = #{options[:origin_location_group_id]})") if options[:origin_location_group_id]
-      if options[:origin_location_groups]
+      shipmentlines = shipmentlines.where(shipment_type: opts[:shipment_type]) if opts[:shipment_type]
+      shipmentlines = shipmentlines.where(origin_location_id: opts[:origin_location_id]) if opts[:origin_location_id]
+      shipmentlines = shipmentlines.where(destination_location_id: opts[:destination_location_id]) if opts[:destination_location_id]
+      shipmentlines = shipmentlines.where("origin_location_id in (select id from locations where location_group_id = #{opts[:origin_location_group_id]})") if opts[:origin_location_group_id]
+      if opts[:origin_location_groups]
        list_of_grp_ids = ""
-       options[:origin_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
+       opts[:origin_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
        list_of_grp_ids.chop!
        shipmentlines = shipmentlines.where("origin_location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
       end
-      shipmentlines = shipmentlines.where("destination_location_id in (select id from locations where location_group_id = #{options[:destination_location_group_id]})") if options[:destination_location_group_id]
-      if options[:destination_location_groups]
+      shipmentlines = shipmentlines.where("destination_location_id in (select id from locations where location_group_id = #{opts[:destination_location_group_id]})") if opts[:destination_location_group_id]
+      if opts[:destination_location_groups]
        list_of_grp_ids = ""
-       options[:destination_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
+       opts[:destination_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
        list_of_grp_ids.chop!
        shipmentlines = shipmentlines.where("destination_location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
       end

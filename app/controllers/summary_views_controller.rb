@@ -12,6 +12,11 @@ class SummaryViewsController < ApplicationController
     @product_categories = User.find(session[:user_id]).organization.product_categories
   end
 
+  def loc_group_prod_cat
+    @location_group = LocationGroup.find(params[:location_group_id])
+    @product_category = ProductCategory.find(params[:product_category_id])
+  end
+
 
   protected
    

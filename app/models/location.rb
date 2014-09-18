@@ -55,6 +55,12 @@ class Location < ActiveRecord::Base
     @inventory_exceptions  
   end
 
+  def inventory_exception_quantity(options = {})
+    inv_excptn_quantity = 0
+    inventory_exceptions(options).each {|ie| inv_excptn_quantity += ie.quantity_at_risk}
+    return inv_excptn_quantity
+  end
+
   def work_order_exceptions(options = {})
     @work_order_exceptions = []
     wos = work_orders
@@ -71,11 +77,6 @@ class Location < ActiveRecord::Base
     @inbound_shipment_line_exceptions
   end
  
-  def outbound_shipment_line_exceptions(options = {})
-    @outbound_shipment_line_exceptions = shipment_line_exceptions("origin", options)
-    @outbound_shipment_line_exceptions
-  end
-
   def inbound_order_line_exceptions(options = {})
     @inbound_order_line_exceptions = order_line_exceptions("destination", options)
     @inbound_order_line_exceptions
@@ -123,21 +124,9 @@ class Location < ActiveRecord::Base
     @inbound_exceptions
   end
 
-  def outbound_exceptions(options = {})
-    @outbound_exceptions = outbound_shipment_line_exceptions(options)
-    @outbound_exceptions << outbound_order_line_exceptions(options)
-    @outbound_exceptions.flatten!
-    @outbound_exceptions
-  end
-
   def inbound_shipment_at_risk_quantity(options = {})
     @inbound_shipment_at_risk_quantity = shipment_at_risk_quantity("destination", options)
     @inbound_shipment_at_risk_quantity
-  end
-
-  def outbound_shipment_at_risk_quantity(options = {})
-    @outbound_shipment_at_risk_quantity = shipment_at_risk_quantity("origin", options)
-    @outbound_shipment_at_risk_quantity
   end
 
   def inbound_order_at_risk_quantity(options = {})
@@ -153,10 +142,6 @@ class Location < ActiveRecord::Base
   def total_inbound_quantity_at_risk(options = {})
     @total_inbound_quantity_at_risk = inbound_shipment_at_risk_quantity(options) + inbound_order_at_risk_quantity(options)
     @total_inbound_quantity_at_risk
-  end
-
-  def total_outbound_quantity_at_risk(options = {})
-    @total_outbound_quantity_at_risk = outbound_shipment_at_risk_quantity(options) + outbound_order_at_risk_quantity(options)
   end
 
   def percentage_inbound_quantity_at_risk(options = {})
@@ -192,17 +177,29 @@ class Location < ActiveRecord::Base
   def all_exceptions(options = {}) 
     allexceptions = inbound_shipment_line_exceptions(options)
     allexceptions << inbound_order_line_exceptions(options)
-    allexceptions << outbound_shipment_line_exceptions(options)
-    allexceptions << outbound_order_line_exceptions(options)
+    allexceptions << inventory_exceptions(options) 
+    allexceptions << outbound_order_line_exceptions(options)    
     allexceptions.flatten!
     return allexceptions
-  end 
+  end
+
+  def total_exception_quantity(options = {})
+    total_excptn_qty = 0
+    all_exceptions(options).each {|excptn| total_excptn_qty += excptn.quantity_at_risk}
+    return total_excptn_qty
+  end
+   
 
   protected 
 
     def shipment_lines(direction, options = {})
       attribute_name = direction + "_location_id"
       shipment_lines = ShipmentLine.where("#{attribute_name} = #{self.id}")
+      if direction == "destination"
+        shipment_lines = shipment_lines.where(shipment_type: "Inbound")
+      elsif direction == "origin"
+        shipment_lines = shipment_lines.where(shipment_type: "Outbound")
+      end
       shipment_lines = shipment_lines.where(product_id: options[:product_id]) if options[:product_id]
       shipment_lines = shipment_lines.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
       shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
@@ -210,7 +207,7 @@ class Location < ActiveRecord::Base
         list_of_categories = ""
         options[:product_categories].each {|pc| list_of_categories += pc + ","}
         list_of_categories.chop!
-        shipment_lines = shipment_lines.where("product_id in (select od from products where product_category_id in (#{list_of_categories})")
+        shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id in (#{list_of_categories})")
       end
       return shipment_lines
     end
@@ -218,6 +215,11 @@ class Location < ActiveRecord::Base
     def order_lines(direction, options = {})
       attribute_name = direction + "_location_id"
       order_lines = OrderLine.where("#{attribute_name} = #{self.id}")
+      if direction == "destination"
+        order_lines = order_lines.where(order_type: "Inbound")
+      elsif direction == "origin"
+        order_lines = order_lines.where(order_type: "Outbound")
+      end
       order_lines = order_lines.where(product_id: options[:product_id]) if options[:product_id]
       order_lines = order_lines.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
       order_lines = order_lines.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
@@ -225,7 +227,7 @@ class Location < ActiveRecord::Base
         list_of_categories = ""
         options[:product_categories].each {|pc| list_of_categories += pc + ","}
         list_of_categories.chop!
-        order_lines = order_lines.where("product_id in (select od from products where product_category_id in (#{list_of_categories})")
+        order_lines = order_lines.where("product_id in (select id from products where product_category_id in (#{list_of_categories})")
       end
       return order_lines
     end

@@ -1,0 +1,16 @@
+<table class="table table-striped">
+    <tr>
+      <th>Product Name</th>
+      <% @location_group.locations.each do |location| %>
+        <th><%= location.name %></th>
+      <% end %>
+    </tr>
+    <% @product_category.products.each do |product| %>
+      <tr> 
+        <td><%= product.name %></td>
+        <% @location_group.locations.each do |location| %>
+        <td><%= location.total_exception_quantity(product_id: product.id) %></td>  
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
