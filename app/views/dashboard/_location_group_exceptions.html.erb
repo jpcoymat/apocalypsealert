@@ -23,7 +23,20 @@ $(function () {
                ,
          <% end %>
         <% end %>
-        ]
+        ],
+        plotOptions: {
+            series: {
+              cursor: 'pointer', 
+              point: {
+                events:{ 
+                  click: function () {
+                    var s = '/location_group_view?location_group_summary%5Blocation_group_name%5D=' + this.series.name + '&amp;location_group_summary%5Bexception_category%5D=' + this.category;
+                    location.href = s;
+                  }
+                }
+              } 
+            }
+        }
     });
 });
 

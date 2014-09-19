@@ -18,6 +18,13 @@ class SummaryViewsController < ApplicationController
   end
 
 
+  def location_group_view
+    @location_group = LocationGroup.where(name: params[:location_group_summary][:location_group_name]).first
+    @product_categories = User.find(session[:user_id]).organization.product_categories
+    @exception_category = params[:location_group_summary][:exception_category]
+  end
+
+
   protected
    
     def summary_params
