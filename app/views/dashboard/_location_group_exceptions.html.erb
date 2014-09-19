@@ -12,16 +12,6 @@ $(function () {
         xAxis: {
             categories: ['Source', 'Make', 'Move', 'Store', 'Deliver']
         },
-        labels: {
-            items: [{
-                html: 'Exception Quantity',
-                style: {
-                    left: '50px',
-                    top: '18px',
-                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
-                }
-            }]
-        },
         series: [
          <% @location_groups.each do |lg| %>
          {
