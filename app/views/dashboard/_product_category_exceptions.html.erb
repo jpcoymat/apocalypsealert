@@ -1,0 +1,60 @@
+<% content_for :head do %>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<% end %>
+<div id="prod_cat_exceptions_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+$(function () {
+    $('#prod_cat_exceptions_container').highcharts({
+        title: {
+            text: 'Exceptions by Product Category'
+        },
+        xAxis: {
+            categories: ['Source', 'Make', 'Move', 'Store', 'Deliver']
+        },
+        labels: {
+            items: [{
+                html: 'Exception Quantity',
+                style: {
+                    left: '50px',
+                    top: '18px',
+                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                }
+            }]
+        },
+        series: [
+         <% @product_categories.each do |pc| %>
+         {
+           type: 'column',
+           name: '<%= pc.name %>',
+           data: [<%= pc.source_exception_quantity.to_i %>, <%= pc.make_exception_quantity.to_i %>, <%= pc.move_exception_quantity.to_i %>, <%= pc.store_exception_quantity.to_i %>, <%= pc.deliver_exception_quantity.to_i %>]
+         },
+         <% end %>
+         {
+           type: 'pie',
+           name: 'Product Category Breakdown',
+           data: [
+             <% @product_categories.each do |pc| %>
+             {
+               name: '<%= pc.name %>',
+               y: <%= pc.all_exception_quantity.to_i %>,
+               color: Highcharts.getOptions().colors[<%= @product_categories.index(pc) %>]
+             }
+             <% unless pc == @product_categories.last %>
+               ,
+             <% end %>	 
+           <% end %>
+           ],
+           center: [100, -20],
+           size: 100,
+           showInLegend: false,
+           dataLabels: {
+             enabled: false
+           }
+         }
+        ]
+    });
+});
+
+</script>
+

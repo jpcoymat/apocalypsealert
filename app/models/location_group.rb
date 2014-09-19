@@ -18,42 +18,117 @@ class LocationGroup < ActiveRecord::Base
     end
   end
 
-  def inbound_order_line_exceptions(options = {})
-    inbd_order_line_excptns = exceptions("inbound_order_line", options)
-    return inbd_order_line_excptns
+  def inbound_order_lines(options = {}) 
+    order_lines("destination", options)
   end
 
-  def inbound_order_line_exception_quantity(options = {})
-    inbd_order_line_excptn_qty = 0
-    inbound_order_line_exceptions(options).each {|excptn| inbd_order_line_excptn_qty += excptn.quantity_at_risk}
-    return inbd_order_line_excptn_qty
+  def outbound_order_lines(options = {})
+    order_lines("origin", options = {})
+  end
+ 
+  def inbound_shipment_lines(options = {})
+    shipment_lines("destination", options) 
   end
 
-  def inbound_shipment_line_exceptions(options = {})
-    inbd_ship_line_excptns = exceptions(" inbound_shipment_line", options)
-    return inbd_ship_line_excptns
+  def outbound_shipments(options = {})
+    shipment_lines("origin", options)
   end
 
-  def inbound_shipment_line_exception_quantity(options = {})
-    inbd_ship_line_excptn_qty = 0
-    inbound_shipment_line_exceptions(options).each {|excptn| inbd_ship_line_excptn_qty += excptn.quantity_at_risk}
-    return inbd_ship_line_excptn_qty
+  def work_orders(options = {})
+    wos = WorkOrder.where("location_id in (select id from locations where location_group_id = #{self.id})")
+    wos = wos.where(product_id: options[:product_id]) if options[:product_id]
+    wos = wos.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
+    if options[:product_categories]
+      list_of_prod_cats = ""
+      options[:product_categories].each {|pc| list_of_prod_cats += pc.id.to_s + ","}
+      list_of_prod_cats.chop!
+      wos = wos.where("product_id in (select id from products where product_category_id in ('#{list_of_prod_cats}'))") 
+    end
+    return wos
+  end 
+
+  def inventory_projections(options = {})
+    ips = InventoryProjection.where("location_id in (select id from locations where location_group_id = #{self.id})")
+    ips = ips.where(product_id: options[:product_id]) if options[:product_id]
+    ips = ips.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
+    if options[:product_categories]
+      list_of_prod_cats = ""
+      options[:product_categories].each {|pc| list_of_prod_cats += pc.id.to_s + ","}
+      list_of_prod_cats.chop!
+      ips = ips.where("product_id in (select id from products where product_category_id in ('#{list_of_prod_cats}'))")
+    end
+    return ips  
   end
 
-  def outbound_order_line_exceptions(options = {})
-    otbd_order_line_excptns = exceptions("outbound_order_line", options)
-    return otbd_order_line_excptns
+  def source_exceptions(options = {})
+    order_line_exceptions("destination", options)   
   end
 
-  def outbound_order_line_exception_quantity(options = {})
-    otbd_order_line_excptn_qty = 0
-    outbound_order_line_exceptions(options).each {|excptn| otbd_order_line_excptn_qty += excptn.quantity_at_risk}
-    return otbd_order_line_excptn_qty
+  def make_exceptions(options = {})
+    make_excptns = []
+    work_orders(options).each {|wo| make_excptns << wo.affected_scv_exceptions}
+    make_excptns.flatten!
+    return make_excptns 
   end
 
-  def outbound_order_shipment_exceptions(options = {})
-    otbd_ship_line_excptns = exceptions("outbound_shipment_line", options)
-    return otbd_ship_line_excptns
+  def move_exceptions(options = {})
+    shipment_line_exceptions("destination", options)
+  end
+
+  def store_exceptions(options = {})
+    store_excptns = []
+    inventory_projections(options).each {|ip| store_excptns << ip.affected_scv_exceptions}
+    store_excptns.flatten!
+    return store_excptns
+  end
+
+  def deliver_exceptions(options = {})
+    order_line_exceptions("origin", options)
+  end
+ 
+  def source_exception_quantity(options = {})
+    source_excptn_qty = 0
+    source_exceptions(options).each {|se| source_excptn_qty += se.quantity_at_risk}
+    return source_excptn_qty
+  end
+
+  def make_exception_quantity(options = {})
+    make_exception_qty = 0 
+    make_exceptions(options).each {|se| make_exception_qty += se.quantity_at_risk}
+    return make_exception_qty
+  end
+
+  def move_exception_quantity(options = {})
+    move_exception_qty = 0
+    move_exceptions(options).each {|se| move_exception_qty += se.quantity_at_risk}
+    return move_exception_qty
+  end
+
+  def store_exception_quantity(options = {})
+    store_exception_qty = 0
+    store_exceptions(options).each {|se| store_exception_qty += se.quantity_at_risk}
+    return store_exception_qty
+  end
+
+  def deliver_exception_quantity(options = {})
+    deliver_exception_qty = 0
+    deliver_exceptions(options).each {|se| deliver_exception_qty += se.quantity_at_risk}
+    return deliver_exception_qty
+  end
+
+  def all_exceptions(options = {})
+    allexceptions = source_exceptions(options)
+    allexceptions << make_exceptions(options)
+    allexceptions << move_exceptions(options)
+    allexceptions << store_exceptions(options)
+    allexceptions << deliver_exceptions(options)
+    allexceptions.flatten!
+    return allexceptions
+  end
+
+  def all_exception_quantity(options = {})
+    total_excptn_qty = source_exception_quantity(options) + make_exception_quantity(options) +  move_exception_quantity(options) + store_exception_quantity(options) + deliver_exception_quantity(options)
+    return total_excptn_qty
   end
 
   protected
@@ -65,5 +140,62 @@ class LocationGroup < ActiveRecord::Base
       exceptions.flatten!
       return exceptions
     end
- 
+
+    def order_lines(direction, options = {})
+      opts = options.clone
+      attribute_name = direction + "_location_id"
+      order_lines = OrderLine.where("#{attribute_name} in (select id from locations where location_group_id = #{self.id})")
+      if direction == "destination"
+        order_lines = order_lines.where(order_type: "Inbound")
+      elsif direction == "origin"
+        order_lines = order_lines.where(order_type: "Outbound")
+      end   
+      order_lines = order_lines.where(product_id: opts[:product_id]) if opts[:product_id]
+      order_lines = order_lines.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
+      order_lines = order_lines.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]})") if opts[:product_category_id]
+      if opts[:product_categories]
+        list_of_categories = ""
+        opts[:product_categories].each {|pc| list_of_categories += pc + ","}
+        list_of_categories.chop!
+        order_lines = order_lines.where("product_id in (select id from products where product_category_id in (#{list_of_categories})")
+      end
+      return order_lines
+    end
+  
+    def shipment_lines(direction, options = {})
+      opts = options.clone
+      attribute_name = direction + "_location_id"
+      shipment_lines = ShipmentLine.where("#{attribute_name} in (select id from locations where location_group_id = #{self.id})")
+      if direction == "destination"
+        shipment_lines = shipment_lines.where(shipment_type: "Inbound")
+      elsif direction == "origin"
+        shipment_lines = shipment_lines.where(shipment_type: "Outbound")
+      end
+      shipment_lines = shipment_lines.where(product_id: opts[:product_id]) if opts[:product_id]
+      shipment_lines = shipment_lines.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
+      shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]})") if opts[:product_category_id]
+      if opts[:product_categories]
+        list_of_categories = ""
+        opts[:product_categories].each {|pc| list_of_categories += pc + ","}
+        list_of_categories.chop!
+        shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id in (#{list_of_categories})")
+      end
+      return shipment_lines
+    end
+
+    def order_line_exceptions(direction, options = {})
+      @order_line_exceptions = []
+      order_lines(direction, options).each {|ol| @order_line_exceptions << ol.affected_scv_exceptions}
+      @order_line_exceptions.flatten!
+      @order_line_exceptions
+    end
+   
+    def shipment_line_exceptions(direction, options = {})
+      @shipment_line_exceptions = []
+      shipment_lines(direction, options).each {|sl| @shipment_line_exceptions << sl.affected_scv_exceptions}
+      @shipment_line_exceptions.flatten!
+      @shipment_line_exceptions
+    end 
+
+
 end

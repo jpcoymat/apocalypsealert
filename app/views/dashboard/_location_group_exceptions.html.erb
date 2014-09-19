@@ -1,0 +1,60 @@
+<% content_for :head do %>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<% end %>
+<div id="loc_grp_excptns_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+$(function () {
+    $('#loc_grp_excptns_container').highcharts({
+        title: {
+            text: 'Exceptions by Location Group'
+        },
+        xAxis: {
+            categories: ['Source', 'Make', 'Move', 'Store', 'Deliver']
+        },
+        labels: {
+            items: [{
+                html: 'Exception Quantity',
+                style: {
+                    left: '50px',
+                    top: '18px',
+                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                }
+            }]
+        },
+        series: [
+         <% @location_groups.each do |lg| %>
+         {
+           type: 'column',
+           name: '<%= lg.name %>',
+           data: [<%= lg.source_exception_quantity.to_i %>, <%= lg.make_exception_quantity.to_i %>, <%= lg.move_exception_quantity.to_i %>, <%= lg.store_exception_quantity.to_i %>, <%= lg.deliver_exception_quantity.to_i %>]
+         },
+         <% end %>
+         {
+           type: 'pie',
+           name: 'Product Category Breakdown',
+           data: [
+             <% @location_groups.each do |lg| %>
+             {
+               name: '<%= lg.name %>',
+               y: <%= lg.all_exception_quantity.to_i %>,
+               color: Highcharts.getOptions().colors[<%= @location_groups.index(lg) %>]
+             }
+             <% unless lg == @location_groups.last %>
+               ,
+             <% end %>	 
+           <% end %>
+           ],
+           center: [100, -20],
+           size: 100,
+           showInLegend: false,
+           dataLabels: {
+             enabled: false
+           }
+         }
+        ]
+    });
+});
+
+</script>
+
