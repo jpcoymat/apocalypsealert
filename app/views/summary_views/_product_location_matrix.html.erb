@@ -9,7 +9,7 @@
       <tr> 
         <td><%= product.name %></td>
         <% @location_group.locations.each do |location| %>
-        <td><%= location.total_exception_quantity(product_id: product.id) %></td>  
+        <td><%= number_with_delimiter(location.total_exception_quantity(product_id: product.id).to_i) %></td>  
         <% end %>
       </tr>
     <% end %>

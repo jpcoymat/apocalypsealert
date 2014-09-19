@@ -26,11 +26,12 @@ class Location < ActiveRecord::Base
   end
 
   def inventory_positions(options = {})
+    opts = options.clone
     @inventory_positions = []
     projections = inventory_projections
-    projections = projections.where(product_id: options[:product_id]) if options[:product_id]
-    projections = projections.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
-    projections = projections.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]}") if options[:product_category_id]
+    projections = projections.where(product_id: opts[:product_id]) if opts[:product_id]
+    projections = projections.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
+    projections = projections.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]}") if opts[:product_category_id]
     projections.each do |projection| 
       inventory_position = InventoryProjection.inventory_position(projection.location, projection.product)
       @inventory_positions << inventory_position unless (@inventory_positions.include?(inventory_position) or inventory_position.nil?)
@@ -45,11 +46,12 @@ class Location < ActiveRecord::Base
   end
 
   def inventory_exceptions(options = {})
+    opts = options.clone
     @inventory_exceptions = []
     projections = inventory_projections
-    projections = projections.where(product_id: options[:product_id]) if options[:product_id]
-    projections = projections.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
-    projections = projections.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]}") if options[:product_category_id]
+    projections = projections.where(product_id: opts[:product_id]) if opts[:product_id]
+    projections = projections.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
+    projections = projections.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]}") if opts[:product_category_id]
     projections.each {|ip| @inventory_exceptions << ip.affected_scv_exceptions}
     @inventory_exceptions.flatten!
     @inventory_exceptions  
@@ -62,11 +64,12 @@ class Location < ActiveRecord::Base
   end
 
   def work_order_exceptions(options = {})
+    opts = options.clone
     @work_order_exceptions = []
     wos = work_orders
-    wos = wos.where(product_id: options[:product_id]) if options[:product_id]
-    wos = wos.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
-    wos = wos.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]}") if options[:product_category_id]
+    wos = wos.where(product_id: opts[:product_id]) if opts[:product_id]
+    wos = wos.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
+    wos = wos.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]}") if opts[:product_category_id]
     wos.each {|wo| @work_order_exceptions << wo.affected_scv_exceptions}
     @work_order_exceptions.flatten!
     @work_order_exceptions
@@ -193,6 +196,7 @@ class Location < ActiveRecord::Base
   protected 
 
     def shipment_lines(direction, options = {})
+      opts = options.clone
       attribute_name = direction + "_location_id"
       shipment_lines = ShipmentLine.where("#{attribute_name} = #{self.id}")
       if direction == "destination"
@@ -200,12 +204,12 @@ class Location < ActiveRecord::Base
       elsif direction == "origin"
         shipment_lines = shipment_lines.where(shipment_type: "Outbound")
       end
-      shipment_lines = shipment_lines.where(product_id: options[:product_id]) if options[:product_id]
-      shipment_lines = shipment_lines.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
-      shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
-      if options[:product_categories]
+      shipment_lines = shipment_lines.where(product_id: opts[:product_id]) if opts[:product_id]
+      shipment_lines = shipment_lines.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
+      shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]})") if opts[:product_category_id]
+      if opts[:product_categories]
         list_of_categories = ""
-        options[:product_categories].each {|pc| list_of_categories += pc + ","}
+        opts[:product_categories].each {|pc| list_of_categories += pc + ","}
         list_of_categories.chop!
         shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id in (#{list_of_categories})")
       end
@@ -213,6 +217,7 @@ class Location < ActiveRecord::Base
     end
 
     def order_lines(direction, options = {})
+      opts = options.clone
       attribute_name = direction + "_location_id"
       order_lines = OrderLine.where("#{attribute_name} = #{self.id}")
       if direction == "destination"
@@ -220,12 +225,12 @@ class Location < ActiveRecord::Base
       elsif direction == "origin"
         order_lines = order_lines.where(order_type: "Outbound")
       end
-      order_lines = order_lines.where(product_id: options[:product_id]) if options[:product_id]
-      order_lines = order_lines.where("product_id = (select id from products where name = '#{options[:product_name]}'") if options[:product_name]
-      order_lines = order_lines.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
-      if options[:product_categories]
+      order_lines = order_lines.where(product_id: opts[:product_id]) if opts[:product_id]
+      order_lines = order_lines.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
+      order_lines = order_lines.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]})") if opts[:product_category_id]
+      if opts[:product_categories]
         list_of_categories = ""
-        options[:product_categories].each {|pc| list_of_categories += pc + ","}
+        opts[:product_categories].each {|pc| list_of_categories += pc + ","}
         list_of_categories.chop!
         order_lines = order_lines.where("product_id in (select id from products where product_category_id in (#{list_of_categories})")
       end
