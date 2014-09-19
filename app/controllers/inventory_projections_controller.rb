@@ -6,6 +6,7 @@ class InventoryProjectionsController < ApplicationController
     @user_org = User.find(session[:user_id]).organization
     @locations = @user_org.locations
     @products = @user_org.products
+    @product_categories = @user_org.product_categories
     if request.post?
       @user_params = search_params(inventory_projection_search_params)
       @inventory_positions = InventoryProjection.inventory_positions(@user_params)

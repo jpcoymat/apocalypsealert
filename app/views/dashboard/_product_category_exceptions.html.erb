@@ -28,30 +28,11 @@ $(function () {
            type: 'column',
            name: '<%= pc.name %>',
            data: [<%= pc.source_exception_quantity.to_i %>, <%= pc.make_exception_quantity.to_i %>, <%= pc.move_exception_quantity.to_i %>, <%= pc.store_exception_quantity.to_i %>, <%= pc.deliver_exception_quantity.to_i %>]
-         },
-         <% end %>
-         {
-           type: 'pie',
-           name: 'Product Category Breakdown',
-           data: [
-             <% @product_categories.each do |pc| %>
-             {
-               name: '<%= pc.name %>',
-               y: <%= pc.all_exception_quantity.to_i %>,
-               color: Highcharts.getOptions().colors[<%= @product_categories.index(pc) %>]
-             }
-             <% unless pc == @product_categories.last %>
-               ,
-             <% end %>	 
-           <% end %>
-           ],
-           center: [100, -20],
-           size: 100,
-           showInLegend: false,
-           dataLabels: {
-             enabled: false
-           }
          }
+         <% unless pc == @product_categories.last %>
+           ,
+         <% end %>
+       <% end %>
         ]
     });
 });
