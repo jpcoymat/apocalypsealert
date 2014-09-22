@@ -30,6 +30,12 @@ class ProductCategory < ActiveRecord::Base
     return workorders
   end
 
+  def work_order_quantity(options = {})
+    wo_qty = 0
+    work_orders(options).each {|wo| wo_qty += wo.quantity}
+    return wo_qty  
+  end
+
   def inbound_order_lines(options = {})
     inbd_ols = order_lines({order_type: "Inbound"}.merge(options))
     return inbd_ols
@@ -86,6 +92,12 @@ class ProductCategory < ActiveRecord::Base
       projections = projections.where("location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
     end
     return projections
+  end
+
+  def inventory_projection_quantity(options = {})
+    inv_qty = 0
+    inventory_projections(options).each {|ip| inv_qty += ip.available_quantity}
+    return inv_qty
   end
 
   def source_exceptions(options = {})

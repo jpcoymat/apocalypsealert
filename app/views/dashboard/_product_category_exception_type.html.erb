@@ -1,0 +1,67 @@
+<h4>Product Category By Quantity at Risk</h4>
+<div id="prodcat-slider"></div>
+<p>
+  <label for="prodcatamount">Exception Threshold:</label>
+  <input type="text" id="prodcatamount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+<table class="table table-striped" id="prodcat-riskprop">
+  <tr>
+    <th>Product Category</th> 
+    <th>Source Risk </th> 
+    <th>Make Risk </th>  
+    <th>Move Risk </th>
+    <th>Store Risk </th>
+    <th>Deliver Risk </th>
+  </tr>
+  <% @product_categories.each do |pc| %>
+  <tr>
+     <td><%= pc.name %></td>
+    <% source_nominator = pc.source_exception_quantity.to_f %>
+    <% source_demoninator = pc.inbound_order_line_quantity > 0 ? pc.inbound_order_line_quantity.to_f : 1 %>
+    <td data-riskprop="<%= (source_nominator/source_demoninator)*100 %>" > <%= number_to_percentage((source_nominator/source_demoninator)*100, precision: 2) %></td>
+    <% make_nominator = pc.make_exception_quantity.to_f %>
+    <% make_denominator = pc.work_order_quantity > 0 ? pc.work_order_quantity.to_f : 1 %>
+    <td data-riskprop="<%= (make_nominator/make_denominator)*100 %>" > <%= number_to_percentage((make_nominator/make_denominator)*100, precision: 2) %></td>
+    <% move_nominator = pc.move_exception_quantity.to_f %>
+    <% move_denominator = pc.inbound_shipment_line_quantity > 0 ? pc.inbound_shipment_line_quantity.to_f : 1 %>
+    <td data-riskprop="<%= (move_nominator/move_denominator)*100 %>"><%= number_to_percentage((move_nominator/move_denominator)*100,  precision: 2) %></td>
+    <% store_nominator = pc.store_exception_quantity.to_f %>
+    <% store_denominator = pc.inventory_projection_quantity > 0 ? pc.inventory_projection_quantity.to_f : 1 %>
+    <td data-riskprop="<%= (store_nominator/store_denominator)*100 %>"> <%= number_to_percentage((store_nominator/store_denominator)*100, precision: 2) %></td>
+    <% deliver_nominator = pc.deliver_exception_quantity.to_f %>
+    <% deliver_denominator = pc.outbound_order_line_quantity > 0 ? pc.outbound_order_line_quantity.to_f :  1 %>
+    <td data-riskprop="<%= (deliver_nominator/deliver_denominator)*100 %>" > <%= number_to_percentage((deliver_nominator/deliver_denominator)*100, precision: 2) %></td>
+  </tr>
+  <% end %>
+</table>
+<script type="text/javascript">
+  $(function() {
+    $( "#prodcat-slider" ).slider({
+      range: "max",
+      min: 0,
+      max: 100,
+      value: 0,
+      slide: function( event, ui ) {
+        $("#prodcatamount" ).val( ui.value + '%' );
+        var sliderValue = ui.value;
+        if (sliderValue > 0 ) {
+          $("#prodcat-riskprop tr > td").each(function(index) {
+            var cellValue = $(this).data("riskprop");
+            if (cellValue >= sliderValue) {
+              $(this).addClass("danger");
+            } else {
+              $(this).removeClass("danger");
+            }
+          })
+        }
+        else {
+          $("#prodcat-riskprop tr > td").each(function(index) {
+            $(this).removeClass("danger");  
+          })
+        }
+      }
+    });
+    $( "#prodcatamount" ).val( $( "#prodcat-slider" ).slider( "value" ) + '%' );
+  });
+  </script>
+

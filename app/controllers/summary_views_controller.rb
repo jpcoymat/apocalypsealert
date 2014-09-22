@@ -24,6 +24,12 @@ class SummaryViewsController < ApplicationController
     @exception_category = params[:location_group_summary][:exception_category]
   end
 
+  def product_category_view
+    @product_category = ProductCategory.where(name: params[:product_category_summary][:product_category_name]).first
+    @location_groups = User.find(session[:user_id]).organization.location_groups
+    @exception_category = params[:product_category_summary][:exception_category]
+  end
+
 
   protected
    

@@ -1,0 +1,65 @@
+<h4>Location Group By Quantity at Risk</h4>
+<div id="locgrp-slider"></div>
+<p>
+  <label for="locgrpamount">Exception Threshold:</label>
+  <input type="text" id="locgrpamount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+<table class="table table-striped" id="locgroup-riskprop">
+  <tr>
+    <th>Location Group</th> 
+    <th>Source Risk </th> 
+    <th>Make Risk </th>  
+    <th>Move Risk </th>
+    <th>Store Risk </th>
+    <th>Deliver Risk </th>
+  </tr>
+  <% @location_groups.each do |lg| %>
+  <tr>
+    <td><%= lg.name %></td>
+    <% source_nominator = lg.source_exception_quantity.to_f %>
+    <% source_demoninator = lg.inbound_order_line_quantity > 0 ? lg.inbound_order_line_quantity.to_f : 1 %>
+    <td data-riskprop="<%= (source_nominator/source_demoninator)*100 %>" > <%= number_to_percentage((source_nominator/source_demoninator)*100, precision: 2) %></td>
+    <% make_nominator = lg.make_exception_quantity.to_f %>
+    <% make_denominator = lg.work_order_quantity > 0 ? lg.work_order_quantity.to_f : 1 %>
+    <td data-riskprop="<%= (make_nominator/make_denominator)*100 %>" > <%= number_to_percentage((make_nominator/make_denominator)*100, precision: 2) %></td>
+    <% move_nominator = lg.move_exception_quantity.to_f %>
+    <% move_denominator = lg.inbound_shipment_line_quantity > 0 ? lg.inbound_shipment_line_quantity.to_f : 1 %>
+    <td data-riskprop="<%= (move_nominator/move_denominator)*100 %>"><%= number_to_percentage((move_nominator/move_denominator)*100,  precision: 2) %></td>
+    <% store_nominator = lg.store_exception_quantity.to_f %>
+    <% store_denominator = lg.inventory_projection_quantity > 0 ? lg.inventory_projection_quantity.to_f : 1 %>
+    <td data-riskprop="<%= (store_nominator/store_denominator)*100 %>"> <%= number_to_percentage((store_nominator/store_denominator)*100, precision: 2) %></td>
+    <% deliver_nominator = lg.deliver_exception_quantity.to_f %>
+    <% deliver_denominator = lg.outbound_order_line_quantity > 0 ? lg.outbound_order_line_quantity.to_f :  1 %>
+    <td data-riskprop="<%= (deliver_nominator/deliver_denominator)*100 %>" > <%= number_to_percentage((deliver_nominator/deliver_denominator)*100, precision: 2) %></td>
+  </tr>
+  <% end %>
+</table>
+<script type="text/javascript">
+  $(function() {
+    $( "#locgrp-slider" ).slider({
+      range: "max",
+      min: 0,
+      max: 100,
+      value: 0,
+      slide: function( event, ui ) {
+        $("#locgrpamount" ).val( ui.value + '%');
+        var sliderValue = ui.value;
+        if (sliderValue > 0 ) {
+          $("#locgroup-riskprop tr > td").each(function(index) {
+            var cellValue = $(this).data("riskprop");
+            if (cellValue >= sliderValue) {
+              $(this).addClass("danger");
+            } else {
+              $(this).removeClass("danger"); 
+            }
+          })
+        }
+        else {
+          $("#locgroup-riskprop tr > td").each(function(index) {
+            $(this).removeClass("danger");
+          })
+        }
+      }});
+    $( "#locgrpamount" ).val( $( "#locgrp-slider" ).slider( "value" ) + '%');
+  });
+  </script>

@@ -22,12 +22,30 @@ class LocationGroup < ActiveRecord::Base
     order_lines("destination", options)
   end
 
+  def inbound_order_line_quantity(options = {})
+    inbd_ol_qty = 0
+    inbound_order_lines(options).each {|ol| inbd_ol_qty += ol.quantity}
+    return inbd_ol_qty 
+  end
+
   def outbound_order_lines(options = {})
     order_lines("origin", options = {})
+  end
+
+  def outbound_order_line_quantity(options = {})
+    otbd_ol_qty = 0
+    outbound_order_lines(options).each {|ol| otbd_ol_qty  += ol.quantity}
+    return otbd_ol_qty
   end
  
   def inbound_shipment_lines(options = {})
     shipment_lines("destination", options) 
+  end
+
+  def inbound_shipment_line_quantity(options = {})
+    inbd_ship_qty = 0
+    inbound_shipment_lines(options).each {|sl| inbd_ship_qty += sl.quantity}
+    return inbd_ship_qty
   end
 
   def outbound_shipments(options = {})
@@ -47,6 +65,12 @@ class LocationGroup < ActiveRecord::Base
     return wos
   end 
 
+  def work_order_quantity(options = {})
+    wo_qty = 0
+    work_orders(options).each {|wo| wo_qty += wo.quantity}
+    return wo_qty
+  end
+
   def inventory_projections(options = {})
     ips = InventoryProjection.where("location_id in (select id from locations where location_group_id = #{self.id})")
     ips = ips.where(product_id: options[:product_id]) if options[:product_id]
@@ -58,6 +82,12 @@ class LocationGroup < ActiveRecord::Base
       ips = ips.where("product_id in (select id from products where product_category_id in ('#{list_of_prod_cats}'))")
     end
     return ips  
+  end
+
+  def inventory_projection_quantity(options = {})
+    ip_qty = 0 
+    inventory_projections(options).each {|ip| ip_qty += ip.available_quantity}
+    return ip_qty
   end
 
   def source_exceptions(options = {})
