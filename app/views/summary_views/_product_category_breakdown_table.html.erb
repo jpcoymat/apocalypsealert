@@ -9,7 +9,7 @@
   <tr>
     <td><%= prod.name %></td>
     <% @location_groups.each do |lg| %>
-    <td><%= lg.try(@method_to_execute.to_sym, product_id: prod.id) %></td>
+    <td><%= number_with_delimiter(lg.try(@method_to_execute.to_sym, product_id: prod.id)) %></td>
     <% end %>
   </tr>
   <% end %>
