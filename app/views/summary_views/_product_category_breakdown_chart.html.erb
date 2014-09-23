@@ -1,0 +1,45 @@
+<% content_for :head do %>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<% end %>
+<div id="prodcat_brkdown_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+$(function () {
+    $('#prodcat_brkdown_container').highcharts({
+        title: {
+            text: 'Product Category Exception Breakdown'
+        },
+        xAxis: {
+            categories: [
+              <% @products.each do |prod| %>
+                '<%= prod.name %>'
+                 <% unless prod == @products.last %>
+                   ,
+                 <% end %>
+              <% end %>
+            ]
+        },
+        series: [
+         <% @location_groups.each do |lg| %>
+         {
+           type: 'column',
+           name: '<%= lg.name %>',
+           data: [
+           <% @products.each do |prod| %>
+             <%= lg.try(@method_to_execute.to_sym, product_id: prod.id) %>
+             <% unless @products.last == prod %>
+               ,
+             <% end %>
+           <% end %>
+           ]
+         }
+         <% unless lg == @location_groups.last %>
+               ,
+         <% end %>
+        <% end %>
+        ]
+    });
+});
+
+</script>
+

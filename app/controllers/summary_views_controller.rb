@@ -27,7 +27,21 @@ class SummaryViewsController < ApplicationController
   def product_category_view
     @product_category = ProductCategory.where(name: params[:product_category_summary][:product_category_name]).first
     @location_groups = User.find(session[:user_id]).organization.location_groups
+    @products = @product_category.products
     @exception_category = params[:product_category_summary][:exception_category]
+    @method_to_execute = ""
+    case @exception_category
+      when "Source" 
+        @method_to_execute = "source_exception_quantity"
+      when "Make"
+        @method_to_execute = "make_exception_quantity"
+      when "Move"
+        @method_to_execute = "move_exception_quantity"
+      when "Store"
+        @method_to_execute = "store_exception_quantity"
+      when "Deliver"
+        @method_to_execute = "deliver_exception_quantity"
+    end
   end
 
 

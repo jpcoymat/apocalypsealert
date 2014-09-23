@@ -1,0 +1,16 @@
+<table class="table table-striped">
+  <tr>
+    <th>Product Name </th>
+    <% @location_groups.each do |lg| %>
+    <th><%= lg.name %></th>
+    <% end %>
+  </tr>
+  <% @products.each do |prod| %>
+  <tr>
+    <td><%= prod.name %></td>
+    <% @location_groups.each do |lg| %>
+    <td><%= lg.try(@method_to_execute.to_sym, product_id: prod.id) %></td>
+    <% end %>
+  </tr>
+  <% end %>
+
