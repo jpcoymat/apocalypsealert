@@ -89,7 +89,8 @@ class Milestone < ActiveRecord::Base
   end
 
   def customer_organization_name
-    customer_organization.try(:name)
+    @customer_organization_name = self.customer_organization_id.nil? ? "" : customer_organization.try(:name) 
+    @customer_organization_name
   end
 
   def customer_organization_name=(organization_name)
@@ -105,7 +106,8 @@ class Milestone < ActiveRecord::Base
   end
 
   def create_organization_name
-    create_organization.try(:name)
+    @create_organization_name = self.create_organization_id.nil? ? "" : create_organization.try(:name)
+    @create_organization_name
   end
 
   def create_organization_name=(organization_name)
