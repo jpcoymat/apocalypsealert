@@ -165,7 +165,7 @@ class Location < ActiveRecord::Base
   end 
 
   def deleteable?
-    origin_shipment_lines.empty? and destination_shipment_lines.empty? and origin_order_lines.empty? and destination_order_lines.empty? and inventory_positions.empty?
+    origin_shipment_lines.empty? and destination_shipment_lines.empty? and origin_order_lines.empty? and destination_order_lines.empty? and inventory_projections.empty?
   end
 
   def housed_products
