@@ -17,7 +17,7 @@ google.load('visualization', '1', {'packages': ['geochart']});
 
     <% @locations.each do |loc| %>
       <% if loc.latitude and loc.longitude %>
-        data.addRow([ <%= loc.latitude %>, <%= loc.longitude %>, '<%= loc.code %>', <%= loc.inbound_exceptions.count %>, <%= loc.percentage_inbound_quantity_at_risk %>]);
+        data.addRow([ <%= loc.latitude %>, <%= loc.longitude %>, '<%= loc.code %>', <%= loc.source_exception_quantity %>, <%= loc.source_percentage_risk %>]);
       <% end %>
     <% end %>
 

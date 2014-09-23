@@ -8,6 +8,7 @@ class DashboardController < ApplicationController
     @locations = @user_org.exception_locations
     @product_categories = @user_org.product_categories
     @location_groups  = @user_org.location_groups
+    @prod_cat_log_grp_method = "all_exception_quantity"
   end
 
   def reset_map
@@ -38,6 +39,15 @@ class DashboardController < ApplicationController
     render action: 'index'
   end
 
+  def redraw_prod_cat_log_grp_matrix
+    @user_org = User.find(session[:user_id]).organization
+    @product_categories = @user_org.product_categories
+    @location_groups  = @user_org.location_groups
+    @prod_cat_log_grp_method = params[:method_name] + "_exception_quantity"
+    respond_to do |format|
+      format.js
+    end
+  end
 
   private
 

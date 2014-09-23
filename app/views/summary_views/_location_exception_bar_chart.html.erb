@@ -39,7 +39,7 @@ $(function () {
         series: [
           {name: "Source", data: [
             <% @product_categories.each do |pc| %>
-              <%= pc.source_exception_quantity(origin_location_id: @location.id).to_i %>
+              <%= pc.source_exception_quantity(destination_location_id: @location.id).to_i %>
               <% unless pc == @product_categories.last %>
                 ,
               <% end %>
@@ -55,7 +55,7 @@ $(function () {
           ]},
           {name: "Move", data: [
             <% @product_categories.each do |pc| %>
-              <%= pc.move_exception_quantity(origin_location_id: @location.id).to_i %>
+              <%= pc.move_exception_quantity(destination_location_id: @location.id).to_i %>
               <% unless pc == @product_categories.last %>
                 ,
               <% end %>
@@ -71,7 +71,7 @@ $(function () {
           ]},
           {name: "Deliver", data: [
             <% @product_categories.each do |pc| %>
-              <%= pc.deliver_exception_quantity(destination_location_id: @location.id).to_i %>
+              <%= pc.deliver_exception_quantity(origin_location_id: @location.id).to_i %>
               <% unless pc == @product_categories.last %>
                 ,
               <% end %>

@@ -7,7 +7,17 @@
   </div>
   <br \><br \>
   <div class="container-fluid">
-    <%= render partial: "product_cat_log_group_matrix" %>
+    <div class="row">
+      <div class="col-md-2"><%= button_to "All", redraw_prod_cat_log_grp_matrix_path(method_name: "all"), remote: true, class: "btn btn-primary" %></div>
+      <div class="col-md-2"><%= button_to "Source", redraw_prod_cat_log_grp_matrix_path(method_name: "source"), remote: true, class: "btn btn-primary" %></div>
+      <div class="col-md-2"><%= button_to "Make", redraw_prod_cat_log_grp_matrix_path(method_name: "make"), remote: true, class: "btn btn-primary" %></div>
+      <div class="col-md-2"><%= button_to "Move", redraw_prod_cat_log_grp_matrix_path(method_name: "move"), remote: true, class: "btn btn-primary" %></div>
+      <div class="col-md-2"><%= button_to "Store", redraw_prod_cat_log_grp_matrix_path(method_name: "store"), remote: true, class: "btn btn-primary" %></div>
+      <div class="col-md-2"><%= button_to "Deliver", redraw_prod_cat_log_grp_matrix_path(method_name: "deliver"), remote: true, class: "btn btn-primary" %></div>
+    </div>
+    <div id = "product_cat_log_group_matrix">
+      <%= render partial: "product_cat_log_group_matrix" %>
+    </div>
   </div> 
   <div class="container-fluid">
     <%= render partial: "product_category_exceptions" %>

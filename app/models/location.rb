@@ -3,91 +3,124 @@ class Location < ActiveRecord::Base
   belongs_to :organization
   belongs_to :location_group
 
-  has_many :work_orders
-  has_many :inventory_projections
-
   validates :name, :code, :city, :country, presence: true
   validates :code, uniqueness: {scope: :organization_id}
 
-  def origin_shipment_lines
-    @origin_shipment_lines = shipment_lines("origin")
+  def origin_shipment_lines(options = {})
+    @origin_shipment_lines = shipment_lines("origin", options)
   end
 
-  def destination_shipment_lines
-    @destination_shipment_lines = shipment_lines("destination")
+  def origin_shipment_line_quantity(options = {})
+    @origin_shipment_line_quantity = 0
+    origin_shipment_lines(options).each {|sl| @origin_shipment_line_quantity += sl.quantity}
+    @origin_shipment_line_quantity 
   end
 
-  def origin_order_lines
-    @origin_order_lines = order_lines("origin")
+  def destination_shipment_lines(options = {})
+    @destination_shipment_lines = shipment_lines("destination", options)
   end
 
-  def destination_order_lines
-    @destination_order_lines = order_lines("destination")
+  def destination_shipment_line_quantity(options = {})
+   @destination_shipment_line_quantity = 0
+   destination_shipment_lines(options).each {|sl| @destination_shipment_line_quantity += sl.quantity}
+   @destination_shipment_line_quantity
   end
 
-  def inventory_positions(options = {})
+  def origin_order_lines(options = {})
+    @origin_order_lines = order_lines("origin", options)
+  end
+
+  def origin_order_line_quantity(options = {})
+    @origin_order_line_quantity = 0
+    origin_order_lines(options).each {|ol| @origin_order_line_quantity += ol.quantity}
+    @origin_order_line_quantity
+  end
+
+  def destination_order_lines(options = {})
+    @destination_order_lines = order_lines("destination", options)
+  end
+
+  def destination_order_line_quantity(options = {})
+    @destination_order_line_quantity = 0
+    destination_order_lines(options).each {|ol| @destination_order_line_quantity += ol.quantity}
+    @destination_order_line_quantity
+  end
+
+  def inventory_projections(options = {})
     opts = options.clone
-    @inventory_positions = []
-    projections = inventory_projections
-    projections = projections.where(product_id: opts[:product_id]) if opts[:product_id]
-    projections = projections.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
-    projections = projections.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]}") if opts[:product_category_id]
-    projections.each do |projection| 
-      inventory_position = InventoryProjection.inventory_position(projection.location, projection.product)
-      @inventory_positions << inventory_position unless (@inventory_positions.include?(inventory_position) or inventory_position.nil?)
+    @inventory_projections = InventoryProjection.where(location_id: self.id)
+    @inventory_projections = @inventory_projections.where(product_id: opts[:product_id]) if opts[:product_id]
+    @inventory_projections = @inventory_projections.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
+    @inventory_projections = @inventory_projections.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]}") if opts[:product_category_id]
+    if opts[:product_categories]
+      list_of_prod_cats = ""
+      opts[:product_categories].each {|pc| list_of_prod_cats += pc + ","}
+      list_of_prod_cats.chop!
+      @inventory_projections = @inventory_projections.where("product_id in (select id from products where product_category_id in (#{list_of_prod_cats}))")
     end
-    @inventory_positions
+    @inventory_projections
   end
 
-  def inventory_quantity(options = {})
-    @inventory_quantity = 0
-    inventory_positions(options).each {|ip| @inventory_quantity += ip.available_quantity}
-    @inventory_quantity
+  def inventory_projection_quantity(options = {})
+    @inventory_projection_quantity = 0
+    inventory_projections(options).each {|ip| @inventory_projection_quantity += ip.available_quantity}
+    @inventory_projection_quantity
+  end 
+
+  def store_exceptions(options = {})
+    @store_exceptions = []
+    inventory_projections(options).each {|ip| @store_exceptions << ip.affected_scv_exceptions}
+    @store_exceptions.flatten!
+    @store_exceptions  
   end
 
-  def inventory_exceptions(options = {})
+  def work_orders(options = {})
     opts = options.clone
-    @inventory_exceptions = []
-    projections = inventory_projections
-    projections = projections.where(product_id: opts[:product_id]) if opts[:product_id]
-    projections = projections.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
-    projections = projections.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]}") if opts[:product_category_id]
-    projections.each {|ip| @inventory_exceptions << ip.affected_scv_exceptions}
-    @inventory_exceptions.flatten!
-    @inventory_exceptions  
+    @work_orders = WorkOrder.where(location_id: self.id)
+    @work_orders = @work_orders.where(product_id: opts[:product_id]) if opts[:product_id]
+    @work_orders = @work_orders.where("product_id = (select id from products where name =  '#{opts[:product_name]}'") if opts[:product_name]
+    @work_orders = @work_orders.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]}") if opts[:product_category_id]
+    if opts[:product_categories]
+      list_of_prod_cats = ""
+      opts[:product_categories].each {|pc| list_of_prod_cats += pc + ","}
+      list_of_prod_cats.chop!
+      @work_orders = @work_orders.where("product_id in (select id from products where product_category_id in (#{list_of_prod_cats}))")
+    end
+    @work_orders
   end
 
-  def inventory_exception_quantity(options = {})
-    inv_excptn_quantity = 0
-    inventory_exceptions(options).each {|ie| inv_excptn_quantity += ie.quantity_at_risk}
-    return inv_excptn_quantity
+  def work_order_quantity(options = {})
+    @work_order_quantity = 0
+    work_orders(options).each {|wo| @work_order_quantity  += wo.quantity}
+    @work_order_quantity 
   end
 
-  def work_order_exceptions(options = {})
-    opts = options.clone
+  def make_exceptions(options = {})
     @work_order_exceptions = []
-    wos = work_orders
-    wos = wos.where(product_id: opts[:product_id]) if opts[:product_id]
-    wos = wos.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
-    wos = wos.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]}") if opts[:product_category_id]
-    wos.each {|wo| @work_order_exceptions << wo.affected_scv_exceptions}
+    work_orders(options).each {|wo| @work_order_exceptions << wo.affected_scv_exceptions}
     @work_order_exceptions.flatten!
     @work_order_exceptions
   end
 
-  def inbound_shipment_line_exceptions(options = {})
-    @inbound_shipment_line_exceptions = shipment_line_exceptions("destination", options)
-    @inbound_shipment_line_exceptions
-  end
- 
-  def inbound_order_line_exceptions(options = {})
-    @inbound_order_line_exceptions = order_line_exceptions("destination", options)
-    @inbound_order_line_exceptions
+  def make_exception_quantity(options = {})
+    @make_exception_quantity = 0
+    make_exceptions(options).each {|se| @make_exception_quantity += se.quantity_at_risk}
+    @make_exception_quantity
   end
 
-  def outbound_order_line_exceptions(options = {})
-    @outbound_order_line_exceptions = order_line_exceptions("origin", options)
-    @outbound_order_line_exceptions
+  def move_exceptions(options = {})
+    @move_exceptions = shipment_line_exceptions("destination", options)
+    @move_exceptions
+  end
+ 
+  def source_exceptions(options = {})
+    @source_exceptions = order_line_exceptions("destination", options)
+    @source_exceptions
+  end
+
+  def deliver_exceptions(options = {})
+    @deliver_exceptions = order_line_exceptions("origin", options)
+    @deliver_exceptions
   end
 
   def shipment_inbound_quantity(options = {})
@@ -110,60 +143,26 @@ class Location < ActiveRecord::Base
     @order_outbound_quantity
   end
 
-  def total_inbound_quantity(options = {})
-    @total_inbound_quantity = shipment_inbound_quantity(options) + order_ibound_quantity(options)
-    @total_inbound_quantity
+  def store_exception_quantity(options = {})
+    @store_exception_quantity = 0
+    store_exceptions(options).each {|se| @store_exception_quantity += se.quantity_at_risk}
+    @store_exception_quantity
+  end
+
+  def move_exception_quantity(options = {})
+    @move_exception_quantity = shipment_at_risk_quantity("destination", options)
+    @move_exception_quantity
+  end
+
+  def source_exception_quantity(options = {})
+    @source_exception_quantity = order_at_risk_quantity("destination", options) 
+    @source_exception_quantity
+  end
+
+  def deliver_exception_quantity(options = {})
+    @deliver_exception_quantity = order_at_risk_quantity("origin", options) 
+    @deliver_exception_quantity
   end 
-
-  def total_outbound_quantity(options = {})
-    @total_outbound_quantity = shipment_outbound_quantity(options) + order_outbound_quantity(options)
-    @total_outbound_quantity
-  end
-
-  def inbound_exceptions(options = {})
-    @inbound_exceptions = inbound_shipment_line_exceptions(options)
-    @inbound_exceptions << inbound_order_line_exceptions(options)
-    @inbound_exceptions.flatten!
-    @inbound_exceptions
-  end
-
-  def inbound_shipment_at_risk_quantity(options = {})
-    @inbound_shipment_at_risk_quantity = shipment_at_risk_quantity("destination", options)
-    @inbound_shipment_at_risk_quantity
-  end
-
-  def inbound_order_at_risk_quantity(options = {})
-    @inbound_order_at_risk_quantity = order_at_risk_quantity("destination", options) 
-    @inbound_order_at_risk_quantity
-  end
-
-  def outbound_order_at_risk_quantity(options = {})
-    @outbound_order_at_risk_quantity = order_at_risk_quantity("origin", options) 
-    @outbound_order_at_risk_quantity
-  end
-
-  def total_inbound_quantity_at_risk(options = {})
-    @total_inbound_quantity_at_risk = inbound_shipment_at_risk_quantity(options) + inbound_order_at_risk_quantity(options)
-    @total_inbound_quantity_at_risk
-  end
-
-  def percentage_inbound_quantity_at_risk(options = {})
-    @percentage_inbound_quantity_at_risk = 0.0 
-    denominator = total_inbound_quantity(options).to_f
-    if denominator > 0.0
-      @percentage_inbound_quantity_at_risk = ((total_inbound_quantity_at_risk(options).to_f/denominator)*100).round(2)
-    end
-    @percentage_inbound_quantity_at_risk
-  end 
-
-  def percentage_outbound_quantity_at_risk(options = {})
-    @percentage_outbound_quantity_at_risk = 0.0
-    denominator = total_outbound_quantity(options).to_f
-    if denominator > 0.0
-      @percentage_outbound_quantity_at_risk = total_inbound_quantity_at_risk(options).to_f/denominator 
-    end
-    @percentage_outbound_quantity_at_risk
-  end
 
   def deleteable?
     origin_shipment_lines.empty? and destination_shipment_lines.empty? and origin_order_lines.empty? and destination_order_lines.empty? and inventory_positions.empty?
@@ -177,21 +176,72 @@ class Location < ActiveRecord::Base
     @housed_products  
   end
 
-  def all_exceptions(options = {}) 
-    allexceptions = inbound_shipment_line_exceptions(options)
-    allexceptions << inbound_order_line_exceptions(options)
-    allexceptions << inventory_exceptions(options) 
-    allexceptions << outbound_order_line_exceptions(options)    
-    allexceptions.flatten!
-    return allexceptions
-  end
-
   def total_exception_quantity(options = {})
     total_excptn_qty = 0
     all_exceptions(options).each {|excptn| total_excptn_qty += excptn.quantity_at_risk}
     return total_excptn_qty
   end
-   
+
+  def all_exceptions(options = {})
+    allexceptions = source_exceptions(options)
+    allexceptions << make_exceptions(options)
+    allexceptions << move_exceptions(options)
+    allexceptions << store_exceptions(options)
+    allexceptions << deliver_exceptions(options)
+    allexceptions.flatten!
+    return allexceptions   
+  end   
+ 
+  def source_percentage_risk(options = {})
+    nominator = source_exception_quantity(options)
+    if nominator > 0
+      denominator = destination_order_line_quantity(options)
+      return (nominator.to_f/denominator.to_f*100).round(2)
+    else
+      return  0
+    end 
+  end
+
+  def make_percentage_risk(options = {})
+    nominator = make_exception_quantity(options) 
+    if nominator > 0 
+      denominator = work_order_quantity(options)
+      return (nominator.to_f/denominator.to_f*100).round(2)
+    else
+      return 0
+    end
+  end
+
+  def move_percentage_risk(options = {})
+    nominator = move_exception_quantity(options)
+    if nominator > 0
+      denominator = destination_shipment_line_quantity(options)
+      return (nominator.to_f/denominator.to_f*100).round(2)
+    else
+      return 0
+    end 
+  end
+
+  def store_percentage_risk(options = {})
+    nominator = store_exception_quantity(options)
+    if nominator > 0
+      denominator = inventory_projection_quantity(options) 
+      return (nominator.to_f/denominator.to_f*100).round(2)
+    else
+      return 0
+    end
+  end
+
+  def deliver_percentage_risk(options = {})
+    nominator = deliver_exception_quantity
+    if nominator > 0
+      denominator = origin_order_line_quantity(options)
+      return (nominator.to_f/denominator.to_f*100).round(2)
+    else
+      return 0
+    end
+  end
+
 
   protected 
 

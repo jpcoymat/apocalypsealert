@@ -1,3 +1,4 @@
+
 <table class="table table-striped">
   <tr>
     <th>Product Category</th>
@@ -9,7 +10,7 @@
   <tr>
     <td><%= pc.name %></td>
     <% @location_groups.each do |lg| %>
-    <% cell_value = pc.all_exception_quantity(origin_location_group_id: lg.id, location_group_id: lg.id, destination_location_group_id: lg.id).to_i %>   
+    <% cell_value = pc.try(@prod_cat_log_grp_method.to_sym, origin_location_group_id: lg.id, location_group_id: lg.id, destination_location_group_id: lg.id) %>   
     <td><%= cell_value <= 0 ? cell_value : link_to(number_with_delimiter(cell_value), loc_grp_prod_cat_path(product_category_id: pc.id, location_group_id: lg.id)) %>
     <% end %>
   </tr>

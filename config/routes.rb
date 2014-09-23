@@ -139,10 +139,8 @@ Rails.application.routes.draw do
 
   controller :dashboard do
     get 'dashboard', action: "index"
-    get 'reset_map', action: "reset_map"
-    post 'reset_map', action: "reset_map"
-    get 'reset_category_exceptions', action: "reset_category_exceptions"
-    post 'reset_category_exceptions', action: "reset_category_exceptions"
+    get 'redraw_prod_cat_log_grp_matrix', action: "redraw_prod_cat_log_grp_matrix"
+    post 'redraw_prod_cat_log_grp_matrix', action: "redraw_prod_cat_log_grp_matrix"
   end
 
   controller :summary_views do
