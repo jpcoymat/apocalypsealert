@@ -41,7 +41,7 @@ class ScvExceptionsController < ApplicationController
   # POST /scv_exceptions.json
   def create
     @scv_exception = ScvException.new(scv_exception_params)
-
+    @scv_exception.status = 0
     respond_to do |format|
       if @scv_exception.save
         format.html { redirect_to @scv_exception, notice: 'Scv exception was successfully created.' }

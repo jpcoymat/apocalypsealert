@@ -28,7 +28,7 @@
   <div class="form-group">
     <%= f.label :affected_object_type, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
-      <%= f.select :affected_object_type, [["Shipment Line", "ShipmentLine"], ["Order Line", "OrderLine"], ["Inventory Projection", "InventoryProjection"]], {}, class: "form-control" %>
+      <%= f.select :affected_object_type, [["Shipment Line", "ShipmentLine"], ["Order Line", "OrderLine"], ["Inventory Projection", "InventoryProjection"], ["Work Order", "WorkOrder"]], {}, class: "form-control" %>
     </div>
   </div>
 
@@ -75,7 +75,7 @@
   <div class="form-group">
     <%= f.label :cause_object_type, class: "col-sm-2 control-label" %>
     <div class="col-xs-4">
-      <%= f.select :cause_object_type, [["Milestone", "milestone"],["Shipment Line", "ShipmentLine"], ["Order Line", "OrderLine"], ["Inventory Projection", "InventoryProjection"]], {}, class: "form-control" %>
+      <%= f.select :cause_object_type, [["Milestone", "milestone"],["Shipment Line", "ShipmentLine"], ["Order Line", "OrderLine"], ["Inventory Projection", "InventoryProjection"],["Work Order", "WorkOrder"]], {}, class: "form-control" %>
     </div>
   </div>
 
