@@ -120,6 +120,20 @@ class InventoryProjection < ActiveRecord::Base
     return projections
   end
 
+  def self.inventory_products(organization)
+    all_prods = organization.products
+    inventory_prods = []
+    all_prods.each {|prod| where(product: prod).count > 0 ? inventory_prods << prod : nil}
+    return inventory_prods
+  end
+
+  def self.inventory_locations(organization)
+    all_locs = organization.locations
+    inventory_locs = []
+    all_locs.each {|loc| where(location: loc).count > 0 ? inventory_locs << loc : nil}
+    return inventory_locs
+  end
+
   def reference_number
     product.code + "/" + location.code + "/" + self.projected_for.to_s
   end
