@@ -1,0 +1,65 @@
+<div id="inventory-slider"></div>
+<p>
+  <label for="inventorydate">Exception Threshold:</label>
+  <input type="text" id="projectiondatelabel" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+
+<table class="table table-hover" id="inventory-table">
+  <tr>
+    <th>Product Name</th>
+    <% @locations.each do |location| %>
+    <th><%= location.name %></th>
+    <% end %>  
+  </tr>
+<% @products.each do |prod| %>
+  <% (@min_date .. @max_date).each do |projection_date| %>
+    <tr data-projectiondate="<%= (projection_date - @min_date).to_i.to_s %>">
+      <td><%= prod.name %></td>
+      <% @locations.each do |location| %>
+        <td><%= InventoryProjection.where(product: prod, location: location, projected_for: projection_date).first.try(:available_quantity) || 0 %></td>
+      <% end %>
+    </tr>
+  <% end %>
+<% end %> 
+<script type="text/javascript">
+  $(function() {
+    $( "#inventory-slider" ).slider({
+      range: "max",
+      min: 0,
+      max: <%= (@max_date - @min_date).to_i %>,
+      value: 0,
+      slide: function( event, ui ) {
+        var startDate = new Date(<%= @min_date.year %>, <%= @min_date.month - 1%>, <%= @min_date.day %>, 12, 0); 
+        var sliderValue = ui.value;
+        var userDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+        userDate.setDate(userDate.getDate() + sliderValue);
+        var dateString = userDate.getFullYear() + '-' + (userDate.getMonth() + 1) + '-' + userDate.getDate(); 
+        $("#projectiondatelabel" ).val(dateString);
+        $("#inventory-table tr").each(function(index) {
+          if (index > 0) {
+            var rowDate = $(this).data("projectiondate");
+            if (rowDate == sliderValue) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          }
+        })
+      }
+    });
+    var startDate = new Date(<%= @min_date.year %>, <%= (@min_date.month - 1)%>, <%= @min_date.day %>, 12, 0);
+    var startDateString = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate();
+    $( "#projectiondatelabel" ).val(startDateString);
+    $("#inventory-table tr").each(function(index) {
+      if (index > 0) {
+        var rowDate = $(this).data("projectiondate");
+        if (rowDate == 0) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }  
+      }
+    });
+  });
+</script>
+

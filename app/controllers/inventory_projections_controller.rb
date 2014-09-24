@@ -119,6 +119,14 @@ class InventoryProjectionsController < ApplicationController
     end
   end
 
+  def matrix
+    @user_org = User.find(session[:user_id]).organization
+    @products = @user_org.products
+    @locations = @user_org.locations
+    @min_date = InventoryProjection.calculate(:minimum, :projected_for)
+    @max_date = InventoryProjection.calculate(:maximum, :projected_for)
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_inventory_projection
