@@ -1,3 +1,13 @@
 <h1>Location Group Summary View </h1>
-
- <%= @location_group.name %>
+<h4>Location Group: <strong><%= @location_group.name %></strong></h4>
+<div class="row">
+  <div class="col-md-2"><%= button_to "All", location_group_view_path(location_group_summary: {exception_category: "All", location_group_name: @location_group.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Source", location_group_view_path(location_group_summary: {exception_category: "Source", location_group_name: @location_group.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Make", location_group_view_path(location_group_summary: {exception_category: "Make", location_group_name: @location_group.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Move", location_group_view_path(location_group_summary: {exception_category: "Move", location_group_name: @location_group.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Store", location_group_view_path(location_group_summary: {exception_category: "Store", location_group_name: @location_group.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Deliver", location_group_view_path(location_group_summary: {exception_category: "Deliver", location_group_name: @location_group.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+</div>
+<div id="locgroupbreakdown-table">  
+  <%= render partial: "location_group_breakdown_table" %>
+</div>

@@ -2,5 +2,18 @@
   <p><%= @product_category.name %></p>
   <p><%= @exception_category %></p>
 
-  <%= render partial: "product_category_breakdown_table" %>
-  <%= render partial: "product_category_breakdown_chart" %> 
+
+<div class="row">
+  <div class="col-md-2"><%= button_to "All", product_category_view_path(product_category_summary: {exception_category: "All", product_category_name: @product_category.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Source", product_category_view_path(product_category_summary: {exception_category: "Source", product_category_name: @product_category.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Make", product_category_view_path(product_category_summary: {exception_category: "Make", product_category_name: @product_category.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Move", product_category_view_path(product_category_summary: {exception_category: "Move", product_category_name: @product_category.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Store", product_category_view_path(product_category_summary: {exception_category: "Store", product_category_name: @product_category.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+  <div class="col-md-2"><%= button_to "Deliver", product_category_view_path(product_category_summary: {exception_category: "Deliver", product_category_name: @product_category.name}), method: :get, remote: true, class: "btn btn-primary" %></div>
+</div>
+<div id="prodcatbreakdown-table">
+  <%= render partial: "product_category_breakdown_table" %> 
+</div>
+<div>
+<%= render partial: "product_category_breakdown_chart" %>
+</div>

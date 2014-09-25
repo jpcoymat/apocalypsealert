@@ -1,0 +1,16 @@
+<table class="table table-striped">
+  <tr>
+    <th>Location Name </th> 
+    <% @product_categories.each do |pc| %>
+    <th><%= pc.name %></th>  
+    <% end %>
+  </tr>
+  <% @locations.each do |loc| %>
+    <tr>
+      <td><%= loc.name %></td>
+      <% @product_categories.each do |pc| %>
+      <td><%= number_with_delimiter(pc.try(@method_to_execute.to_sym, origin_location_id: loc.id, destination_location_id: loc.id, location_id: loc.id ))%></td>  
+      <% end %>
+    </tr>
+  <% end %>
+</table>
