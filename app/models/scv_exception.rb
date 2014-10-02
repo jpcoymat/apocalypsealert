@@ -9,6 +9,16 @@ class ScvException < ActiveRecord::Base
   validate :valid_priority?
   validate :valid_type?
 
+  def is_root_exception? 
+    root_exception = true
+    ScvException.where(cause_object: affected_object).count > 0 ? root_exception = false : nil
+    return root_exception 
+  end
+
+  def child_exceptions
+    @child_exceptions = ScvException.where(cause_object: affected_object)
+  end
+
   def self.priorities
     @@priorities = [1,2,3]
   end

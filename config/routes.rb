@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       get 'file_upload'
       post 'import_file'
     end
+    get :graph, on: :member 
   end
 
 

@@ -1,6 +1,6 @@
 class ScvExceptionsController < ApplicationController
   before_filter :authorize
-  before_action :set_scv_exception, only: [:show, :edit, :update, :destroy]
+  before_action :set_scv_exception, only: [:graph, :show, :edit, :update, :destroy]
 
 
   def file_upload
@@ -14,7 +14,9 @@ class ScvExceptionsController < ApplicationController
     redirect_to scv_exceptions_path
   end
 
-
+  def graph
+    @graph =  ExceptionGraph.new(@scv_exception)
+  end
 
 
   # GET /scv_exceptions

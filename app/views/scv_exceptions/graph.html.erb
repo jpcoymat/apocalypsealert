@@ -1,0 +1,37 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "sigma" %>
+<% end %>
+<h1>Exception Graph</h1>
+<style type="text/css">
+    body {
+      margin: 0;
+    }
+    #sigmacontainer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+<div id="sigmacontainer"></div>
+<script type="text/javascript">
+$(function () {
+  var s = new sigma('sigmacontainer');
+  <% x, y = 0, 0 %>
+  <% @graph.nodes.each do |node| %>
+  s.graph.addNode({id: '<%= @graph.node_id(node) %>',
+                   label: '<%= @graph.node_label(node) %>',
+                   x: <%= x %>,
+                   y: <%= y %>,
+                   color: '#f00'});
+  <% x += 1 %>
+  <% y += 1 %>  
+  <% end %> 
+
+  <% @graph.edges.each do |edge| %>
+  s.graph.addEdge({id: '<%= @graph.edge_id(edge) %>',
+                   source: '<%= @graph.edge_source_id(edge) %>',
+                   target: '<%= @graph.edge_target_id(edge) %>'}); 
+  <% end %>
+  s.render();
+});
+</script>

@@ -19,7 +19,7 @@
         <th>Cause Object Date Type</th>
         <th>Cause Object Date </th>
         <th>Status</th>
-        <th colspan="3"></th>
+        <th colspan="4"></th>
       </tr>
     </thead>
   
@@ -42,6 +42,11 @@
           <td><%= link_to 'Show', scv_exception %></td>
           <td><%= link_to 'Edit', edit_scv_exception_path(scv_exception) %></td>
           <td><%= link_to 'Destroy', scv_exception, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td>
+          <% if scv_exception.is_root_exception? %>
+            <%= link_to 'View Graph', graph_scv_exception_path(scv_exception) %>
+          <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
