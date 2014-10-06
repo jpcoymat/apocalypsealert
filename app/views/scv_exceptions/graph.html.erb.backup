@@ -1,0 +1,23 @@
+
+<h1>Exception Graph</h1>
+<style type="text/css">
+    body {
+      margin: 0;
+    }
+    #sigmacontainer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+<div id="sigmacontainer"></div>
+<script type="text/javascript">
+  var s = new sigma({
+                graph: { nodes: [{id: "ShipmentLine2", label: "ShipmentLine SL002"},{id: "OrderLine3", label: "OrderLine OL0001"},{id: "InventoryProjection34", label: "InventoryProjection SKUA001/LOC1/2014-10-05"}], edges : [{id: "ShipmentLine2-OrderLine3", source: "ShipmentLine2", target: "OrderLine3"},{id: "OrderLine3-InventoryProjection34", source: "OrderLine3", target: "InventoryProjection34"},{id: "ShipmentLine2-InventoryProjection34", source: "ShipmentLine2", target: "InventoryProjection34"}]},
+                container: 'sigmacontainer',
+                settings: {
+                  defaultNodeColor: '#ec5148'
+                }
+              });
+  s.render();
+</script>

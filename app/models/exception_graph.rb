@@ -7,18 +7,23 @@ class ExceptionGraph
 
   def initialize(root_exception)
     @root_exception = root_exception
-    @root_node = ExceptionGraphNode.new(@root_exception.cause_object)
-    sister_node = ExceptionGraphNode.new(@root_exception.affected_object)
+    @root_node = ExceptionGraphNode.new(@root_exception.cause_object, 0, 0)
+    sister_node = ExceptionGraphNode.new(@root_exception.affected_object, 5,5)
     @nodes = [@root_node, sister_node]
     @edges = [ExceptionGraphEdge.new(@root_node, sister_node)]
     add_nodes
   end
 
   def add_nodes(start_exception = @root_exception)
+    x_position, y_position = 10, 10
     start_exception.child_exceptions.each do |child|
-      source_node = ExceptionGraphNode.new(child.cause_object) 
+      source_node = ExceptionGraphNode.new(child.cause_object, x_position, y_position )
+      x_position += 5
+      y_position += 5 
       @nodes << source_node unless node_exists?(source_node)
-      target_node = ExceptionGraphNode.new(child.affected_object)
+      target_node = ExceptionGraphNode.new(child.affected_object, x_position, y_position)
+      x_position += 5
+      y_position += 5
       @nodes << target_node unless node_exists?(target_node)  
       edge = ExceptionGraphEdge.new(source_node, target_node)
       @edges << edge unless @edges.include?(edge)

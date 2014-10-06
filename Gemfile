@@ -18,7 +18,7 @@ gem 'therubyracer',  platforms: :ruby
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-
+gem 'sigma-rails'
 
 gem 'roo'
 gem 'rails_12factor', group: :production
