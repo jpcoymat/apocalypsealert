@@ -22,8 +22,8 @@ class ExceptionGraph
       @nodes << target_node unless node_exists?(target_node)  
       edge = ExceptionGraphEdge.new(source_node, target_node)
       @edges << edge unless @edges.include?(edge)
-      root_edge = ExceptionGraphEdge.new(@root_node, target_node)
-      @edges << root_edge unless @edges.include?(root_edge) 
+
+
       add_nodes(child)
     end
   end
