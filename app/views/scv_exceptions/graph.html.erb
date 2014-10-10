@@ -6,8 +6,8 @@
     }
     #sigmacontainer {
       position: absolute;
-      width: 100%;
-      height: 100%;
+      width: 50%;
+      height: 50%;
     }
 </style>
 <div id="sigmacontainer"></div>
@@ -22,8 +22,8 @@
         label: '<%= node.node_label %>',
         size: 1,
         color: '#00f',
-        x: <%= node.x_position %>,
-        y: <%= node.y_position %>
+        x: Math.random(),
+        y: Math.random()
       });
       
     <% end %>

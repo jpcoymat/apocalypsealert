@@ -3,13 +3,9 @@ class ExceptionGraphNode
   attr_accessor :node_object
   attr_accessor :node_id
   attr_accessor :node_label
-  attr_accessor :x_position
-  attr_accessor :y_position
 
-  def initialize(node_object, x_position, y_position)
+  def initialize(node_object)
     @node_object = node_object
-    @x_position = x_position
-    @y_position = y_position
     node_id
     node_label
   end
