@@ -7,7 +7,7 @@ class ExceptionGraph
 
   def initialize(root_exception)
     @root_exception = root_exception
-    @root_node = ExceptionGraphNode.new(@root_exception.cause_object)
+    @root_node = ExceptionGraphNode.new(@root_exception.cause_object, "#f00")
     sister_node = ExceptionGraphNode.new(@root_exception.affected_object)
     @nodes = [@root_node, sister_node]
     @edges = [ExceptionGraphEdge.new(@root_node, sister_node)]

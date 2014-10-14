@@ -3,9 +3,11 @@ class ExceptionGraphNode
   attr_accessor :node_object
   attr_accessor :node_id
   attr_accessor :node_label
+  attr_accessor :color
 
-  def initialize(node_object)
+  def initialize(node_object, color = "#00f")
     @node_object = node_object
+    @color = color
     node_id
     node_label
   end
