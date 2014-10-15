@@ -6,6 +6,7 @@
   <option value="shipment_line_number">Shipment Line Number</option>
   <option value="order_line_number">Order Line Number</option>
   <option value="shipment_type">Shipment Type</option>
+  <option value="status">Status</option>
   <option value="product">Product</option>
   <option value="origin_location">Origin Location</option>
   <option value="destination_location">Destination Location</option>
@@ -80,6 +81,9 @@
             break;     
           case "shipment_type":
             addShipmentTypeCriteria();
+            break;
+          case "status":
+            addStatusCriteria();
             break;
 	  case "product":
 	    addProductCritera();
@@ -159,7 +163,21 @@
     } 
   }
   
-
+  function addStatusCriteria() {
+    var elementExists = checkExistingElement("shipment_line_status");
+    if (elementExists) {
+      null;
+    }
+    else {
+      var htmlToAdd = '<div class="form-group" id="shipment_status_div"><label class="col-sm-2 control-label" for="shipment_line_Status">Status</label><div class="col-sm-2"><select class="form-control" id="shipment_line_status" name="shipment_line[status]">';
+      <% ShipmentLine.statuses.each do |k,v| %>
+        htmlToAdd += '<option value="<%= v.to_s %>"><%= k.titleize %></option>';
+      <% end %>
+      htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'shipment_status_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
+      $('#search_form').append(htmlToAdd);
+    }
+  
+  }
 
 
   function addOriginLocationCriteria() {

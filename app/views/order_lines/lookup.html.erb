@@ -33,11 +33,11 @@
     <p>No Order Lines match your search criteria.</p>
   <% else %>
     <table class="table table-striped">
-      <tr> <th>Order Number </th> <th>State</th> <th>ETD</th> <th>ETA</th> <th>Product</th> <th>Order Qty</th> <th>Shipped Qty</th> <th>Open Qty</th> <th>Shipment Count</th><th colspan="2"></th> </tr>
+      <tr> <th>Order Number </th> <th>Status</th> <th>ETD</th> <th>ETA</th> <th>Product</th> <th>Order Qty</th> <th>Shipped Qty</th> <th>Open Qty</th> <th>Shipment Count</th><th colspan="2"></th> </tr>
         <% @order_lines.each do |order_line| %>
           <tr>
               <td><%= order_line.order_line_number %></td>
-              <td><%= order_line.status.humanize %></td>
+              <td><%= order_line.status.titleize %></td>
               <td><%= order_line.etd.to_formatted_s(:short) %></td>
               <td><%= order_line.eta.to_formatted_s(:short) %></td>
               <td><%= order_line.product.name %></td>
@@ -180,7 +180,7 @@ $(function() {
     else {
       var htmlToAdd = '<div class="form-group" id="order_status_div"><label class="col-sm-2 control-label" for="order_line_Status">Status</label><div class="col-sm-2"><select class="form-control" id="order_status" name="order_line[status]">';
       <% OrderLine.statuses.each do |k,v| %>
-        htmlToAdd += '<option value="' + '<%= v.to_s %>' + '">' + '<%= k.humanize %></option>';  
+        htmlToAdd += '<option value="' + '<%= v.to_s %>' + '">' + '<%= k.titleize %></option>';  
       <% end %>
       htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'order_status_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
       $('#search_params').append(htmlToAdd);
