@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140917000210) do
+ActiveRecord::Schema.define(version: 20141015034348) do
 
   create_table "inventory_projections", force: true do |t|
     t.integer  "location_id"
@@ -76,6 +76,7 @@ ActiveRecord::Schema.define(version: 20140917000210) do
     t.integer  "product_id"
     t.boolean  "is_active"
     t.string   "order_type"
+    t.integer  "status",                   default: 0
   end
 
   create_table "organizations", force: true do |t|
@@ -142,6 +143,7 @@ ActiveRecord::Schema.define(version: 20140917000210) do
     t.integer  "product_id"
     t.boolean  "is_active"
     t.string   "shipment_type"
+    t.integer  "status",                    default: 0
   end
 
   create_table "users", force: true do |t|

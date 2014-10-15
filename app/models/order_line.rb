@@ -1,5 +1,8 @@
 class OrderLine < ActiveRecord::Base
 
+
+  enum status: [ :open, :partially_shipped, :fully_shipped, :closed, :cancelled]
+
   belongs_to :product
 
   validates :order_line_number, :quantity, :customer_organization_id, :product_id, :eta, :etd, presence: true
@@ -154,7 +157,19 @@ class OrderLine < ActiveRecord::Base
     @cause_scv_exceptions = ScvException.where(cause_object_type: self.class.to_s, cause_object_id: self.id)
   end
 
+  def shipped_quantity
+    @shipped_quantity = 0
+    shipment_lines.each {|sl| @shipped_quantity += sl.quantity}
+    @shipped_quantity
+  end
 
+  def open_quantity
+    self.quantity - shipped_quantity
+  end
+
+  def total_shipments
+    shipment_lines.count
+  end
 
   protected
 

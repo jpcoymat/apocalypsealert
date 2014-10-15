@@ -1,6 +1,8 @@
 class ShipmentLine < ActiveRecord::Base
 
 
+  enum status: [ :planned, :in_transit, :delivered, :cancelled]
+
   belongs_to :product
   belongs_to :order_line
 

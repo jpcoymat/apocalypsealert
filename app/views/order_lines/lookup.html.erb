@@ -4,6 +4,7 @@
 
 <select id="form_criteria">
   <option value="order_line_number">Order Line Number</option>
+  <option value="status">Status</option>
   <option value="order_type">Order Type</option>
   <option value="product">Product</option>
   <option value="origin_location">Origin Location</option>
@@ -32,17 +33,24 @@
     <p>No Order Lines match your search criteria.</p>
   <% else %>
     <table class="table table-striped">
-      <tr><th>Customer Organization</th> <th>Supplier Organization</th><th>Order Line Number </th> <th>ETD</th> <th>ETA</th> <th>Product</th> <th>Origin Location </th> <th>Destination Location</th> <th>Quantity</th></tr>
+      <tr> <th>Order Number </th> <th>State</th> <th>ETD</th> <th>ETA</th> <th>Product</th> <th>Order Qty</th> <th>Shipped Qty</th> <th>Open Qty</th> <th>Shipment Count</th><th colspan="2"></th> </tr>
         <% @order_lines.each do |order_line| %>
-          <tr><td><%= order_line.customer_organization_name %></td>
-              <td><%= order_line.supplier_organization_name %></td>
+          <tr>
               <td><%= order_line.order_line_number %></td>
+              <td><%= order_line.status.humanize %></td>
               <td><%= order_line.etd.to_formatted_s(:short) %></td>
               <td><%= order_line.eta.to_formatted_s(:short) %></td>
               <td><%= order_line.product.name %></td>
-              <td><%= order_line.origin_location.try(:name) %></td>
-              <td><%= order_line.destination_location.try(:name) %></td>
-              <td><%= order_line.quantity.to_s        %></td>
+              <td><%= number_with_delimiter(order_line.quantity)        %></td>
+              <td><%= number_with_delimiter(order_line.shipped_quantity) %></td>
+              <td><%= number_with_delimiter(order_line.open_quantity) %></td>
+              <td>
+              <% if order_line.total_shipments > 0 %>
+                <%= link_to(number_with_delimiter(order_line.total_shipments), lookup_shipment_lines_path(shipment_line: {order_line_number: order_line.order_line_number}), method: :post) %>
+              <% else %>
+                0
+              <% end %>
+              </td>
               <td><%= link_to "Details", order_line_path(order_line)  %></td>
               <td><%= link_to "Edit", edit_order_line_path(order_line) %></td>
               </tr>
@@ -88,6 +96,9 @@ $(function() {
             break;
           case "order_type":
             addOrderTypeCriteria(); 
+            break;
+          case "status":
+            addStatusCriteria();
             break;
 	  case "product":
 	    addProductCritera();
@@ -159,7 +170,24 @@ $(function() {
       $('#search_params').append(htmlToAdd);
     }
   }
+ 
+
+  function addStatusCriteria() {
+    var elementExists = checkExistingElement('order_line_status');
+    if (elementExists) {
+      null;
+    }
+    else {
+      var htmlToAdd = '<div class="form-group" id="order_status_div"><label class="col-sm-2 control-label" for="order_line_Status">Status</label><div class="col-sm-2"><select class="form-control" id="order_status" name="order_line[status]">';
+      <% OrderLine.statuses.each do |k,v| %>
+        htmlToAdd += '<option value="' + '<%= v.to_s %>' + '">' + '<%= k.humanize %></option>';  
+      <% end %>
+      htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'order_status_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
+      $('#search_params').append(htmlToAdd);
+    }
+  } 
   
+
   function addDestinationLocationCriteria() {
     var elementExists = checkExistingElement('order_line_destination_location_id');
     if (elementExists) {

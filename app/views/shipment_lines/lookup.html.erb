@@ -4,6 +4,7 @@
 
 <select id="form_criteria">
   <option value="shipment_line_number">Shipment Line Number</option>
+  <option value="order_line_number">Order Line Number</option>
   <option value="shipment_type">Shipment Type</option>
   <option value="product">Product</option>
   <option value="origin_location">Origin Location</option>
@@ -74,6 +75,9 @@
 	  case "shipment_line_number":
 	    addShipmentLineCriteria();
             break;
+          case "order_line_number":
+            addOrderLineCriteria();
+            break;     
           case "shipment_type":
             addShipmentTypeCriteria();
             break;
@@ -119,6 +123,25 @@
     }
   }
 
+  function addOrderLineCriteria() {
+
+    var elementExists = checkExistingElement('shipment_line_order_line_number');
+    if (elementExists) {
+      null;
+    }
+    else {
+      var htmlToAdd = '<div class="form-group" id="order_line_div"><label class="col-sm-2 control-label" for="shipment_line_order Line Number">Order Line number</label><div class="col-sm-2"><input class="form-control" id="shipment_line_order_line_number" name="shipment_line[order_line_number]" type="text" /></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'order_line_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
+      $('#search_form').append(htmlToAdd);
+      var movement_sources = [
+      <% @order_lines.each do |ol| %>
+          "<%= ol.order_line_number %>",
+      <% end %>
+      ""];
+      $( "#shipment_line_order_line_number" ).autocomplete({source: movement_sources});
+    }
+  }
+
+
   function addProductCritera() {
     var elementExists = checkExistingElement('product_names');
     if (elementExists) {
@@ -136,6 +159,9 @@
     } 
   }
   
+
+
+
   function addOriginLocationCriteria() {
     var elementExists = checkExistingElement('shipment_line_origin_location_id');
     if (elementExists) {

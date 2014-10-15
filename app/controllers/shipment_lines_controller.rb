@@ -9,6 +9,7 @@ class ShipmentLinesController < ApplicationController
     @organizations = Organization.all
     @products = @user_org.products
     @locations = @user_org.locations
+    @order_lines = @user_org.order_lines
     @all_shipment_lines = @user_org.shipment_lines
     if request.post?
       @shipment_lines = @all_shipment_lines.where(search_params).order(:shipment_line_number)
@@ -120,7 +121,7 @@ class ShipmentLinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def shipment_line_params
-      params.require(:shipment_line).permit(:shipment_type, :is_active, :mode, :order_line_number, :shipment_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :order_line_id, :product_id, :product_name, :customer_organization_id, :forwarder_organization_id, :carrier_organization_id)
+      params.require(:shipment_line).permit(:order_line_number, :shipment_type, :is_active, :mode, :order_line_number, :shipment_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :order_line_id, :product_id, :product_name, :customer_organization_id, :forwarder_organization_id, :carrier_organization_id)
     end
 
     def search_params
@@ -128,6 +129,10 @@ class ShipmentLinesController < ApplicationController
       if search_params.key?("product_name")
         search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.try(:id)
         search_params.delete("product_name")
+      end
+      if search_params.key?("order_line_number")
+        search_params["order_line_id"] = OrderLine.where(order_line_number: search_params["order_line_number"]).first.try(:id)
+        search_params.delete("order_line_number") 
       end
       search_params
     end
