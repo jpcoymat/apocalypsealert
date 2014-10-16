@@ -15,12 +15,12 @@
 <br /><br />
 <h4>Associated Ship Lines</h4>
 
-	<% if @order_line.shipment_lines.empty? %>
+	<% if @order_line.immediate_shipment_lines.empty? %>
 		<p>No Ship Lines for this Order Line were found.</p>
 	<% else %>
 		<table class="table table-striped">
 			<tr><th>Reference Number</th>	<th>Product</th> <th>Origin Location</th> <th>Destination Location</th> <th>Ship Quantity</th> <th> Remaining Quantity</th></tr>
-			<% @order_line.shipment_lines.each do |ship_line| %>
+			<% @order_line.immediate_shipment_lines.each do |ship_line| %>
 				<tr>
 					<td><%= ship_line.shipment_line_number	%></td>
 					<td><%= ship_line.product.name			%></td>

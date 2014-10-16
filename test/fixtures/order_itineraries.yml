@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  order_line_id: 1
+  shipment_line_id: 1
+  leg_number: 1
+
+two:
+  order_line_id: 1
+  shipment_line_id: 1
+  leg_number: 1

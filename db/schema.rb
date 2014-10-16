@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141015034348) do
+ActiveRecord::Schema.define(version: 20141015215939) do
 
   create_table "inventory_projections", force: true do |t|
     t.integer  "location_id"
@@ -60,6 +60,15 @@ ActiveRecord::Schema.define(version: 20141015034348) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "reference_number"
+  end
+
+  create_table "order_itineraries", force: true do |t|
+    t.integer  "order_line_id"
+    t.integer  "shipment_line_id"
+    t.integer  "leg_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "next_order_itinerary_id"
   end
 
   create_table "order_lines", force: true do |t|

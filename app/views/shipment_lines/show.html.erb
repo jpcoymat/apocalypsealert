@@ -3,6 +3,7 @@
            
                 <dt>Shipment Line Number    	</dt>   <dd><%= @shipment_line.shipment_line_number  		%></dd>
  		<dt>Mode			</dt>	<dd><%= @shipment_line.mode				%></dd>
+		<dt>Status			</dt>	<dd><%= @shipment_line.status.titleize			%></dd>
 		<dt>Shipment Type		</dt>	<dd><%= @shipment_line.shipment_type 			%></dd>
                 <dt>Customer Organization	</dt>	<dd><%= @shipment_line.customer_organization_name	%></dd>
   		<dt>Forwarder Organization	</dt>	<dd><%= @shipment_line.forwarder_organization_name	%></dd>

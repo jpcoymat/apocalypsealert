@@ -12,9 +12,11 @@ class OrderLine < ActiveRecord::Base
   validate :different_locations
   validate :different_customer_and_supplier
   validate :valid_order_type
- 
-  has_many :shipment_lines
+
+  has_many :order_itineraries 
+  has_many :shipment_lines, through: :order_itineraries
   has_many :milestones, as: :associated_object
+
 
   def self.import(file_path)
     spreadsheet = open_spreadsheet(file_path)
@@ -114,7 +116,6 @@ class OrderLine < ActiveRecord::Base
     self.product_id = Product.where(code: product_code).first.try(:id)
   end
 
-
   def supplier_organization
     @supplier_organization = self.supplier_organization_id ? Organization.find(self.supplier_organization_id) : nil
   end
@@ -157,9 +158,16 @@ class OrderLine < ActiveRecord::Base
     @cause_scv_exceptions = ScvException.where(cause_object_type: self.class.to_s, cause_object_id: self.id)
   end
 
+  def immediate_shipment_lines
+    itineraries = order_itineraries.where(leg_number: 1)
+    @immediate_shipment_lines = []
+    itineraries.each {|oi| @immediate_shipment_lines << oi.shipment_line unless @immediate_shipment_lines.include?(oi.shipment_line)}
+    @immediate_shipment_lines
+  end
+
   def shipped_quantity
     @shipped_quantity = 0
-    shipment_lines.each {|sl| @shipped_quantity += sl.quantity}
+    immediate_shipment_lines.each {|sl| @shipped_quantity += sl.quantity}
     @shipped_quantity
   end
 
@@ -168,7 +176,7 @@ class OrderLine < ActiveRecord::Base
   end
 
   def total_shipments
-    shipment_lines.count
+    immediate_shipment_lines.count
   end
 
   protected
