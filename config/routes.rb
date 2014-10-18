@@ -52,6 +52,7 @@ Rails.application.routes.draw do
       post 'lookup'
       get 'file_upload'
       post 'import_file'
+      get 'order_line_shipment_graphs'
     end
   end
 
@@ -143,6 +144,8 @@ Rails.application.routes.draw do
     get 'dashboard', action: "index"
     get 'redraw_prod_cat_log_grp_matrix', action: "redraw_prod_cat_log_grp_matrix"
     post 'redraw_prod_cat_log_grp_matrix', action: "redraw_prod_cat_log_grp_matrix"
+    get 'recalculate_product_category_exceptions', action: "recalculate_product_category_exceptions"
+    get 'recalculate_location_group_exceptions', action: "recalculate_location_group_exceptions"
   end
 
   controller :summary_views do

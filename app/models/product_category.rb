@@ -21,12 +21,7 @@ class ProductCategory < ActiveRecord::Base
     workorders = WorkOrder.where("product_id in (select id from products where product_category_id = #{self.id})")
     workorders = workorders.where(location_id: opts[:location_id]) if opts[:location_id]
     workorders = workorders.where("location_id in (select id from locations where location_group_id = #{opts[:location_group_id]})") if opts[:location_group_id]
-    if opts[:location_groups]
-      list_of_grp_ids = ""
-      opts[:location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
-      list_of_grp_ids.chop!
-      workorders = workorders.where("location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
-    end
+    workorders = workorders.where("location_id in (select id from locations where location_group_id in (#{opts[:location_groups]}))") if opts[:location_groups]
     return workorders
   end
 
@@ -86,10 +81,7 @@ class ProductCategory < ActiveRecord::Base
     projections = projections.where(location_id: opts[:location_id]) if opts[:location_id]
     projections = projections.where("location_id in (select id from locations where location_group_id = #{opts[:location_group_id]})") if opts[:location_group_id]
     if opts[:location_groups]
-      list_of_grp_ids = ""
-      opts[:location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
-      list_of_grp_ids.chop!
-      projections = projections.where("location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
+      projections = projections.where("location_id in (select id from locations where location_group_id in (#{opts[:location_groups]}))")
     end
     return projections
   end
@@ -193,19 +185,9 @@ class ProductCategory < ActiveRecord::Base
       orderlines = orderlines.where(origin_location_id: opts[:origin_location_id]) if opts[:origin_location_id]
       orderlines = orderlines.where(destination_location_id: opts[:destination_location_id]) if opts[:destination_location_id]
       orderlines = orderlines.where("origin_location_id in (select id from locations where location_group_id = #{opts[:origin_location_group_id]})") if opts[:origin_location_group_id]
-      if opts[:origin_location_groups]
-       list_of_grp_ids = ""
-       opts[:origin_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
-       list_of_grp_ids.chop!
-       orderlines = orderlines.where("origin_location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
-      end      
+      orderlines = orderlines.where("origin_location_id in (select id from locations where location_group_id in (#{opts[:origin_location_groups]}))") if opts[:origin_location_groups]
       orderlines = orderlines.where("destination_location_id in (select id from locations where location_group_id = #{opts[:destination_location_group_id]})") if opts[:destination_location_group_id]
-      if opts[:destination_location_groups]
-       list_of_grp_ids = ""
-       opts[:destination_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
-       list_of_grp_ids.chop!
-       orderlines = orderlines.where("destination_location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
-      end
+      orderlines = orderlines.where("destination_location_id in (select id from locations where location_group_id in (#{opts[:destination_location_groups]}))") if opts[:destination_location_groups]
       return orderlines
     end
 
@@ -216,19 +198,9 @@ class ProductCategory < ActiveRecord::Base
       shipmentlines = shipmentlines.where(origin_location_id: opts[:origin_location_id]) if opts[:origin_location_id]
       shipmentlines = shipmentlines.where(destination_location_id: opts[:destination_location_id]) if opts[:destination_location_id]
       shipmentlines = shipmentlines.where("origin_location_id in (select id from locations where location_group_id = #{opts[:origin_location_group_id]})") if opts[:origin_location_group_id]
-      if opts[:origin_location_groups]
-       list_of_grp_ids = ""
-       opts[:origin_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
-       list_of_grp_ids.chop!
-       shipmentlines = shipmentlines.where("origin_location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
-      end
+       shipmentlines = shipmentlines.where("origin_location_id in (select id from locations where location_group_id in (#{opts[:origin_location_groups]}))") if opts[:origin_location_groups]
       shipmentlines = shipmentlines.where("destination_location_id in (select id from locations where location_group_id = #{opts[:destination_location_group_id]})") if opts[:destination_location_group_id]
-      if opts[:destination_location_groups]
-       list_of_grp_ids = ""
-       opts[:destination_location_groups].each {|lg| list_of_grp_ids += lg.to_s + ","}
-       list_of_grp_ids.chop!
-       shipmentlines = shipmentlines.where("destination_location_id in (select id from locations where location_group_id in (#{list_of_grp_ids}))")
-      end
+      shipmentlines = shipmentlines.where("destination_location_id in (select id from locations where location_group_id in (#{opts[:destination_location_groups]}))") if opts[:destination_location_groups]
       return shipmentlines
     end
 

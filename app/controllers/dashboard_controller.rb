@@ -49,6 +49,43 @@ class DashboardController < ApplicationController
     end
   end
 
+  def recalculate_product_category_exceptions
+    @user_org = User.find(session[:user_id]).organization
+    @product_categories = @user_org.product_categories
+    location_groups = params[:location_groups]
+    @response = []
+    @product_categories.each do |pc|
+      @response << {name: pc.name, data: [pc.source_exception_quantity(destination_location_groups: location_groups).to_i, 
+					pc.make_exception_quantity(location_groups: location_groups).to_i, 
+					pc.move_exception_quantity(destination_location_groups: location_groups).to_i,
+                                        pc.store_exception_quantity(location_groups: location_groups).to_i, 
+					pc.deliver_exception_quantity(origin_location_groups: location_groups).to_i]}
+    end  
+    respond_to do |format|
+      format.json {render json: @response}
+      format.html {render json: @response} 
+    end  
+  end
+
+  def recalculate_location_group_exceptions
+    @user_org = User.find(session[:user_id]).organization
+    @location_groups = @user_org.location_groups
+    product_categories = params[:product_categories]
+    @response = []
+    @location_groups.each do |lg|
+      @response << {name: lg.name, data: [lg.source_exception_quantity(product_categories: product_categories).to_i,
+					  lg.make_exception_quantity(product_categories: product_categories).to_i,
+                                          lg.move_exception_quantity(product_categories: product_categories).to_i,
+                                          lg.store_exception_quantity(product_categories: product_categories).to_i,
+                                          lg.deliver_exception_quantity(product_categories: product_categories).to_i]}
+    end
+    respond_to do |format|
+      format.json {render json: @response}
+      format.html {render json: @response}
+    end
+  end
+
+
   private
 
     def map_params
@@ -59,5 +96,6 @@ class DashboardController < ApplicationController
       params.require(:category_parameters).permit(:product_id, :product_code, :location_id, :location_code, :product_name)
     end
 
+   
 
 end

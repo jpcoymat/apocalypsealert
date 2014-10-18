@@ -16,7 +16,7 @@ class OrderItinerary < ActiveRecord::Base
       if shipment_line.origin_location == order_line.origin_location
         return previous_order_itinerary
       else 
-        previous_order_itinerary = OrderItinerary.where("order_line_id = #{self.order_line_id} and shipment_line_id in (select id from shipment_lines where destination_location_id = #{self.shipment_line.origin_location_id} and next_order_itinerary_id is null").first
+        previous_order_itinerary = OrderItinerary.where("order_line_id = #{self.order_line_id} and shipment_line_id in (select id from shipment_lines where destination_location_id = #{self.shipment_line.origin_location_id}) and next_order_itinerary_id is null").first
         return previous_order_itinerary
       end
     end     
@@ -24,7 +24,7 @@ class OrderItinerary < ActiveRecord::Base
 
   def set_leg_number
     previous_itinerary = find_previous_order_itinerary
-    previous_itinerary.nil ? self.leg_number = 1 : self.leg_number = previous_itinerary.leg_number + 1
+    previous_itinerary.nil? ? self.leg_number = 1 : self.leg_number = previous_itinerary.leg_number + 1
     
   end
 

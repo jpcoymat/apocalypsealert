@@ -13,9 +13,23 @@ class ShipmentLinesController < ApplicationController
     @all_shipment_lines = @user_org.shipment_lines
     if request.post?
       @shipment_lines = @all_shipment_lines.where(search_params).order(:shipment_line_number)
+      @order_line = order_param
+      if @order_line
+        @shipment_lines = @shipment_lines.where("id in (select shipment_line_id from order_itineraries where order_line_id = #{@order_line.id})")
+      end
+      @shipment_lines
     end
   end
 
+  def order_line_shipment_graphs
+    @order_line = order_param
+    @root_shipments = @order_line.immediate_shipment_lines
+    @graphs = []
+    @root_shipments.each do |shipment| 
+      graph = ShipmentGraph.new(shipment)
+      @graphs << graph
+    end
+  end
 
   # GET /shipment_lines
   # GET /shipment_lines.json
@@ -53,6 +67,13 @@ class ShipmentLinesController < ApplicationController
     @shipment_line = ShipmentLine.new(shipment_line_params)
     respond_to do |format|
       if @shipment_line.save
+        @order_line = order_param
+        if @order_line
+          @order_itinerary = OrderItinerary.new(shipment_line: @shipment_line, order_line: @order_line)
+          @order_itinerary.set_leg_number
+          @order_itinerary.save
+          @order_itinerary.set_previous_order_itinerary
+        end
         format.html { redirect_to lookup_shipment_lines_path, notice: 'Shipment line was successfully created.' }
         format.json { render :show, status: :created, location: @shipment_line }
       else
@@ -121,7 +142,15 @@ class ShipmentLinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def shipment_line_params
-      params.require(:shipment_line).permit(:status, :order_line_number, :shipment_type, :is_active, :mode, :order_line_number, :shipment_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :order_line_id, :product_id, :product_name, :customer_organization_id, :forwarder_organization_id, :carrier_organization_id)
+      params.require(:shipment_line).permit(:status, :shipment_type, :is_active, :mode, :shipment_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :product_id, :product_name, :customer_organization_id, :forwarder_organization_id, :carrier_organization_id)
+    end
+
+    def order_param
+      ol = nil
+      unless params[:shipment_line][:order_line_number].nil? or params[:shipment_line][:order_line_number].blank?
+        ol = OrderLine.where(order_line_number: params[:shipment_line][:order_line_number]).first
+      end
+      ol
     end
 
     def search_params
@@ -129,10 +158,6 @@ class ShipmentLinesController < ApplicationController
       if search_params.key?("product_name")
         search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.try(:id)
         search_params.delete("product_name")
-      end
-      if search_params.key?("order_line_number")
-        search_params["order_line_id"] = OrderLine.where(order_line_number: search_params["order_line_number"]).first.try(:id)
-        search_params.delete("order_line_number") 
       end
       search_params
     end

@@ -2,6 +2,42 @@
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 <% end %>
+
+<div class="row">
+  <div class="col-lg-6">
+    <select class="form-control chosen-select" id="product_categories" multiple="multiple" name="product_categories[]" data-placeholder="Select Product Categories">
+      <% @product_categories.each do |product_category| %>
+        <option value="<%= product_category.id %>"><%= product_category.name %></option>
+      <% end %>
+    </select>
+    <script type="text/javascript">
+      $("#product_categories").chosen({search_contains: true});
+    </script>
+  </div>
+  <button type="button" class="btn btn-primary" onclick="javacript:getLocationGroupExc()">Filter</button>
+</div>
+
+<script type="text/javascript">
+  function getLocationGroupExc() {
+    var productCategoires = $('#product_categories').val();
+    var url = "/recalculate_location_group_exceptions?product_categories=" + productCategoires;
+    $.get(url, function(data){
+       var chart = $("#loc_grp_excptns_container").highcharts();
+       var newData;
+       if (typeof(data) != "object") {
+         newData = $.parseJSON(data);
+       } else {
+         newData = data;
+       }
+       $.each(chart.series, function( index, value ) {
+          chart.series[index].setData(newData[index].data);
+        });
+    });
+  }
+</script>
+
+
+
 <div id="loc_grp_excptns_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <script type="text/javascript">
 $(function () {

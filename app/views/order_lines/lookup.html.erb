@@ -46,7 +46,7 @@
               <td><%= number_with_delimiter(order_line.open_quantity) %></td>
               <td>
               <% if order_line.total_shipments > 0 %>
-                <%= link_to(number_with_delimiter(order_line.total_shipments), lookup_shipment_lines_path(shipment_line: {order_line_number: order_line.order_line_number}), method: :post) %>
+                <%= link_to(number_with_delimiter(order_line.total_shipments), order_line_shipment_graphs_shipment_lines_path(shipment_line: {order_line_number: order_line.order_line_number})) %>
               <% else %>
                 0
               <% end %>

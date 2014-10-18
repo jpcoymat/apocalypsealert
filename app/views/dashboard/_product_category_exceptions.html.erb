@@ -1,7 +1,44 @@
 <% content_for :head do %>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
+<%= stylesheet_link_tag "chosen-bootstrap" %>
+<%= javascript_include_tag "chosen-jquery" %>
+
 <% end %>
+
+<div class="row">
+  <div class="col-lg-6">
+    <select class="form-control chosen-select" id="location_groups" multiple="multiple" name="location_groups[]" data-placeholder="Select Location Groups">
+      <% @location_groups.each do |location_group| %>
+        <option value="<%= location_group.id %>"><%= location_group.name %></option>
+      <% end %>
+    </select>
+    <script type="text/javascript">
+      $("#location_groups").chosen({search_contains: true});
+    </script>
+  </div>
+  <button type="button" class="btn btn-primary" onclick="javacript:getProductCatExc()">Filter</button>
+</div>
+
+<script type="text/javascript">
+  function getProductCatExc() {
+    var locationGroups = $('#location_groups').val();
+    var url = "/recalculate_product_category_exceptions?location_groups=" + locationGroups + "&destination_location_groups=" + locationGroups + "&origin_location_groups=" + locationGroups;
+    $.get(url, function(data){
+       var chart = $("#prod_cat_exceptions_container").highcharts();
+       var newData;
+       if (typeof(data) != "object") {
+         newData = $.parseJSON(data);
+       } else {
+         newData = data;
+       }
+       $.each(chart.series, function( index, value ) {
+          chart.series[index].setData(newData[index].data);
+        }); 
+    });  
+  }
+</script>
+
 <div id="prod_cat_exceptions_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <script type="text/javascript">
 $(function () {

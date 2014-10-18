@@ -4,18 +4,26 @@ class ShipmentLine < ActiveRecord::Base
   enum status: [ :planned, :in_transit, :delivered, :cancelled]
 
   belongs_to :product
-  belongs_to :order_line
+  has_one :order_itinerary
+  has_one :order_line, through: :order_itinerary
 
   validates :shipment_line_number, :mode, :quantity, :customer_organization_id, :product_id, :eta, :etd, presence: true
   validates_uniqueness_of :shipment_line_number, scope: :customer_organization_id
   validate :origin_or_destination
-  validate :parent_child_match
+  
   validate :arrival_after_departure
   validate :different_locations
   validate :valid_shipment_type
 
   has_many :milestones, as: :associated_object
  
+  def next_leg_shipment
+    @next_leg_shipment = nil
+    next_itinerary = order_itinerary.next_order_itinerary
+    @next_leg_shipment = next_itinerary.shipment_line if next_itinerary
+    @next_leg_shipment
+  end
+
 
   def self.modes
     @@modes = ["Ocean", "Truck", "Air", "Rail", "Intermodal", "Parcel"]
@@ -35,10 +43,17 @@ class ShipmentLine < ActiveRecord::Base
     header = spreadsheet.row(1)
     (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
+      order_line = OrderLine.where(order_line_number: row["order_line_number"]).first
+      row.delete("order_line_number")
       shipment_line = where(shipment_line_number: row["shipment_line_number"]).first || new
       shipment_line.attributes = row
       shipment_line.is_active = true
-      shipment_line.save
+      if shipment_line.save and order_line
+        order_itinerary = OrderItinerary.new(shipment_line: shipment_line, order_line: order_line)
+        order_itinerary.set_leg_number
+        order_itinerary.save
+        order_itinerary.set_previous_order_itinerary
+      end
     end
   end
 
@@ -83,13 +98,8 @@ class ShipmentLine < ActiveRecord::Base
     self.destination_location_id = Location.where(name: location_name).first.try(:id)
   end
 
-
   def order_line_number
     order_line.try(:order_line_number)
-  end
-  
-  def order_line_number=(order_line_number)
-    self.order_line_id = OrderLine.where(order_line_number: order_line_number).first.try(:id)
   end
 
   def product_name
@@ -185,14 +195,6 @@ class ShipmentLine < ActiveRecord::Base
     def different_locations
       if origin_location == destination_location
         errors.add(:base, "Origin and Destination must be different")
-      end
-    end
-
-    def parent_child_match
-      if self.order_line
-        if (self.order_line.product != self.product) || (self.order_line.origin_location != self.origin_location) || (self.order_line.destination_location != self.destination_location)
-          errors.add(:base, "Order Line and Shipment Line details do not match")
-        end
       end
     end
 

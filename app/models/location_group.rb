@@ -56,12 +56,7 @@ class LocationGroup < ActiveRecord::Base
     wos = WorkOrder.where("location_id in (select id from locations where location_group_id = #{self.id})")
     wos = wos.where(product_id: options[:product_id]) if options[:product_id]
     wos = wos.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
-    if options[:product_categories]
-      list_of_prod_cats = ""
-      options[:product_categories].each {|pc| list_of_prod_cats += pc.id.to_s + ","}
-      list_of_prod_cats.chop!
-      wos = wos.where("product_id in (select id from products where product_category_id in ('#{list_of_prod_cats}'))") 
-    end
+    wos = wos.where("product_id in (select id from products where product_category_id in (#{ options[:product_categories]}))") if options[:product_categories]
     return wos
   end 
 
@@ -75,12 +70,7 @@ class LocationGroup < ActiveRecord::Base
     ips = InventoryProjection.where("location_id in (select id from locations where location_group_id = #{self.id})")
     ips = ips.where(product_id: options[:product_id]) if options[:product_id]
     ips = ips.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
-    if options[:product_categories]
-      list_of_prod_cats = ""
-      options[:product_categories].each {|pc| list_of_prod_cats += pc.id.to_s + ","}
-      list_of_prod_cats.chop!
-      ips = ips.where("product_id in (select id from products where product_category_id in ('#{list_of_prod_cats}'))")
-    end
+    ips = ips.where("product_id in (select id from products where product_category_id in (#{options[:product_categories]}))") if options[:product_categories]
     return ips  
   end
 
@@ -183,12 +173,7 @@ class LocationGroup < ActiveRecord::Base
       order_lines = order_lines.where(product_id: opts[:product_id]) if opts[:product_id]
       order_lines = order_lines.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
       order_lines = order_lines.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]})") if opts[:product_category_id]
-      if opts[:product_categories]
-        list_of_categories = ""
-        opts[:product_categories].each {|pc| list_of_categories += pc + ","}
-        list_of_categories.chop!
-        order_lines = order_lines.where("product_id in (select id from products where product_category_id in (#{list_of_categories})")
-      end
+      order_lines = order_lines.where("product_id in (select id from products where product_category_id in (#{opts[:product_categories]}))") if opts[:product_categories]
       return order_lines
     end
   
@@ -204,12 +189,7 @@ class LocationGroup < ActiveRecord::Base
       shipment_lines = shipment_lines.where(product_id: opts[:product_id]) if opts[:product_id]
       shipment_lines = shipment_lines.where("product_id = (select id from products where name = '#{opts[:product_name]}'") if opts[:product_name]
       shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id = #{opts[:product_category_id]})") if opts[:product_category_id]
-      if opts[:product_categories]
-        list_of_categories = ""
-        opts[:product_categories].each {|pc| list_of_categories += pc + ","}
-        list_of_categories.chop!
-        shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id in (#{list_of_categories})")
-      end
+      shipment_lines = shipment_lines.where("product_id in (select id from products where product_category_id in (#{opts[:product_categories]}))") if opts[:product_categories]
       return shipment_lines
     end
 
