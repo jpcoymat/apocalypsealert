@@ -85,6 +85,38 @@ class DashboardController < ApplicationController
     end
   end
 
+  def recalculate_org_exceptions
+    @user_org = User.find(session[:user_id]).organization
+    loc_groups = params[:org_location_groups]
+    prod_cats = params[:org_product_categories]
+    search_params = {}
+    search_params[:product_categories] = prod_cats unless (prod_cats.nil? or prod_cats.blank?)
+    unless (loc_groups.nil? or loc_groups.blank?)
+      search_params[:location_groups] = loc_groups
+      search_params[:destination_location_groups] = loc_groups
+      search_params[:origin_location_groups] = loc_groups
+    end
+    @response = [{name: "Exception Quantity",
+                  data: [@user_org.source_exception_quantity(search_params),
+                         @user_org.make_exception_quantity(search_params),
+                         @user_org.move_exception_quantity(search_params),
+                         @user_org.store_exception_quantity(search_params),
+                         @user_org.deliver_exception_quantity(search_params) 
+                        ]
+                 },
+                 {name: "On Schedule Quantity",
+                  data:[ @user_org.inbound_order_quantity(search_params) - @user_org.source_exception_quantity(search_params),   
+                         @user_org.work_order_quantity(search_params) - @user_org.source_exception_quantity(search_params) ,
+                         @user_org.inbound_shipment_quantity(search_params) - @user_org.move_exception_quantity(search_params),
+                         @user_org.inventory_projection_quantity(search_params) - @user_org.store_exception_quantity(search_params),
+                         @user_org.outbound_order_quantity(search_params) - @user_org.deliver_exception_quantity(search_params)
+                       ]
+                 }]
+    respond_to do |format|
+      format.json {render json: @response}
+      format.html {render json: @response}
+    end 
+  end
 
   private
 

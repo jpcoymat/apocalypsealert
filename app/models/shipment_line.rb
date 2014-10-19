@@ -7,7 +7,7 @@ class ShipmentLine < ActiveRecord::Base
   has_one :order_itinerary
   has_one :order_line, through: :order_itinerary
 
-  validates :shipment_line_number, :mode, :quantity, :customer_organization_id, :product_id, :eta, :etd, presence: true
+  validates :shipment_line_number, :mode, :quantity, :customer_organization_id, :product_id, :eta, :etd, :origin_location_id, :destination_location_id, presence: true
   validates_uniqueness_of :shipment_line_number, scope: :customer_organization_id
   validate :origin_or_destination
   

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141016161304) do
+ActiveRecord::Schema.define(version: 20141018223903) do
 
   create_table "inventory_projections", force: true do |t|
     t.integer  "location_id"
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20141016161304) do
     t.decimal  "available_quantity"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "organization_id"
   end
 
   create_table "location_groups", force: true do |t|

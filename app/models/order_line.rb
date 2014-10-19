@@ -5,9 +5,9 @@ class OrderLine < ActiveRecord::Base
 
   belongs_to :product
 
-  validates :order_line_number, :quantity, :customer_organization_id, :product_id, :eta, :etd, presence: true
+  validates :order_line_number, :quantity, :customer_organization_id, :product_id, :eta, :etd, :origin_location_id, :destination_location_id, presence: true
   validates_uniqueness_of :order_line_number, scope: :customer_organization_id
-  validate :origin_or_destination
+
   validate :arrival_after_departure
   validate :different_locations
   validate :different_customer_and_supplier
@@ -180,12 +180,6 @@ class OrderLine < ActiveRecord::Base
   end
 
   protected
-
-    def origin_or_destination
-      if self.origin_location_id.nil? and self.destination_location_id.nil?
-        errors.add(:base, "Origin and Destination cannot be both null")
-      end
-    end
 
     def arrival_after_departure
       if self.etd and self.eta

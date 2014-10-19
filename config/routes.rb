@@ -146,6 +146,7 @@ Rails.application.routes.draw do
     post 'redraw_prod_cat_log_grp_matrix', action: "redraw_prod_cat_log_grp_matrix"
     get 'recalculate_product_category_exceptions', action: "recalculate_product_category_exceptions"
     get 'recalculate_location_group_exceptions', action: "recalculate_location_group_exceptions"
+    get 'recalculate_org_exceptions', action: "recalculate_org_exceptions"
   end
 
   controller :summary_views do

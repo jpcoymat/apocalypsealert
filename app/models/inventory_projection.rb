@@ -2,6 +2,7 @@ class InventoryProjection < ActiveRecord::Base
 
   belongs_to :location
   belongs_to :product
+  belongs_to :organization
 
   validates :location_id, :product_id, :projected_for, :available_quantity, presence: true
   validates :product_id, uniqueness: {scope: [:projected_for, :location_id], message: "Projection for product/location/date exists"}
