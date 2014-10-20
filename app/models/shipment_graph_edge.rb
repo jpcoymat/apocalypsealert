@@ -6,9 +6,11 @@ class ShipmentGraphEdge
   attr_accessor :target
   attr_accessor :edge_id
   attr_accessor :color
+  attr_accessor :shipment
 
 
   def initialize(shipment)
+    @shipment = shipment
     @source_node = shipment.origin_location
     @source = @source_node.try(:id)
     @target_node = shipment.destination_location
