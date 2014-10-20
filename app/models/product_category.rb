@@ -32,7 +32,11 @@ class ProductCategory < ActiveRecord::Base
   end
 
   def inbound_order_lines(options = {})
-    inbd_ols = order_lines({order_type: "Inbound"}.merge(options))
+    opts = options.clone
+    opts.delete(:origin_location_id) if opts[:origin_location_id]
+    opts.delete(:origin_location_group_id) if opts[:origin_location_group_id]
+    opts.delete(:origin_location_groups) if opts[:origin_location_groups]
+    inbd_ols = order_lines({order_type: "Inbound"}.merge(opts))
     return inbd_ols
   end
 
@@ -43,7 +47,11 @@ class ProductCategory < ActiveRecord::Base
   end
 
   def outbound_order_lines(options = {})
-    ob_ols = order_lines({order_type: "Outbound"}.merge(options))
+    opts = options.clone
+    opts.delete(:destination_location_id) if opts[:destination_location_id]
+    opts.delete(:destination_location_group_id) if opts[:destination_location_group_id]
+    opts.delete(:destination_location_groups) if opts[:destination_location_groups]
+    ob_ols = order_lines({order_type: "Outbound"}.merge(opts))
     return ob_ols
   end 
 
@@ -54,7 +62,11 @@ class ProductCategory < ActiveRecord::Base
   end
 
   def inbound_shipment_lines(options = {})
-    inbd_shpmts = shipment_lines({shipment_type: "Inbound"}.merge(options))
+    opts = options.clone
+    opts.delete(:origin_location_id) if opts[:origin_location_id]
+    opts.delete(:origin_location_group_id) if opts[:origin_location_group_id]
+    opts.delete(:origin_location_groups) if opts[:origin_location_groups]
+    inbd_shpmts = shipment_lines({shipment_type: "Inbound"}.merge(opts))
     return inbd_shpmts 
   end
 
@@ -65,7 +77,11 @@ class ProductCategory < ActiveRecord::Base
   end
 
   def outbound_shipment_lines(options = {})
-    otbd_shpmts =  shipment_lines({shipment_type: "Outbound"}.merge(options))
+    opts = options.clone
+    opts.delete(:destination_location_id) if opts[:destination_location_id]
+    opts.delete(:destination_location_group_id) if opts[:destination_location_group_id]
+    opts.delete(:destination_location_groups) if opts[:destination_location_groups]
+    otbd_shpmts =  shipment_lines({shipment_type: "Outbound"}.merge(opts))
     return otbd_shpmts
   end
 

@@ -20,7 +20,10 @@
 <script type="text/javascript">
   function getLocationGroupExc() {
     var productCategoires = $('#product_categories').val();
-    var url = "/recalculate_location_group_exceptions?product_categories=" + productCategoires;
+    var url = "/recalculate_location_group_exceptions";
+    if (productCategoires !== null) {
+      url += "?product_categories=" + productCategoires; 
+    }
     $.get(url, function(data){
        var chart = $("#loc_grp_excptns_container").highcharts();
        var newData;
@@ -51,7 +54,7 @@ $(function () {
         series: [
          <% @location_groups.each do |lg| %>
          {
-           type: 'column',
+           type: 'bar',
            name: '<%= lg.name %>',
            data: [<%= lg.source_exception_quantity.to_i %>, <%= lg.make_exception_quantity.to_i %>, <%= lg.move_exception_quantity.to_i %>, <%= lg.store_exception_quantity.to_i %>, <%= lg.deliver_exception_quantity.to_i %>]
          }
@@ -62,6 +65,7 @@ $(function () {
         ],
         plotOptions: {
             series: {
+              stacking: 'normal',
               cursor: 'pointer', 
               point: {
                 events:{ 

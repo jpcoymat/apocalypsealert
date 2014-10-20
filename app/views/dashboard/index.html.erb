@@ -6,11 +6,11 @@
     <%= render partial: "map_chart" %>
   </div>
   <br \> <br \>
-  <div >
+  <div class="jumbotron">
     <%= render partial: "org_exception_chart" %>
   </div>
   <br \><br \>
-  <div class="container-fluid">
+  <div class="container-fluid jumbotron">
     <div class="row">
       <div class="col-md-2"><%= button_to "All", redraw_prod_cat_log_grp_matrix_path(method_name: "all"), remote: true, class: "btn btn-primary" %></div>
       <div class="col-md-2"><%= button_to "Source", redraw_prod_cat_log_grp_matrix_path(method_name: "source"), remote: true, class: "btn btn-primary" %></div>
@@ -20,23 +20,23 @@
       <div class="col-md-2"><%= button_to "Deliver", redraw_prod_cat_log_grp_matrix_path(method_name: "deliver"), remote: true, class: "btn btn-primary" %></div>
     </div>
     <br \>
-    <div id = "product_cat_log_group_matrix">
+    <div id="product_cat_log_group_matrix">
       <%= render partial: "product_cat_log_group_matrix" %>
     </div>
   </div> 
   <br \><br \>
-  <div class="container-fluid">
+  <div class="container-fluid jumbotron">
     <%= render partial: "product_category_exceptions" %>
   </div>
   <br \><br \>
-  <div class="container-fluid">
+  <div class="container-fluid jumbotron">
     <%= render partial: "location_group_exceptions" %>
   </div>
   <br \><br \>
-  <div class="container-fluid">
+  <div class="container-fluid jumbotron">
     <%= render partial: "product_category_exception_type" %>
   </div>
   <br \><br \>
-  <div class="container-fluid">
+  <div class="container-fluid jumbotron">
     <%= render partial: "location_group_exception_type" %>
   </div>

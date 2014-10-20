@@ -23,7 +23,10 @@
 <script type="text/javascript">
   function getProductCatExc() {
     var locationGroups = $('#location_groups').val();
-    var url = "/recalculate_product_category_exceptions?location_groups=" + locationGroups + "&destination_location_groups=" + locationGroups + "&origin_location_groups=" + locationGroups;
+    var url = "/recalculate_product_category_exceptions";
+    if (locationGroups !== null) {
+      url += "?location_groups=" + locationGroups + "&destination_location_groups=" + locationGroups + "&origin_location_groups=" + locationGroups;   
+    }
     $.get(url, function(data){
        var chart = $("#prod_cat_exceptions_container").highcharts();
        var newData;
@@ -52,7 +55,7 @@ $(function () {
         series: [
          <% @product_categories.each do |pc| %>
          {
-           type: 'column',
+           type: 'bar',
            name: '<%= pc.name %>',
            data: [<%= pc.source_exception_quantity.to_i %>, <%= pc.make_exception_quantity.to_i %>, <%= pc.move_exception_quantity.to_i %>, <%= pc.store_exception_quantity.to_i %>, <%= pc.deliver_exception_quantity.to_i %>]
          }
@@ -63,6 +66,7 @@ $(function () {
         ],
         plotOptions: {
             series: {
+              stacking: 'normal', 
               cursor: 'pointer', 
               point: {
                 events:{ 
