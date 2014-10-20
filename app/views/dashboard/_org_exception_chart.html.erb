@@ -23,9 +23,19 @@
 </div>
 <script type="text/javascript">
   function getFilteredExceptions() {
-    var locGroups = $('#org_location_groups').val();
+ 
+    var url = "/recalculate_org_exceptions";
     var prodCats = $('#org_product_categories').val();
-    var url = "/recalculate_org_exceptions?org_product_categories=" + prodCats + "&org_location_groups=" + locGroups;
+    var locGroups = $('#org_location_groups').val();
+    if (locGroups !== null && prodCats !== null) {
+      url += "?org_product_categories=" + prodCats + "&org_location_groups=" + locGroups;
+    }
+    else if (locGroups == null && prodCats !== null) {
+      url += "?org_product_categories=" + prodCats;
+    }
+    else if (locGroups ==! null && prodCats == null){
+      url += "?org_location_groups=" + locGroups;
+    }
     $.get(url, function(data){
       var chart = $('#org_exception_container').highcharts();
       var newData;
@@ -54,7 +64,7 @@ $(function () {
             text: 'Supply Chain Status'
         },
         xAxis: {
-            categories: ['Source', 'Make', 'Move', 'Store', 'Delier']
+            categories: ['Source', 'Make', 'Move', 'Store', 'Deliver']
         },
         yAxis: {
             min: 0,
