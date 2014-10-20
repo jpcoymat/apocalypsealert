@@ -33,7 +33,7 @@
     else if (locGroups == null && prodCats !== null) {
       url += "?org_product_categories=" + prodCats;
     }
-    else if (locGroups ==! null && prodCats == null){
+    else if (locGroups !== null && prodCats == null){
       url += "?org_location_groups=" + locGroups;
     }
     $.get(url, function(data){
