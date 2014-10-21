@@ -1,6 +1,7 @@
+<h1>Inventory Availability Matrix</h1>
 <div id="inventory-slider"></div>
 <p>
-  <label for="inventorydate">Exception Threshold:</label>
+  <label for="inventorydate">Projection Date:</label>
   <input type="text" id="projectiondatelabel" readonly style="border:0; color:#f6931f; font-weight:bold;">
 </p>
 
@@ -16,7 +17,7 @@
     <tr data-projectiondate="<%= (projection_date - @min_date).to_i.to_s %>">
       <td><%= prod.name %></td>
       <% @locations.each do |location| %>
-        <td><%= InventoryProjection.where(product: prod, location: location, projected_for: projection_date).first.try(:available_quantity) || 0 %></td>
+        <td><%= number_with_delimiter(InventoryProjection.where(product: prod, location: location, projected_for: projection_date).first.try(:available_quantity) || 0) %></td>
       <% end %>
     </tr>
   <% end %>
