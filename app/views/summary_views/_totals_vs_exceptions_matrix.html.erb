@@ -14,7 +14,8 @@
     <tr>
       <td class="text-center"><%= location_group.name %></td>
     <% @product_categories.each do |product_category| %>
-      <td class="text-center"><%= location_group.try(@exception_method.to_sym, product_category_id: product_category.id) %> </td><td class="text-center"> <%= location_group.try(@summary_method.to_sym, product_category_id: product_category.id) %> </td> 
+      <td class="text-center"><%= number_with_delimiter(location_group.try(@exception_method.to_sym, product_category_id: product_category.id)) %> </td>
+      <td class="text-center"><%= number_with_delimiter(location_group.try(@summary_method.to_sym, product_category_id: product_category.id)) %> </td> 
     <% end %>
     </tr>
   <% end %> 
