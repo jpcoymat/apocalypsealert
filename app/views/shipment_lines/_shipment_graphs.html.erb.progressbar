@@ -1,0 +1,17 @@
+<% @graphs.each do |graph| %>
+  <% increment = (100.0/(graph.nodes.count - 1)) %>
+  <div class="alert alert-warning">
+    <p><strong>Origin Location: </strong> <%= graph.nodes.first.location.name %></p>
+    <p><strong>Final Destination Location: </strong> <%= graph.nodes.last.location.name %></p>
+    <p><strong>ETD: </strong> <%= graph.edges.first.shipment.etd.to_formatted_s(:short) %></p>
+    <p><strong>ETA: </strong> <%= graph.edges.last.shipment.eta.to_formatted_s(:short) %></p>
+
+    <div class="progress">
+    <% graph.edges.each do |edge| %>
+      <div class="progress-bar progress-bar-<%= ShipmentGraphEdge.bootstrap_class[edge.shipment.status] %>" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: <%= increment %>%">
+        <span class="sr-only"></span>
+      </div>
+    <% end %>
+    </div>
+  </div>
+<% end %>

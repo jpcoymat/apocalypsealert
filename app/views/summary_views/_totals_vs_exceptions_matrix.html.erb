@@ -1,0 +1,16 @@
+<table class="table table-striped">
+  <tr>
+    <th>Location Group </th>
+  <% @product_categories.each do |product_category| %>
+    <th><%= product_category.name %></th>
+  <% end %>
+  </tr>
+  <% @location_groups.each do |location_group| %>
+    <tr>
+      <td><%= location_group.name %></td>
+    <% @product_categories.each do |product_category| %>
+      <td><%= location_group.try(@exception_method.to_sym, product_category_id: product_category.id) %> / <%= location_group.try(@summary_method.to_sym, product_category_id: product_category.id) %> </td> 
+    <% end %>
+    </tr>
+  <% end %> 
+</table>

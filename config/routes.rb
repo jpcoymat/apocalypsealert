@@ -155,6 +155,7 @@ Rails.application.routes.draw do
     get 'loc_grp_prod_cat', action: "loc_group_prod_cat"
     get 'location_group_view', action: "location_group_view"
     get 'product_category_view', action: "product_category_view"
+    get 'category_breakdown', action: "category_breakdown"
   end
 
   root to: 'dashboard#index'

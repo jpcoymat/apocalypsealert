@@ -20,9 +20,12 @@ class ShipmentGraphEdge
   end
 
   def self.status_colors
-    @@status_colors = {"delivered" => "#1dd754", "in_transit" => "#d7b81d", "planned" => "#2e2b20", "#cancelled" => "#e21025"}
+    @@status_colors = {"delivered" => "#1dd754", "in_transit" => "#d7b81d", "planned" => "#2e2b20", "cancelled" => "#e21025"}
     @@status_colors
   end
 
+  def self.bootstrap_class
+    @@bootstrap_class = {"delivered" => "success", "in_transit" => "warning", "planned" => "info", "cancelled" => "danger"}
+  end
 
 end

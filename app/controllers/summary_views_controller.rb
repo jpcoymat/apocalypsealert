@@ -65,7 +65,36 @@ class SummaryViewsController < ApplicationController
     end
   end
 
-  
+  def category_breakdown
+    @user_org = User.find(session[:user_id]).organization
+    @location_groups = @user_org.location_groups
+    @product_categories = @user_org.product_categories
+    @scv_category = params[:scv_category]
+    if params[:location_groups]
+      @location_groups = @location_groups.where("id in (#{params[:location_groups]})")
+    end
+    if params[:product_categories] 
+      @product_categories = @product_categories.where("id in (#{params[:product_categories]})")
+    end
+    @exception_method, @summary_method = "", ""
+    case @scv_category
+      when "Source"
+        @exception_method = "source_exception_quantity"
+        @summary_method = "inbound_order_line_quantity"
+      when "Make"
+        @exception_method = "make_exception_quantity"
+        @summary_method = "work_order_quantity"
+      when "Move"
+        @exception_method = "move_exception_quantity"
+        @summary_method = "inbound_shipment_line_quantity"
+      when "Store"
+        @exception_method = "store_exception_quantity"
+        @summary_method = "inventory_projection_quantity"
+      when "Deliver"
+        @exception_method = "deliver_exception_quantity"
+        @summary_method = "outbound_order_line_quantity"
+    end
+  end  
 
 
   protected

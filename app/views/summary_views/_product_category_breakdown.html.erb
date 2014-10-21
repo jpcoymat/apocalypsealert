@@ -1,0 +1,70 @@
+<% content_for :head do %>
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script>
+<% end %>
+
+<div id="prod_cat_breakdown_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+$(function () {
+    <% loc_groups = @location_groups.ids.to_s.chop![1..-1] %>
+    
+    var exceptionQuantityArray = [
+        <% @product_categories.each do |pc| %>
+          <%= pc.try(@exception_method.to_sym, origin_location_groups: loc_groups, location_groups: loc_groups, destination_location_groups: loc_groups) %>
+          <% unless @product_categories.last == pc %>
+            ,  
+          <% end %>
+        <% end %>
+        ];
+    
+    var totalQuantityArray = [
+      <% @product_categories.each do |pc| %>
+          <%= pc.try(@summary_method.to_sym, origin_location_groups: loc_groups, location_groups: loc_groups, destination_location_groups: loc_groups) %>
+          <% unless @product_categories.last == pc %>
+            ,
+          <% end %>
+        <% end %>
+        ];
+
+    var onScheduleQuantity = [];
+   
+    for (var i = 0; i < totalQuantityArray.length; i++){
+      onScheduleQuantity[i] = totalQuantityArray[i] - exceptionQuantityArray[i];      
+    }
+
+    $('#prod_cat_breakdown_container').highcharts({
+        title: {
+            text: 'Product Category Breakdown'
+        },
+        xAxis: {
+            categories: [
+            <% @product_categories.each do |pc| %>
+              '<%=  pc.name %>'
+               <% unless @product_categories.last == pc %>
+                 ,         
+               <% end %>   
+            <% end %>
+            ]
+        },
+        series: [
+            {
+                type: 'bar',
+                name: 'Exception Quantity',
+                data: exceptionQuantityArray
+            },
+            {
+                type: 'bar',
+                name: 'On Schedule Quantity',
+                data: onScheduleQuantity
+           }  
+        ], 
+        plotOptions: {
+            series: {
+                stacking: 'normal'
+            }
+        }            
+    });
+});
+
+</script>
+

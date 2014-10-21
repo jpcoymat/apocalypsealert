@@ -1,0 +1,69 @@
+<% content_for :head do %>
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script>
+<% end %>
+
+<div id="loc_group_breakdown_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+$(function () {
+    
+    var exceptionQuantityArray = [
+        <% @location_groups.each do |loc_group| %>
+          <%= loc_group.try(@exception_method.to_sym, product_categories: @product_categories.ids.to_s.chop![1..-1]) %>
+          <% unless @location_groups.last == loc_group %>
+            ,  
+          <% end %>
+        <% end %>
+        ];
+    
+    var totalQuantityArray = [
+        <% @location_groups.each do |loc_group| %>
+          <%= loc_group.try(@summary_method.to_sym, product_categories: @product_categories.ids.to_s.chop![1..-1]) %>
+          <% unless @location_groups.last == loc_group %>
+            ,
+          <% end %>
+        <% end %>
+        ];
+
+    var onScheduleQuantity = [];
+   
+    for (var i = 0; i < totalQuantityArray.length; i++){
+      onScheduleQuantity[i] = totalQuantityArray[i] - exceptionQuantityArray[i];      
+    }
+
+    $('#loc_group_breakdown_container').highcharts({
+        title: {
+            text: 'Location Group Breakdown'
+        },
+        xAxis: {
+            categories: [
+            <% @location_groups.each do |loc_group| %>
+              '<%=  loc_group.name %>'
+               <% unless loc_group == @location_groups.last %>
+                 ,         
+               <% end %>   
+            <% end %>
+            ]
+        },
+        series: [
+            {
+                type: 'bar',
+                name: 'Exception Quantity',
+                data: exceptionQuantityArray
+            },
+            {
+                type: 'bar',
+                name: 'On Schedule Quantity',
+                data: onScheduleQuantity
+           }  
+        ], 
+        plotOptions: {
+            series: {
+                stacking: 'normal'
+            }
+        }            
+    });
+});
+
+</script>
+
