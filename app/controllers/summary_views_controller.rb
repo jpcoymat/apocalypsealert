@@ -70,11 +70,11 @@ class SummaryViewsController < ApplicationController
     @location_groups = @user_org.location_groups
     @product_categories = @user_org.product_categories
     @scv_category = params[:scv_category]
-    if params[:location_groups]
-      @location_groups = @location_groups.where("id in (#{params[:location_groups]})")
+    if params[:org_location_groups]
+      @location_groups = @location_groups.where("id in (#{params[:org_location_groups]})")
     end
-    if params[:product_categories] 
-      @product_categories = @product_categories.where("id in (#{params[:product_categories]})")
+    if params[:org_product_categories] 
+      @product_categories = @product_categories.where("id in (#{params[:org_product_categories]})")
     end
     @exception_method, @summary_method = "", ""
     case @scv_category

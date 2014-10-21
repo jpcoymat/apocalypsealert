@@ -22,31 +22,32 @@
   <button type="button" class="btn btn-primary" onclick="javacript:getFilteredExceptions()">Filter</button>
 </div>
 <script type="text/javascript">
+
+  var params = "";
+  
   function getFilteredExceptions() {
  
-    var url = "/recalculate_org_exceptions";
+    var url = "/recalculate_org_exceptions?";
     var prodCats = $('#org_product_categories').val();
     var locGroups = $('#org_location_groups').val();
-    if (locGroups !== null && prodCats !== null) {
-      url += "?org_product_categories=" + prodCats + "&org_location_groups=" + locGroups;
+    if (locGroups !== null) {
+      params += "org_location_groups=" + locGroups + "&";
     }
-    else if (locGroups == null && prodCats !== null) {
-      url += "?org_product_categories=" + prodCats;
+    if (prodCats !== null) {
+      params += "org_product_categories=" + prodCats;
     }
-    else if (locGroups !== null && prodCats == null){
-      url += "?org_location_groups=" + locGroups;
-    }
+    url += params;
     $.get(url, function(data){
       var chart = $('#org_exception_container').highcharts();
       var newData;
-       if (typeof(data) != "object") {
-         newData = $.parseJSON(data);
-       } else {
-         newData = data;
-       }
-       $.each(chart.series, function( index, value ) {
-          chart.series[index].setData(newData[index].data);
-        }); 
+      if (typeof(data) != "object") {
+        newData = $.parseJSON(data);
+      } else {
+        newData = data;
+      }
+      $.each(chart.series, function( index, value ) {
+         chart.series[index].setData(newData[index].data);
+      }); 
     });
   }
 
@@ -56,6 +57,19 @@
 <div id="org_exception_container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <script type="text/javascript">
 $(function () {
+
+    var exceptionData = [<%= @user_org.source_exception_quantity %>, <%= @user_org.make_exception_quantity %>, <%= @user_org.move_exception_quantity %>, 
+                         <%= @user_org.store_exception_quantity %>, <%= @user_org.deliver_exception_quantity %>];
+   
+    var aggregateData = [<%= @user_org.inbound_order_quantity %>, <%= @user_org.work_order_quantity %>, <%= @user_org.inbound_shipment_quantity %>,
+                         <%= @user_org.inventory_projection_quantity %>, <%= @user_org.outbound_order_quantity %> ] ;
+
+    var onScheduleData = [];
+    
+    for (var i= 0; i < exceptionData.length; i++) {
+      onScheduleData[i] = aggregateData[i] - exceptionData[i];
+    }
+
     $('#org_exception_container').highcharts({
         chart: {
             type: 'bar'
@@ -82,28 +96,14 @@ $(function () {
                 point: {
                 events:{
                   click: function () {
-                    var s = '/category_breakdown?scv_category=' + this.category;
+                    var s = '/category_breakdown?scv_category=' + this.category + "&" + params;
                     location.href = s;
                   }
                 }
               }
             }
         },
-        series: [{
-            name: 'Exception Quantity',
-            data: [<%= @user_org.source_exception_quantity%>, 
-				  <%= @user_org.make_exception_quantity %>,
-				  <%= @user_org.move_exception_quantity %>, 
-				  <%= @user_org.store_exception_quantity %>, 
-				  <%= @user_org.deliver_exception_quantity %>]
-            }, {
-            name: 'On Schedule Quantity',
-            data: [<%= @user_org.inbound_order_quantity - @user_org.source_exception_quantity%>,   
-                   <%= @user_org.work_order_quantity - @user_org.source_exception_quantity %>,
-                   <%= @user_org.inbound_shipment_quantity - @user_org.move_exception_quantity %>,
-                   <%= @user_org.inventory_projection_quantity - @user_org.store_exception_quantity %>,
-                   <%= @user_org.outbound_order_quantity - @user_org.deliver_exception_quantity %>
-            ] }]
+        series: [{ name: 'Exception Quantity', data: exceptionData }, {name: 'On Schedule Quantity', data: onScheduleData}]
     });
 });
 

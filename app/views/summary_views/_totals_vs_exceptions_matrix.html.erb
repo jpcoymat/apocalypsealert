@@ -1,15 +1,20 @@
-<table class="table table-striped">
+<table class="table table-bordered">
   <tr>
-    <th>Location Group </th>
+    <th rowspan="2" class="text-center">Location Group </th>
   <% @product_categories.each do |product_category| %>
-    <th><%= product_category.name %></th>
+    <th colspan="2" class="text-center"><%= product_category.name %></th>
   <% end %>
+  </tr>
+  <tr>
+     <% @product_categories.count.times do %>
+       <th class="text-center">Exception Quantity </th> <th class="text-center">Totla Quantity</th>
+     <% end %>
   </tr>
   <% @location_groups.each do |location_group| %>
     <tr>
-      <td><%= location_group.name %></td>
+      <td class="text-center"><%= location_group.name %></td>
     <% @product_categories.each do |product_category| %>
-      <td><%= location_group.try(@exception_method.to_sym, product_category_id: product_category.id) %> / <%= location_group.try(@summary_method.to_sym, product_category_id: product_category.id) %> </td> 
+      <td class="text-center"><%= location_group.try(@exception_method.to_sym, product_category_id: product_category.id) %> </td><td class="text-center"> <%= location_group.try(@summary_method.to_sym, product_category_id: product_category.id) %> </td> 
     <% end %>
     </tr>
   <% end %> 
