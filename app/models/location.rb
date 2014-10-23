@@ -173,11 +173,11 @@ class Location < ActiveRecord::Base
   end
 
   def all_exceptions(options = {})
-    allexceptions = source_exceptions(options)
-    allexceptions << make_exceptions(options)
-    allexceptions << move_exceptions(options)
-    allexceptions << store_exceptions(options)
-    allexceptions << deliver_exceptions(options)
+    allexceptions = source_exceptions(options).all
+    allexceptions << make_exceptions(options).all
+    allexceptions << move_exceptions(options).all
+    allexceptions << store_exceptions(options).all
+    allexceptions << deliver_exceptions(options).all
     allexceptions.flatten!
     return allexceptions   
   end   
