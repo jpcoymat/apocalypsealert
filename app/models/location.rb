@@ -168,7 +168,7 @@ class Location < ActiveRecord::Base
 
   def total_exception_quantity(options = {})
     @total_exception_quantity = 0
-    all_exceptions(options).each {|excptn| @total_exception_quantity += excptn.quantity_at_riski.to_i}
+    all_exceptions(options).each {|excptn| @total_exception_quantity += excptn.quantity_at_risk.to_i}
     @total_exception_quantity
   end
 
