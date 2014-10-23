@@ -167,19 +167,19 @@ class Location < ActiveRecord::Base
   end
 
   def total_exception_quantity(options = {})
-    total_excptn_qty = 0
-    all_exceptions(options).each {|excptn| total_excptn_qty += excptn.quantity_at_risk}
-    return total_excptn_qty
+    @total_exception_quantity = 0
+    all_exceptions(options).each {|excptn| total_exception_quantity += excptn.quantity_at_riski.to_i}
+    @total_exception_quantity
   end
 
   def all_exceptions(options = {})
-    allexceptions = source_exceptions(options).all
-    allexceptions << make_exceptions(options).all
-    allexceptions << move_exceptions(options).all
-    allexceptions << store_exceptions(options).all
-    allexceptions << deliver_exceptions(options).all
-    allexceptions.flatten!
-    return allexceptions   
+    @all_exceptions = [source_exceptions(options).all]
+    @all_exceptions << make_exceptions(options).all
+    @all_exceptions << move_exceptions(options).all
+    @all_exceptions << store_exceptions(options).all
+    @all_exceptions << deliver_exceptions(options).all
+    @all_exceptions.flatten!
+    @all_exceptions   
   end   
  
   def source_percentage_risk(options = {})
