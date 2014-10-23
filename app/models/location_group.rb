@@ -23,9 +23,8 @@ class LocationGroup < ActiveRecord::Base
   end
 
   def inbound_order_line_quantity(options = {})
-    inbd_ol_qty = 0
-    inbound_order_lines(options).each {|ol| inbd_ol_qty += ol.quantity}
-    return inbd_ol_qty 
+    @inbound_order_line_quantity = inbound_order_lines(options).sum("quantity").to_i
+    @inbound_order_line_quantity
   end
 
   def outbound_order_lines(options = {})
@@ -33,9 +32,8 @@ class LocationGroup < ActiveRecord::Base
   end
 
   def outbound_order_line_quantity(options = {})
-    otbd_ol_qty = 0
-    outbound_order_lines(options).each {|ol| otbd_ol_qty  += ol.quantity}
-    return otbd_ol_qty
+    @outbound_order_line_quantity = outbound_order_lines(options).sum("quantity").to_i
+    @outbound_order_line_quantity
   end
  
   def inbound_shipment_lines(options = {})
@@ -43,9 +41,8 @@ class LocationGroup < ActiveRecord::Base
   end
 
   def inbound_shipment_line_quantity(options = {})
-    inbd_ship_qty = 0
-    inbound_shipment_lines(options).each {|sl| inbd_ship_qty += sl.quantity}
-    return inbd_ship_qty
+    @inbound_shipment_line_quantity = inbound_shipment_lines(options).sum("quantity").to_i
+    @inbound_shipment_line_quantity
   end
 
   def outbound_shipments(options = {})
@@ -53,31 +50,29 @@ class LocationGroup < ActiveRecord::Base
   end
 
   def work_orders(options = {})
-    wos = WorkOrder.where("location_id in (select id from locations where location_group_id = #{self.id})")
-    wos = wos.where(product_id: options[:product_id]) if options[:product_id]
-    wos = wos.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
-    wos = wos.where("product_id in (select id from products where product_category_id in (#{ options[:product_categories]}))") if options[:product_categories]
-    return wos
+    @work_orders = WorkOrder.where("location_id in (select id from locations where location_group_id = #{self.id})")
+    @work_orders = @work_orders.where(product_id: options[:product_id]) if options[:product_id]
+    @work_orders = @work_orders.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
+    @work_orders = @work_orders.where("product_id in (select id from products where product_category_id in (#{ options[:product_categories]}))") if options[:product_categories]
+    @work_orders
   end 
 
   def work_order_quantity(options = {})
-    wo_qty = 0
-    work_orders(options).each {|wo| wo_qty += wo.quantity}
-    return wo_qty
+    @work_order_quantity = work_orders(options).sum("quantity").to_i
+    @work_order_quantity
   end
 
   def inventory_projections(options = {})
-    ips = InventoryProjection.where("location_id in (select id from locations where location_group_id = #{self.id})")
-    ips = ips.where(product_id: options[:product_id]) if options[:product_id]
-    ips = ips.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
-    ips = ips.where("product_id in (select id from products where product_category_id in (#{options[:product_categories]}))") if options[:product_categories]
-    return ips  
+    @inventory_projections = InventoryProjection.where("location_id in (select id from locations where location_group_id = #{self.id})")
+    @inventory_projections = @inventory_projections.where(product_id: options[:product_id]) if options[:product_id]
+    @inventory_projections = @inventory_projections.where("product_id in (select id from products where product_category_id = #{options[:product_category_id]})") if options[:product_category_id]
+    @inventory_projections = @inventory_projections.where("product_id in (select id from products where product_category_id in (#{options[:product_categories]}))") if options[:product_categories]
+    @inventory_projections 
   end
 
   def inventory_projection_quantity(options = {})
-    ip_qty = 0 
-    inventory_projections(options).each {|ip| ip_qty += ip.available_quantity}
-    return ip_qty
+    @inventory_projection_quantity = inventory_projections(options).sum("available_quantity").to_i
+    @inventory_projection_quantity
   end
 
   def source_exceptions(options = {})
@@ -85,10 +80,10 @@ class LocationGroup < ActiveRecord::Base
   end
 
   def make_exceptions(options = {})
-    make_excptns = []
-    work_orders(options).each {|wo| make_excptns << wo.affected_scv_exceptions}
-    make_excptns.flatten!
-    return make_excptns 
+    wo_ids = work_orders(options).ids.to_s.chop![1..-1]
+    wo_ids = "-1" if (wo_ids.nil? or wo_ids == "")
+    @make_exceptions = ScvException.where("affected_object_type = 'WorkOrder' and affected_object_id in (#{wo_ids})")
+    @make_exceptions
   end
 
   def move_exceptions(options = {})
@@ -96,10 +91,10 @@ class LocationGroup < ActiveRecord::Base
   end
 
   def store_exceptions(options = {})
-    store_excptns = []
-    inventory_projections(options).each {|ip| store_excptns << ip.affected_scv_exceptions}
-    store_excptns.flatten!
-    return store_excptns
+    proj_ids = inventory_projections(options).ids.to_s.chop![1..-1]
+    proj_ids = "-1" if (proj_ids.nil? or proj_ids == "")
+    @store_exceptions = ScvException.where("affected_object_type = 'InventoryProjection' and affected_object_id in (#{proj_ids})")
+    @store_exceptions
   end
 
   def deliver_exceptions(options = {})
@@ -107,33 +102,28 @@ class LocationGroup < ActiveRecord::Base
   end
  
   def source_exception_quantity(options = {})
-    source_excptn_qty = 0
-    source_exceptions(options).each {|se| source_excptn_qty += se.quantity_at_risk}
-    return source_excptn_qty
+    @source_exception_quantity = source_exceptions(options).sum("abs(affected_object_quantity - cause_object_quantity)").to_i
+    @source_exception_quantity
   end
 
   def make_exception_quantity(options = {})
-    make_exception_qty = 0 
-    make_exceptions(options).each {|se| make_exception_qty += se.quantity_at_risk}
-    return make_exception_qty
+    @make_exception_quantity = make_exceptions(options).sum("abs(affected_object_quantity - cause_object_quantity)").to_i
+    @make_exception_quantity
   end
 
   def move_exception_quantity(options = {})
-    move_exception_qty = 0
-    move_exceptions(options).each {|se| move_exception_qty += se.quantity_at_risk}
-    return move_exception_qty
+    @move_exception_quantity = move_exceptions(options).sum("abs(affected_object_quantity - cause_object_quantity)").to_i
+    @move_exception_quantity
   end
 
   def store_exception_quantity(options = {})
-    store_exception_qty = 0
-    store_exceptions(options).each {|se| store_exception_qty += se.quantity_at_risk}
-    return store_exception_qty
+    @store_exception_quantity = store_exceptions(options).sum("abs(affected_object_quantity - cause_object_quantity)").to_i
+    @store_exception_quantity
   end
 
   def deliver_exception_quantity(options = {})
-    deliver_exception_qty = 0
-    deliver_exceptions(options).each {|se| deliver_exception_qty += se.quantity_at_risk}
-    return deliver_exception_qty
+    @deliver_exception_quantity = deliver_exceptions(options).sum("abs(affected_object_quantity - cause_object_quantity)").to_i
+    @deliver_exception_quantity
   end
 
   def all_exceptions(options = {})
@@ -194,16 +184,16 @@ class LocationGroup < ActiveRecord::Base
     end
 
     def order_line_exceptions(direction, options = {})
-      @order_line_exceptions = []
-      order_lines(direction, options).each {|ol| @order_line_exceptions << ol.affected_scv_exceptions}
-      @order_line_exceptions.flatten!
+      order_line_ids = order_lines(direction, options).ids.to_s.chop![1..-1]
+      order_line_ids = "-1" if (order_line_ids.nil? or order_line_ids == "")
+      @order_line_exceptions = ScvException.where("affected_object_type = 'OrderLine' and affected_object_id in (#{order_line_ids})")
       @order_line_exceptions
     end
    
     def shipment_line_exceptions(direction, options = {})
-      @shipment_line_exceptions = []
-      shipment_lines(direction, options).each {|sl| @shipment_line_exceptions << sl.affected_scv_exceptions}
-      @shipment_line_exceptions.flatten!
+      ship_line_ids = shipment_lines(direction, options).ids.to_s.chop![1..-1]
+      ship_line_ids = "-1" if (ship_line_ids.nil? or ship_line_ids == "")
+      @shipment_line_exceptions  = ScvException.where("affected_object_type = 'ShipmentLine' and affected_object_id in (#{ship_line_ids})")
       @shipment_line_exceptions
     end 
 

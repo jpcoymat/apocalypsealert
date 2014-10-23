@@ -11,8 +11,7 @@ class Location < ActiveRecord::Base
   end
 
   def origin_shipment_line_quantity(options = {})
-    @origin_shipment_line_quantity = 0
-    origin_shipment_lines(options).each {|sl| @origin_shipment_line_quantity += sl.quantity}
+    @origin_shipment_line_quantity = origin_shipment_lines(options).sum("quantity").to_i
     @origin_shipment_line_quantity 
   end
 
@@ -21,8 +20,7 @@ class Location < ActiveRecord::Base
   end
 
   def destination_shipment_line_quantity(options = {})
-   @destination_shipment_line_quantity = 0
-   destination_shipment_lines(options).each {|sl| @destination_shipment_line_quantity += sl.quantity}
+   @destination_shipment_line_quantity = destination_shipment_lines(options).sum("quantity").to_i
    @destination_shipment_line_quantity
   end
 
@@ -31,8 +29,7 @@ class Location < ActiveRecord::Base
   end
 
   def origin_order_line_quantity(options = {})
-    @origin_order_line_quantity = 0
-    origin_order_lines(options).each {|ol| @origin_order_line_quantity += ol.quantity}
+    @origin_order_line_quantity = origin_order_lines(options).sum("quantity").to_i
     @origin_order_line_quantity
   end
 
@@ -41,8 +38,7 @@ class Location < ActiveRecord::Base
   end
 
   def destination_order_line_quantity(options = {})
-    @destination_order_line_quantity = 0
-    destination_order_lines(options).each {|ol| @destination_order_line_quantity += ol.quantity}
+    @destination_order_line_quantity = destination_order_lines(options).sum("quantity").to_i
     @destination_order_line_quantity
   end
 
@@ -57,15 +53,14 @@ class Location < ActiveRecord::Base
   end
 
   def inventory_projection_quantity(options = {})
-    @inventory_projection_quantity = 0
-    inventory_projections(options).each {|ip| @inventory_projection_quantity += ip.available_quantity}
+    @inventory_projection_quantity = inventory_projections(options).sum("available_quantity")
     @inventory_projection_quantity
   end 
 
   def store_exceptions(options = {})
-    @store_exceptions = []
-    inventory_projections(options).each {|ip| @store_exceptions << ip.affected_scv_exceptions}
-    @store_exceptions.flatten!
+    ip_ids = inventory_projections(options).ids.to_s.chop![1..-1]
+    ip_ids = "-1" if (ip_ids.nil? or ip_ids == "")
+    @store_exceptions = ScvException.where("affected_object_type = 'InventoryProjection' and affected_object_id in (#{ip_ids})")
     @store_exceptions  
   end
 
@@ -80,21 +75,19 @@ class Location < ActiveRecord::Base
   end
 
   def work_order_quantity(options = {})
-    @work_order_quantity = 0
-    work_orders(options).each {|wo| @work_order_quantity  += wo.quantity}
+    @work_order_quantity = work_orders(options).sum("quantity")
     @work_order_quantity 
   end
 
   def make_exceptions(options = {})
-    @work_order_exceptions = []
-    work_orders(options).each {|wo| @work_order_exceptions << wo.affected_scv_exceptions}
-    @work_order_exceptions.flatten!
+    wo_ids = work_orders(options).ids.to_s.chop![1..-1]
+    wo_ids = "-1" if (wo_ids.nil? or wo_ids == "")
+    @work_order_exceptions = ScvException.where("affected_object_type = 'WorkOrder' and affected_object_id in (#{wo_ids})")
     @work_order_exceptions
   end
 
   def make_exception_quantity(options = {})
-    @make_exception_quantity = 0
-    make_exceptions(options).each {|se| @make_exception_quantity += se.quantity_at_risk}
+    @make_exception_quantity = make_exceptions(options).sum("abs(affected_object_quantity - cause_object_quantity)").to_i
     @make_exception_quantity
   end
 
@@ -134,8 +127,7 @@ class Location < ActiveRecord::Base
   end
 
   def store_exception_quantity(options = {})
-    @store_exception_quantity = 0
-    store_exceptions(options).each {|se| @store_exception_quantity += se.quantity_at_risk}
+    @store_exception_quantity = store_exceptions(options).sum("abs(affected_object_quantity - cause_object_quantity)").to_i
     @store_exception_quantity
   end
 
@@ -276,41 +268,37 @@ class Location < ActiveRecord::Base
     end
 
     def shipment_line_exceptions(direction, options = {})
-      shipment_exceptions = []
-      shipment_lines(direction, options).each {|shipment_line| shipment_exceptions << shipment_line.affected_scv_exceptions }
-      shipment_exceptions.flatten!
-      return shipment_exceptions
+      ship_line_ids = shipment_lines(direction, options).ids.to_s.chop![1..-1]
+      ship_line_ids = "-1" if (ship_line_ids.nil? or ship_line_ids == "")
+      @shipment_line_exceptions = ScvException.where("affected_object_type = 'ShipmentLine' and affected_object_id in (#{ship_line_ids})")
+      @shipment_line_exceptions
     end  
 
     def order_line_exceptions(direction, options = {})
-      order_line_exceptions = []
-      order_lines(direction, options).each {|order_line| order_line_exceptions << order_line.affected_scv_exceptions}
-      order_line_exceptions.flatten!
-      return order_line_exceptions
+      ol_ids = order_lines(direction, options).ids.to_s.chop![1..-1]
+      ol_ids = "-1" if (ol_ids.nil? or ol_ids == "")
+      @order_line_exceptions = ScvException.where("affected_object_type = 'OrderLine' and affected_object_id in (#{ol_ids})")
+      @order_line_exceptions
     end  
 
     def total_shipment_quantity(direction, options = {})
-      total_shipment_quantity = 0
-      shipment_lines(direction, options).each {|sl| total_shipment_quantity += sl.quantity}
-      return total_shipment_quantity
+      @total_shipment_quantity = shipment_lines(direction, options).sum("quantity").to_i
+      @total_shipment_quantity
     end
 
     def total_order_quantity(direction, options = {})
-      total_order_quantity = 0
-      order_lines(direction, options).each {|ol| total_order_quantity += ol.quantity}
-      return total_order_quantity
+      @total_order_quantity = order_lines(direction, options).sum("quantity").to_i
+      @total_order_quantity
     end
 
     def shipment_at_risk_quantity(direction, options = {})
-      shipment_at_risk_qty = 0
-      shipment_line_exceptions(direction, options).each {|se| shipment_at_risk_qty += se.quantity_at_risk}
-      return shipment_at_risk_qty
+      @shipment_at_risk_quantity = shipment_line_exceptions(direction, options).sum("abs(affected_object_quantity - cause_object_quantity)")
+      @shipment_at_risk_quantity
     end
 
     def order_at_risk_quantity(direction, options = {})
-      order_at_risk_qty = 0
-      order_line_exceptions(direction, options).each {|se| order_at_risk_qty += se.quantity_at_risk}
-      return order_at_risk_qty
+      @order_at_risk_quantity = order_line_exceptions(direction, options).sum("abs(affected_object_quantity - cause_object_quantity)")
+      @order_at_risk_quantity
     end
 
 end
