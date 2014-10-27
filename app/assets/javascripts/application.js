@@ -15,3 +15,4 @@
 //= require twitter/bootstrap
 //= require jquery-ui
 //= require sigma
+//= require chosen-jquery

@@ -22,7 +22,7 @@ gem 'sigma-rails'
 
 gem 'roo'
 gem 'rails_12factor', group: :production
-
+gem 'chosen-rails'
 
 gem "resque"
 gem "resque-web", require: "resque_web"
