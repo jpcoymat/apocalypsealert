@@ -2,10 +2,6 @@
 
 # Version of your assets, change this if you want to expire all your assets.
 Rails.application.config.assets.version = '1.0'
-Rails.application.config.assets.precompile += %w( chosen-jquery.js )
-Rails.application.config.assets.precompile += %w( sigma.js )
-Rails.application.config.assets.precompile += %w( sigma-json.js)
-Rails.application.config.assets.precompile += %w( chosen-bootstrap.css)
 Rails.application.config.assets.precompile += %w( fixtableheader.css )
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
