@@ -1,12 +1,13 @@
 <h1>Order Line Shipping Details </h1>
    
   <table class="table table-condensed">
-    <tr><th>Order Line Number 		</th>	<td><%= @order_line.order_line_number %></td></tr>
-    <tr><th>Product Code		</th>	<td><%= @order_line.product.code %> </td></tr>
-    <tr><th>Total Order Quantity	</th>	<td><%= @order_line.quantity %></td></tr>
-    <tr><th>Shipped Quantity    	</th>	<td><%= @order_line.shipped_quantity %></td></tr>
-    <tr><th>Est. Departure Date		</th>	<td><%= @order_line.etd.to_formatted_s(:rfc822)	%></td></tr>
-    <tr><th>Est. Arrival Date		</th>   <td><%= @order_line.eta.to_formatted_s(:rfc822) %></td></tr>
+    <tr><th>Order Line Number 		</th>	<td><%= @order_line.order_line_number %>			</td></tr>
+    <tr><th>Product Code		</th>	<td><%= @order_line.product.code %> 				</td></tr>
+    <tr><th>Total Order Quantity	</th>	<td><%= number_with_delimiter @order_line.quantity %>		</td></tr>
+    <tr><th>Shipped Quantity    	</th>	<td><%= number_with_delimiter @order_line.shipped_quantity %>	</td></tr>
+    <tr><th>Open Quantity		</th>	<td><%= number_with_delimiter @order_line.open_quantity %>	</td></tr>
+    <tr><th>Est. Departure Date		</th>	<td><%= @order_line.etd.to_formatted_s(:rfc822)	%>		</td></tr>
+    <tr><th>Est. Arrival Date		</th>   <td><%= @order_line.eta.to_formatted_s(:rfc822) %>		</td></tr>
   </table>
   
-  <%= render partial: "shipment_graphs" %>
+  <%= render partial: "shared/shipment_graphs" %>

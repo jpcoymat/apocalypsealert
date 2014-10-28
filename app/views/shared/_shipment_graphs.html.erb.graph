@@ -11,6 +11,7 @@
   <div class="alert alert-warning">
     <div id="<%= graph.graph_id%>" class="sigmacontainer">
     </div>
+    <div>
     <p><strong>Origin Location: </strong> <%= graph.nodes.first.location.name %></p>
     <p><strong>Final Destination Location: </strong> <%= graph.nodes.last.location.name %></p>
     <p><strong>ETD: </strong> <%= graph.edges.first.shipment.etd.to_formatted_s(:short) %></p>
@@ -30,7 +31,7 @@
         size: 1,
         color: '#734f4f',
         x: <%= x_pos %>,
-        y: 2
+        y: 5 
     });
     <% x_pos += dx %>
   <% end %>
@@ -48,6 +49,6 @@
     // Finally, let's ask our sigma instance to refresh:
   <%= "s" + graph.graph_id %>.refresh();
   </script>
- 
-  <br \><br \><br \><br \>
+ </div> 
+  <br \><br \>
 <% end %>

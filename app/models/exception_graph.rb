@@ -4,6 +4,7 @@ class ExceptionGraph
   attr_accessor :root_node
   attr_accessor :nodes
   attr_accessor :edges
+  attr_accessor :depth
 
   def initialize(root_exception)
     @root_exception = root_exception
@@ -11,20 +12,22 @@ class ExceptionGraph
     sister_node = ExceptionGraphNode.new(@root_exception.affected_object)
     @nodes = [@root_node, sister_node]
     @edges = [ExceptionGraphEdge.new(@root_node, sister_node)]
+    @depth = 2
     add_nodes
   end
 
   def add_nodes(start_exception = @root_exception)
-    start_exception.child_exceptions.each do |child|
-      source_node = ExceptionGraphNode.new(child.cause_object)
-      @nodes << source_node unless node_exists?(source_node)
-      target_node = ExceptionGraphNode.new(child.affected_object)
-      @nodes << target_node unless node_exists?(target_node)  
-      edge = ExceptionGraphEdge.new(source_node, target_node)
-      @edges << edge unless @edges.include?(edge)
-
-
-      add_nodes(child)
+    if start_exception.child_exceptions.count > 0 
+      @depth += 1
+      start_exception.child_exceptions.each do |child|
+        source_node = ExceptionGraphNode.new(child.cause_object)
+        @nodes << source_node unless node_exists?(source_node)
+        target_node = ExceptionGraphNode.new(child.affected_object)
+        @nodes << target_node unless node_exists?(target_node)  
+        edge = ExceptionGraphEdge.new(source_node, target_node)
+        @edges << edge unless @edges.include?(edge) unless edge_exists?(edge)
+        add_nodes(child)
+      end
     end
   end
 
@@ -37,6 +40,11 @@ class ExceptionGraph
       end 
     end
     return node_exists
+  end
+
+  def edge_exists?(edge)
+    duplicates = @edges.select {|ed| ed.edge_id == edge.edge_id}
+    duplicates.count > 0 
   end
 
   def convert_to_json

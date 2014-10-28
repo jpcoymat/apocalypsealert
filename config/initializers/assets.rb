@@ -6,9 +6,7 @@ Rails.application.config.assets.precompile += %w( chosen-jquery.js )
 Rails.application.config.assets.precompile += %w( sigma.js )
 Rails.application.config.assets.precompile += %w( sigma-json.js)
 Rails.application.config.assets.precompile += %w( chosen-bootstrap.css)
-Rails.application.config.assets.precompile += %w( chosen-sprite.png)
-Rails.application.config.assets.precompile += %w(chosen-sprite@2x.png)
-
+Rails.application.config.assets.precompile += %w( fixtableheader.css )
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
 # Rails.application.config.assets.precompile += %w( search.js )

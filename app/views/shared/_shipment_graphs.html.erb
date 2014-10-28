@@ -1,0 +1,57 @@
+<div>
+<p><strong>Shipping Details for Order Line <%= @order_line.order_line_number %></strong></p>
+</div>
+<% @graphs.each do |graph| %>
+  <% increment = (100.0/(graph.nodes.count - 1)) %>
+  <div class="alert alert-warning">
+    <p><strong>Origin Location: </strong> <%= graph.nodes.first.location.name %></p>
+    <p><strong>Final Destination Location: </strong> <%= graph.nodes.last.location.name %></p>
+    <p><strong>ETD: </strong> <%= graph.edges.first.shipment.etd.to_formatted_s(:short) %></p>
+    <p><strong>ETA: </strong> <%= graph.edges.last.shipment.eta.to_formatted_s(:short) %></p>
+
+    <div class="progress">
+    <% graph.edges.each do |edge| %>
+      <div class="progress-bar progress-bar-<%= ShipmentGraphEdge.bootstrap_class[edge.shipment.status] %>" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: <%= increment %>%" data-toggle="modal" data-target="#shipmentModal-<%= edge.shipment.id%>">
+        <span class="sr-only"></span>
+      </div>
+    <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% @graphs.each do |graph| %>
+  <% graph.edges.each do |edge| %>
+    <div class="modal fade" id="shipmentModal-<%= edge.shipment.id%>" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title" id="myModalLabel">Shipment Number <%= edge.shipment.shipment_line_number %></h4>
+          </div>
+          <div class="modal-body">
+            <dl class="dl-horizontal">
+                <dt>Mode                        </dt>   <dd><%= edge.shipment.mode                             %></dd>
+                <dt>Status                      </dt>   <dd><%= edge.shipment.status.titleize                  %></dd>
+                <dt>Shipment Type               </dt>   <dd><%= edge.shipment.shipment_type                    %></dd>
+                <dt>Customer Organization       </dt>   <dd><%= edge.shipment.customer_organization_name       %></dd>
+                <dt>Forwarder Organization      </dt>   <dd><%= edge.shipment.forwarder_organization_name      %></dd>
+                <dt>Carrier Organization        </dt>   <dd><%= edge.shipment.carrier_organization_name        %></dd>
+                <dt>ETD                         </dt>   <dd><%= edge.shipment.etd.to_formatted_s(:short)       %></dd>
+                <dt>ETA                         </dt>   <dd><%= edge.shipment.eta.to_formatted_s(:short)       %></dd>
+                <dt>Product                     </dt>   <dd><%= edge.shipment.product.name                     %></dd>
+                <dt>Origin Location             </dt>   <dd><%= edge.shipment.origin_location.try(:name)       %></dd>
+                <dt>Destination Location        </dt>   <dd><%= edge.shipment.destination_location.try(:name)  %></dd>
+                <dt>Quantity                    </dt>   <dd><%= edge.shipment.quantity.to_s                    %></dd>
+            </dl>
+            <br /><br />
+            <h4>Shipment Line Milestones </h4>
+              <%= render partial: "shared/milestones", locals: {milestones: edge.shipment.milestones} %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -172,7 +172,7 @@ class OrderLine < ActiveRecord::Base
   end
 
   def open_quantity
-    self.quantity - shipped_quantity
+    [0, self.quantity - shipped_quantity].max
   end
 
   def total_shipments

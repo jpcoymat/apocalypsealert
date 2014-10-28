@@ -62,6 +62,9 @@ Rails.application.routes.draw do
       post 'lookup'
       get 'file_upload'
       post 'import_file'
+    end
+    member do
+      get 'shipment_graphs'
     end 
   end
 

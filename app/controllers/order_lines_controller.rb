@@ -2,7 +2,7 @@ class OrderLinesController < ApplicationController
 
 
   before_filter :authorize
-  before_action :set_order_line, only: [:show, :edit, :update, :destroy]
+  before_action :set_order_line, only: [:show, :edit, :update, :destroy, :shipment_graphs]
 
  
   # GET /order_lines
@@ -17,6 +17,13 @@ class OrderLinesController < ApplicationController
     @organizations = Organization.all
     if request.post? 
       @order_lines = @all_order_lines.where(search_params).order(:order_line_number)
+      @order_line = @order_lines.first 
+      @root_shipments = @order_line.immediate_shipment_lines
+      @graphs = []
+      @root_shipments.each do |shipment|
+        graph = ShipmentGraph.new(shipment)
+        @graphs << graph
+      end
       respond_to do |format|
         format.html
         format.json {render json: @order_lines}
@@ -26,6 +33,19 @@ class OrderLinesController < ApplicationController
 
   def file_upload
    render partial: "shared/file_upload", locals: {target_path: import_file_order_lines_path}
+  end
+
+  def shipment_graphs
+    @order_line = OrderLine.find(params[:id])
+    @root_shipments = @order_line.immediate_shipment_lines
+    @graphs = []
+    @root_shipments.each do |shipment|
+      graph = ShipmentGraph.new(shipment)
+      @graphs << graph
+    end
+    respond_to do |format|
+      format.js
+    end
   end
 
   def import_file
