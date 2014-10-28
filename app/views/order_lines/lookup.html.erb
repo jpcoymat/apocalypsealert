@@ -52,7 +52,7 @@
         <% @order_lines.each do |order_line| %>
           <tr id="OrderLine<%= order_line.id.to_s%>"
           <% if order_line == @order_lines.first %>
-            class="active"
+            class="danger"
           <% end %>
           >
               <td width="10%"><%= order_line.order_line_number %></td>
@@ -77,8 +77,8 @@
     </table %>
     <script type="text/javascript">
       function setRowAsSelected(orderLineId) {
-        $('.active').removeClass("active");
-        $('#' + orderLineId).addClass("active"); 
+        $('.danger').removeClass("danger");
+        $('#' + orderLineId).addClass("danger"); 
       }
     </script>
     <hr >
