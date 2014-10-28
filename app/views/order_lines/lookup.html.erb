@@ -50,7 +50,11 @@
     </thead>
     <tbody style="height:350px">
         <% @order_lines.each do |order_line| %>
-          <tr>
+          <tr id="OrderLine<%= order_line.id.to_s%>"
+          <% if order_line == @order_lines.first %>
+            class="active"
+          <% end %>
+          >
               <td width="10%"><%= order_line.order_line_number %></td>
               <td width="10%"><%= order_line.status.titleize %></td>
               <td width="7.5%"><%= order_line.etd.to_formatted_s(:short) %></td>
@@ -60,9 +64,9 @@
               <td width="10%"><%= number_with_delimiter(order_line.shipped_quantity) %></td>
               <td width="15%">
               <% if order_line.total_shipments > 0 %>
-                <%= link_to(number_with_delimiter(order_line.total_shipments), shipment_graphs_order_line_path(order_line), remote: true) %>
+                <%= link_to(number_with_delimiter(order_line.total_shipments), shipment_graphs_order_line_path(order_line), onclick: "javacript:setRowAsSelected('OrderLine" + order_line.id.to_s + "')", remote: true) %>
               <% else %>
-                0
+               0  
               <% end %>
               </td>
               <td width="5%"><%= link_to "Details", order_line_path(order_line)  %></td>
@@ -71,6 +75,12 @@
         <% end %>
     </tbody> 
     </table %>
+    <script type="text/javascript">
+      function setRowAsSelected(orderLineId) {
+        $('.active').removeClass("active");
+        $('#' + orderLineId).addClass("active"); 
+      }
+    </script>
     <hr >
     <div id="shipment_graphs">
       <%= render partial: "shared/shipment_graphs" %>
