@@ -4,6 +4,7 @@
 <% @graphs.each do |graph| %>
   <% increment = (100.0/(graph.nodes.count - 1)) %>
   <div class="alert alert-warning">
+    <h4>Itinerary <%= @graphs.index(graph) + 1 %> </h4>
     <p><strong>Origin Location: </strong> <%= graph.nodes.first.location.name %></p>
     <p><strong>Final Destination Location: </strong> <%= graph.nodes.last.location.name %></p>
     <p><strong>ETD: </strong> <%= graph.edges.first.shipment.etd.to_formatted_s(:short) %></p>
