@@ -23,6 +23,7 @@ class ProductCategoriesController < ApplicationController
 
   # GET /product_categories/1/edit
   def edit
+    @user_org = User.find(session[:user_id]).organization
   end
 
   # POST /product_categories
