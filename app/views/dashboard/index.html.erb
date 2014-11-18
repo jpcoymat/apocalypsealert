@@ -4,10 +4,12 @@
   </div>
   <br \> <br \>
   <div class="jumbotron">
+    <h4 class="text-center"> Supply Chain Status Overview </h4>
     <%= render partial: "shared/org_exception_chart" %>
   </div>
   <br \><br \>
   <div class="container-fluid jumbotron">
+    <h4 class="text-center">Execption Breakdown by Category </h4> 
     <div class="row">
       <div class="col-md-2"><%= button_to "All", redraw_prod_cat_log_grp_matrix_path(method_name: "all"), remote: true, class: "btn btn-primary" %></div>
       <div class="col-md-2"><%= button_to "Source", redraw_prod_cat_log_grp_matrix_path(method_name: "source"), remote: true, class: "btn btn-primary" %></div>
@@ -23,17 +25,21 @@
   </div> 
   <br \><br \>
   <div class="container-fluid jumbotron">
+    <h4 class="text-center">Exception Breakdown By Product Category </h4>
     <%= render partial: "shared/product_category_exceptions" %>
   </div>
   <br \><br \>
   <div class="container-fluid jumbotron">
+    <h4 class="text-center">Exception Breakdown by Location Group </h4>
     <%= render partial: "shared/location_group_exceptions" %>
   </div>
   <br \><br \>
   <div class="container-fluid jumbotron">
+    <h4 class="text-center">Exception Tolerance By Product Category</h4>
     <%= render partial: "shared/product_category_exception_type" %>
   </div>
   <br \><br \>
   <div class="container-fluid jumbotron">
+    <h4 class="text-center">Exception Tolerance By Location Group</h4>
     <%= render partial: "shared/location_group_exception_type" %>
   </div>
