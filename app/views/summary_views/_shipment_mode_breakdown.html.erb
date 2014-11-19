@@ -22,7 +22,7 @@ $(function () {
                 name: 'Exception Quantity',
                 data: [
                   <% @mode_summary.each do |mode| %>
-                    '<%=  number_with_delimiter(mode[:exception_quantity]) %>'
+                    <%=  number_with_delimiter(mode[:exception_quantity]) %>
                     <% unless mode == @mode_summary.last %>
                      ,
                     <% end %>
@@ -34,7 +34,8 @@ $(function () {
                 name: 'On Schedule Quantity',
                 data: [
                   <% @mode_summary.each do |mode| %>
-                    '<%=  number_with_delimiter(mode[:total_quantity] - mode[:exception_quantity]) %>'
+                    <% on_schedule_quantity = mode[:total_quantity] - mode[:exception_quantity] %>
+                    <%=  number_with_delimiter(on_schedule_quantity) %>
                     <% unless mode == @mode_summary.last %>
                      ,
                     <% end %>
