@@ -1,0 +1,54 @@
+<div id="shipment_mode_breakdown" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+$(function () {
+    
+    $('#shipment_mode_breakdown"').highcharts({
+        title: {
+            text: 'Shipment Mode Breakdown'
+        },
+        xAxis: {
+            categories: [
+            <% @mode_summary.each do |mode| %>
+              '<%=  mode[:mode] %>'
+               <% unless mode == @mode_summary.last %>
+                 ,         
+               <% end %>   
+            <% end %>
+            ]
+        },
+        series: [
+            {
+                type: 'bar',
+                name: 'Exception Quantity',
+                data: [
+                  <% @mode_summary.each do |mode| %>
+                    '<%=  number_with_delimiter(mode[:exception_quantity]) %>'
+                    <% unless mode == @mode_summary.last %>
+                     ,
+                    <% end %>
+                  <% end %>
+                 ]
+            },
+            {
+                type: 'bar',
+                name: 'On Schedule Quantity',
+                data: [
+                  <% @mode_summary.each do |mode| %>
+                    '<%=  number_with_delimiter(mode[:total_quantity] - mode[:exception_quantity]) %>'
+                    <% unless mode == @mode_summary.last %>
+                     ,
+                    <% end %>
+                  <% end %>
+                  ]
+           }  
+        ], 
+        plotOptions: {
+            series: {
+                stacking: 'normal'
+            }
+        }            
+    });
+});
+
+</script>
+

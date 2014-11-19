@@ -1,4 +1,16 @@
+<% content_for :head do %>
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script>
+<% end %>
+
 <h1><%= @scv_category %> Category Breakdown </h1>
+
+  <% if @scv_category == "Move" %>
+  <div class="container-fluid jumbotron">
+    <h4 class="text-center">Shipment Mode Breakdown</h4>
+    <%= render partial: "shipment_mode_breakdown" %>
+  </div>
+  <% end %>
 
   <div class="container-fluid jumbotron">
     <%= render partial: "totals_vs_exceptions_matrix" %>

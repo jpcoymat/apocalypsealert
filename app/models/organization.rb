@@ -24,6 +24,7 @@ class Organization < ActiveRecord::Base
 
   def shipment_lines(options = {})
     @shipment_lines = ShipmentLine.where("carrier_organization_id = ? or forwarder_organization_id = ? or customer_organization_id = ?", self.id, self.id, self.id)
+    @shipment_lines = @shipment_lines.where(mode: options[:mode]) if options[:mode]
     @shipment_lines = @shipment_lines.where(shipment_type: options[:shipment_type]) if options[:shipment_type]
     @shipment_lines = @shipment_lines.where(product_id: options[:product_id]) if options[:product_id]
     @shipment_lines = @shipment_lines.where("product_id = (select id from products where name = #{options[:product_name]})") if options[:product_name]
