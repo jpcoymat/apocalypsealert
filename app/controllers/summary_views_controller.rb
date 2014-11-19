@@ -88,7 +88,7 @@ class SummaryViewsController < ApplicationController
         @exception_method = "move_exception_quantity"
         @summary_method = "inbound_shipment_line_quantity"
         @mode_summary = []
-        ShipmentLine.modes.each {|mode| @mode_summary << {mode: mode, total_quantity: @user_org.inbound_order_quantity(product_categories: @product_categories.ids.to_s.chop![1..-1], destination_location_groups: @location_groups.ids.to_s.chop![1..-1], mode: mode), exception_quantity: @user_org.move_exception_quantity(product_categories: @product_categories.ids.to_s.chop![1..-1], destination_location_groups: @location_groups.ids.to_s.chop![1..-1], mode: mode)}} 
+        ShipmentLine.modes.each {|mode| @mode_summary << {mode: mode, total_quantity: @user_org.inbound_shipment_quantity(product_categories: @product_categories.ids.to_s.chop![1..-1], destination_location_groups: @location_groups.ids.to_s.chop![1..-1], mode: mode), exception_quantity: @user_org.move_exception_quantity(product_categories: @product_categories.ids.to_s.chop![1..-1], destination_location_groups: @location_groups.ids.to_s.chop![1..-1], mode: mode)}} 
       when "Store"
         @exception_method = "store_exception_quantity"
         @summary_method = "inventory_projection_quantity"
