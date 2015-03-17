@@ -2,6 +2,7 @@
   <div class="container">
 
     <div class="navbar-collapse collapse">
+   
       <ul class="nav navbar-nav">
         <li> <%= link_to "Dashboard", dashboard_path %></li>
         <li class="dropdown">
@@ -62,3 +63,10 @@
 
   </div>
 </div>
+
+<script>
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+</script>

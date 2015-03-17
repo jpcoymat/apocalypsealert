@@ -8,17 +8,14 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-
-       <%= render partial: "shared/main_menu" %>
-       <% if notice %>
-         <div class="alert alert-danger" role="alert"><p><%= notice %></p></div>
-       <% end %>
-<div class="container">
-
+  
+  <%= render partial: "shared/main_menu" %>
+  
+  <% if notice %>
+    <div class="alert alert-danger" role="alert"><p><%= notice %></p></div>
+  <% end %>
+  <div class="container">
     <%= yield %>
-
-
-
-</div>
+  </div>
 </body>
 </html>

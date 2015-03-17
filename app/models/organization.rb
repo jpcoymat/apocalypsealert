@@ -6,6 +6,51 @@ class Organization < ActiveRecord::Base
   has_many :users
   has_many :product_categories
 
+  def suppliers
+    suppliers_from_orders = []
+    inbound_order_lines.select(:supplier_organization_id).distinct.each {|sup| suppliers_from_orders << sup.supplier_organization_id}
+    if suppliers_from_orders.count> 0
+      @suppliers = Organization.find(suppliers_from_orders)
+    else
+      @suppliers = []
+    end
+    @suppliers
+  end
+
+  def customers
+    customers_from_orders = []
+    outbound_order_lines.select(:customer_organization_id).distinct.each {|cust| customers_from_orders << cust.customer_organization_id}
+    if customers_from_orders
+      @customers = Organization.find(customers_from_orders)
+    else
+      @customers = []
+    end
+    @customers
+  end
+
+  def carriers
+    carriers_from_shipments = []
+    shipment_lines.select(:carrier_organization_id).distinct.each {|carrier| carriers_from_shipments << carrier.carrier_organization_id}
+    if carriers_from_shipments
+      @carriers = Organization.find(carriers_from_shipments)
+    else
+      @carriers = []
+    end     
+    @carriers
+  end
+
+  def forwarders
+    forwarders_from_shipments = []
+    shipment_lines.select(:forwarder_organization_id).distinct.each {|frwd| forwarders_from_shipments << frwd.forwarder_organization_id}
+    if 
+      @forwarders = Organization.find(forwarders_from_shipments)
+    else
+      @forwarders = []
+    end  
+    @forwarders
+  end
+
+
   def order_lines(options = {})
     @order_lines = OrderLine.where("customer_organization_id = ? or supplier_organization_id = ?", self.id, self.id)
     @order_lines = @order_lines.where(order_type: options[:order_type]) if options[:order_type]
