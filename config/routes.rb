@@ -1,4 +1,10 @@
+require 'resque'
+require 'resque_scheduler'
+require 'resque_scheduler/server'
+
 Rails.application.routes.draw do
+
+  mount Resque::Server.new, at: "/resque"
 
   resources :product_categories
 

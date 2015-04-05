@@ -47,6 +47,10 @@ class OrderLine < ActiveRecord::Base
     @@order_types
   end
 
+  def self.major_attributes
+    @@major_attributes = [:origin_location_id, :origin_location_group_id, :destination_location_id, :destination_location_group_id, :supplier_organization_id, :product_id, :product_category_id, :order_type]
+  end
+
   def origin_location
     @origin_location = Location.where(id: self.origin_location_id).first
   end
@@ -75,6 +79,18 @@ class OrderLine < ActiveRecord::Base
   
   def origin_location_name
     origin_location.try(:name)
+  end
+
+  def origin_location_group_id
+    origin_location.try(:location_group_id)
+  end
+
+  def destination_location_group_id
+    destination_location.try(:location_group_id)
+  end
+
+  def product_category_id
+    product.try(:product_category_id)
   end
 
   def destination_location_name

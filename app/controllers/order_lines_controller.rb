@@ -91,6 +91,7 @@ class OrderLinesController < ApplicationController
 
     respond_to do |format|
       if @order_line.save
+        Resque.enqueue(AttributeBreakdownJob, {object_class: @order_line.class.to_s, object_id: @order_line.id}.to_json)
         format.html { redirect_to @order_line, notice: 'Order line was successfully created.' }
         format.json { render :show, status: :created, location: @order_line }
       else
