@@ -18,7 +18,7 @@ class TransactionTracker
   end
 
   def initialize(transaction)
-    @object_uid = transaction.try(:id)
+    @object_uid = transaction.try(:id).to_s
     @object_type_tracked = transaction.class.to_s
     compose_key
     @attribute_trackers = redis_value
