@@ -37,6 +37,12 @@ class AttributeTracker
     end
   end
 
+  def remove_transaction(transaction_id)
+    if @value.include?(transaction_id)
+      @value.delete(transaction_id)
+      save
+    end    
+  end
   
 
 end
