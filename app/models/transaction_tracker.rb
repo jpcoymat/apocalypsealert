@@ -10,7 +10,7 @@ class TransactionTracker
   end
 
   def redis_value
-    return $redis.get(@key)   
+    return $redis.get(@key) || []  
   end
 
   def save
@@ -33,7 +33,7 @@ class TransactionTracker
   end
   
   def reevaluate
-    transaction = eval("#{@object_type_tracked}.find({@object_uid})")    
+    transaction = eval("#{@object_type_tracked}.find(#{@object_uid})")    
     attributes_to_check = eval("#{@object_type_tracked}.major_attributes")
     attributes_to_check.each do |attr_check|
       tracker_key = @attribute_trackers.bsearch {|at| at.include?(@object_type_tracked + ":" + attr_check.to_s)}
