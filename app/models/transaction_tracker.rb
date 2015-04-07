@@ -40,4 +40,14 @@ class TransactionTracker
     end
   end
 
+  def reevaluate2
+    transaction = eval("#{@object_type_tracked}.find({@object_uid})")
+    attributes_to_check = eval("#{@object_type_tracked}.major_attributes")
+    attributes_to_check.each do |att_to_check|
+      current_tracker = attribute_trackers.match
+      at = AttributeTracker.new(@object_type_tracked, att_to_check.to_s, 
+    end
+  end
+
+
 end
