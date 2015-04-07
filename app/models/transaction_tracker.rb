@@ -36,18 +36,24 @@ class TransactionTracker
     transaction = eval("#{@object_type_tracked}.find(#{@object_uid})")    
     attributes_to_check = eval("#{@object_type_tracked}.major_attributes")
     attributes_to_check.each do |attr_check|
-      tracker_key = @attribute_trackers.bsearch {|at| at.include?(@object_type_tracked + ":" + attr_check.to_s)}
-      tracker_value = tracker_key[tracker_key.index("=")+1 .. tracker_key.length-1].to_i
-      if tracker_value != transaction.try(attr_check)
-        old_attr_tracker = AttributeTracker.new(@object_type_tracker, attr_check.to_s, tracker_value)
-        old_attr_tracker.remove_transaction(@object_uid)
-        remove_tracker(old_att_tracker)
+      tracker_key = @attribute_trackers.bsearch {|at| at.include?(@object_type_tracked + ":" + attr_check.to_s)} 
+      if tracker_key
+        tracker_value = tracker_key[tracker_key.index("=")+1 .. tracker_key.length-1].to_i
+        if tracker_value != transaction.try(attr_check)
+          old_attr_tracker = AttributeTracker.new(@object_type_tracker, attr_check.to_s, tracker_value)
+          old_attr_tracker.remove_transaction(@object_uid)
+          remove_tracker(old_att_tracker)
+          new_attr_tracker = AttributeTracker.new(@object_type_tracker, attr_check.to_s, transaction.try(attr_check).try(:to_s))
+          new_attr_tracker.add_record(transaction)    
+          add_tracker(new_att_tracker)
+        end
+      else
         new_attr_tracker = AttributeTracker.new(@object_type_tracker, attr_check.to_s, transaction.try(attr_check).try(:to_s))
-        new_attr_tracker.add_record(transaction)    
+        new_attr_tracker.add_record(transaction)
         add_tracker(new_att_tracker)
-        save
-      end
+      end 
     end
+    save
   end
 
 
