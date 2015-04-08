@@ -15,6 +15,8 @@ class ShipmentLine < ActiveRecord::Base
   validate :valid_shipment_type
 
   has_many :milestones, as: :associated_object
+
+  after_save :enqueue_for_attribute_processing
  
   def next_leg_shipment
     @next_leg_shipment = nil
@@ -30,6 +32,10 @@ class ShipmentLine < ActiveRecord::Base
 
   def self.shipment_types
     @@shipment_types = ["Inbound", "Outbound"]
+  end
+
+  def self.major_attributes
+    @@major_attributes = [:origin_location_id, :origin_location_group_id, :destination_location_id, :destination_location_group_id, :carrier_organization_id, :product_id, :product_category_id, :shipment_type, :forwarder_organization_id]
   end
 
 
@@ -174,6 +180,18 @@ class ShipmentLine < ActiveRecord::Base
     @cause_scv_exceptions = ScvException.where(cause_object_type: self.class.to_s, cause_object_id: self.id)
   end
 
+  def origin_location_group_id
+    origin_location.try(:location_group_id)
+  end
+
+  def destination_location_group_id
+    destination_location.try(:location_group_id)
+  end
+
+  def product_category_id
+    product.try(:product_category_id)
+  end
+
 
   protected
 
@@ -194,6 +212,11 @@ class ShipmentLine < ActiveRecord::Base
     def valid_shipment_type
       errors.add(:base, "Shipment Type not valid") unless ShipmentLine.shipment_types.include?(self.shipment_type)
     end
+    
+    def enqueue_for_attribute_processing
+      Resque.enqueue(AttributeBreakdownJob, {object_class: self.class.to_s, object_id: self.id}.to_json)
+    end
+    
 
 
 end

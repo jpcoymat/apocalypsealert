@@ -20,7 +20,7 @@ class AttributeTracker
     @attribute_value = attribute_value
     compose_key
     if redis_value
-      @value = JSON.parse(redis_value)
+      @value = JSON.parse(redis_value).sort
     else
       @value = []
     end
@@ -31,19 +31,34 @@ class AttributeTracker
   end   
 
   def add_transaction(transaction)
-    @value << transaction.try(:id)
+    unless transaction_exists?(transaction)
+      array_index = index_to_insert(transaction)
+      @value.insert(array_index, transaction.try(:id))
+    end
   end
 
   def remove_transaction(transaction)
     @value.delete(transaction.try(:id))
   end
   
-  def process_transaction(transaction)
-    if transaction.try(@transaction.to_sym) == @attribute_value
-      add_transaction(transaction) unless @value.include?(transaction.try(:id))
-    else
-       
-    end
+  def reload
+    @value = redis_value
+  end
+  
+  def transaction_exists?(transaction)
+    transaction_id = @value.bsearch {|elem| elem == transaction.try(:id)}
+    transaction_id.nil? ? tran_exists = false : tran_exists = true
+    return tran_exists 
+  end
+  
+  def index_to_insert(transaction)
+    index_value = @value.index(@value.bsearch {|elem| transaction.try(:id) < elem})
+    index_value.nil? ? index_value = @value.length : nil
+    return index_value
+  end
+  
+  def is_value_a_number
+    
   end
 
 end
