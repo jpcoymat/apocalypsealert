@@ -30,19 +30,20 @@ class AttributeTracker
     $redis.set(@key, @value)
   end   
 
-  def add_record(record)
-    if record.try(@attribute_name.to_sym) == @attribute_value and !(@value.include?(record.try(:id)))
-      @value << record.try(:id)
-      save
-    end
+  def add_transaction(transaction)
+    @value << transaction.try(:id)
   end
 
-  def remove_transaction(transaction_id)
-    if @value.include?(transaction_id)
-      @value.delete(transaction_id)
-      save
-    end    
+  def remove_transaction(transaction)
+    @value.delete(transaction.try(:id))
   end
   
+  def process_transaction(transaction)
+    if transaction.try(@transaction.to_sym) == @attribute_value
+      add_transaction(transaction) unless @value.include?(transaction.try(:id))
+    else
+       
+    end
+  end
 
 end

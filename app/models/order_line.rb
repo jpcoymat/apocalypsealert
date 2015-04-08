@@ -17,6 +17,8 @@ class OrderLine < ActiveRecord::Base
   has_many :shipment_lines, through: :order_itineraries
   has_many :milestones, as: :associated_object
 
+  after_save :enqueue_for_attribute_processing
+
 
   def self.import(file_path)
     spreadsheet = open_spreadsheet(file_path)
@@ -219,6 +221,10 @@ class OrderLine < ActiveRecord::Base
 
     def valid_order_type
       errors.add(:base, "Invalid Order Type") unless OrderLine.order_types.include?(self.order_type)
+    end
+
+    def enqueue_for_attribute_processing
+      Resque.enqueue(AttributeBreakdownJob, {object_class: self.class.to_s, object_id: self.id}.to_json)
     end
 
 end
