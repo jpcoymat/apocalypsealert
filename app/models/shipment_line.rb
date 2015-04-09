@@ -35,7 +35,7 @@ class ShipmentLine < ActiveRecord::Base
   end
 
   def self.major_attributes
-    @@major_attributes = [:origin_location_id, :origin_location_group_id, :destination_location_id, :destination_location_group_id, :carrier_organization_id, :product_id, :product_category_id, :shipment_type, :forwarder_organization_id]
+    @@major_attributes = [:origin_location_id, :origin_location_group_id, :destination_location_id, :destination_location_group_id, :carrier_organization_id, :product_id, :product_category_id, :shipment_type, :forwarder_organization_id, :mode]
   end
 
 

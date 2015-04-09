@@ -57,8 +57,5 @@ class AttributeTracker
     return index_value
   end
   
-  def is_value_a_number
-    
-  end
 
 end

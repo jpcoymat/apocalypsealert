@@ -2,44 +2,47 @@
   <h3 class="text-center">Filter </h3>
   <form class="form-horizontal">
     <div class="form-group">
-      <label class="col-sm-2 control-label"><small>Phase</small></label>
-      <div class="col-sm-10">
-        <select id="phase" class="form-control input-sm">
-          <option value="source">Source Phase</option>
-          <option value="make">Make Phase </option>
-          <option value="move">Move Phase</option>
-          <option value="store">Store Phase </option>
-          <option value="deliver">Deliver Phase</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="col-md-2 control-label"><small>Flow</small></label>
-      <div class="col-sm-10"> 
-        <select class="form-control col-sm-2 input-sm" id="flow">
-          <option value="inbound">Inbound</option>
-          <option value="outbound">Outbound</option> 
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
       <label class="col-md-2 control-label"><small>Origin Group</small></label> 
       <div class="col-sm-10">
         <%= select_tag "origin_loc_groups", options_from_collection_for_select(@location_groups, "id", "name"), multiple: true, class: 'form-control chosen-select input-sm' %>
       </div>
     </div>
     <div class="form-group">
+      <label class="col-md-2 control-label"><small>Origin Locations</small></label> 
+      <div class="col-sm-10">
+        <%= select_tag "origin_locs", options_from_collection_for_select(@locations, "id", "name"), multiple: true, class: 'form-control chosen-select input-sm' %>
+      </div>
+    </div>
+
+    <div class="form-group">
       <label class="col-md-2 control-label"><small>Dest. Group</small></label>
       <div class="col-sm-10">
         <%= select_tag "dest_loc_groups", options_from_collection_for_select(@location_groups, "id", "name"), multiple: true, class: 'form-control chosen-select' %>
       </div>
     </div>
+
+    <div class="form-group">
+      <label class="col-md-2 control-label"><small>Dest. Locations</small></label> 
+      <div class="col-sm-10">
+        <%= select_tag "dest_locs", options_from_collection_for_select(@locations, "id", "name"), multiple: true, class: 'form-control chosen-select input-sm' %>
+      </div>
+    </div>
+
     <div class="form-group">
       <label class="col-md-2 control-label"><small>Products</small></label>
       <div class="col-sm-10">
         <%= select_tag "prod_groups", options_from_collection_for_select(@product_categories, "id", "name"), multiple: true, class: 'form-control chosen-select' %>
       </div>
     </div>
+
+    <div class="form-group">
+      <label class="col-md-2 control-label"><small>Products</small></label>
+      <div class="col-sm-10">
+        <%= select_tag "prod_groups", options_from_collection_for_select(@product_categories, "id", "name"), multiple: true, class: 'form-control chosen-select' %>
+      </div>
+    </div>
+
+
     <div class="form-group">
       <label class="col-md-2 control-label"><small>Supplier</small></label>
       <div class="col-sm-10">

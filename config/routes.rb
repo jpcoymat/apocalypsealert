@@ -4,6 +4,12 @@ require 'resque_scheduler/server'
 
 Rails.application.routes.draw do
 
+  get 'aggregations/global'
+
+  get 'aggregations/source'
+
+  get 'aggregations/move'
+
   mount Resque::Server.new, at: "/resque"
 
   resources :product_categories
