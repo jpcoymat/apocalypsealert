@@ -28,6 +28,7 @@ gem "resque"
 gem "resque-web", require: "resque_web"
 gem 'resque-scheduler',  '~> 2.5.5', require: 'resque_scheduler'
 
+gem "less-rails"
 gem "twitter-bootstrap-rails"
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks

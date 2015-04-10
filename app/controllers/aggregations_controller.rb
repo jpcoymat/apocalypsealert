@@ -1,9 +1,10 @@
 class AggregationsController < ApplicationController
 
   before_filter :authorize
-  before_action :set_master_data, :set_global_filter
+  before_action :set_global_filter
 
   def global
+    @filter_partial = "global_filter"
   end
 
   def source
@@ -25,6 +26,7 @@ class AggregationsController < ApplicationController
   
     def set_master_data
       @user_org = User.find(session[:user_id]).organization
+      @products = @user_org.products
       @locations = @user_org.exception_locations
       @product_categories = @user_org.product_categories
       @location_groups  = @user_org.location_groups 
@@ -32,14 +34,15 @@ class AggregationsController < ApplicationController
     end
     
     def set_global_filter
-      @global_filter = Filter.new("global")
-      @products = FilterElement.new("products")
-      @product_categories = FilterElement.new("product_categories")
-      @origin_locations = FilterElement.new("origin_locations")
-      @origin_location_groups = FilterElement.new("origin_location_groups")
-      @destination_locations = FilterElement.new("destination_locations")
-      @destination_location_groups = FilterElement.new("destination_location_groups")
-      @global_filter.filter_elements = [@products, @product_categories, @origin_locations, @origin_location_groups, @destination_locations, @destination_location_groups]
+      set_master_data
+      @global_filter = Filter.new(filter_name: "global")
+      @products_filter = FilterElement.new(element_name: "products", filter_options: @products, multiselectable: true)
+      @product_categories_filter = FilterElement.new(element_name: "product_categories", multiselectable: true, filter_options: @product_categories)
+      @origin_locations_filter = FilterElement.new(element_name: "origin_locations", multiselectable: true, filter_options: @locations)
+      @origin_location_groups_filter = FilterElement.new(element_name: "origin_location_groups", multiselectable: true, filter_options: @location_groups)
+      @destination_locations_filter = FilterElement.new(element_name: "destination_locations", multiselectable: true, filter_options: @locations)
+      @destination_location_groups_filter = FilterElement.new(element_name: "destination_location_groups", multiselectable: true, filter_options: @location_groups)
+      @global_filter.filter_elements = [@products_filter, @product_categories_filter, @origin_locations_filter, @origin_location_groups_filter, @destination_locations_filter, @destination_location_groups_filter]
     end
 
   

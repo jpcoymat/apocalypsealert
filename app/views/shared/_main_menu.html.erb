@@ -1,8 +1,6 @@
-<div class="navbar navbar-default navbar-static-top" role="navigation">
+<header class="navbar navbar-default navbar-static-top" role="navigation">
   <div class="container">
-
     <div class="navbar-collapse collapse">
-   
       <ul class="nav navbar-nav">
         <li> <%= link_to "Dashboard", dashboard_path %></li>
         <li class="dropdown">
@@ -59,10 +57,10 @@
       <ul class="nav navbar-nav navbar-right">
         <li><%= link_to "Log Out", login_logout_path, method: :post %></li> 
      </ul>
-    </div>
 
+    </div>
   </div>
-</div>
+</header>
 
 <script>
   $("#menu-toggle").click(function(e) {
