@@ -25,9 +25,10 @@ class AggregationsController < ApplicationController
   protected
   
     def set_master_data
-      @user_org = User.find(session[:user_id]).organization
+      @user = User.find(session[:user_id])
+      @user_org = @user.organization
       @products = @user_org.products
-      @locations = @user_org.exception_locations
+      @locations = @user_org.locations
       @product_categories = @user_org.product_categories
       @location_groups  = @user_org.location_groups 
       @other_orgs = Organization.where("id != ?", @user_org.id)

@@ -1,2 +1,16 @@
-<div class="navbar-default sidebar" role="navigation">
-    <div class="sidebar-nav navbar-collapse">
+<h3>Quick Filter</h3>
+<ul class="nav nav-pills nav-stacked">
+<% @global_filter.filter_elements.each do |filter_element| %>
+  <li><%= select_tag filter_element.element_name, options_from_collection_for_select(filter_element.filter_options, "id", "name"), multiple: filter_element.multiselectable, class: 'form-control chosen-select', data: {placeholder: filter_element.display_name} %></li>
+<% end %>
+<li><button type="submit" class="btn btn-primary">Refresh</button></li>
+</ul>
+
+
+<script type="text/javascript" charset="utf-8">
+	<% @global_filter.filter_elements.each do |filter_element| %>
+	$("#<%= filter_element.element_name %>").chosen({search_contains: true});
+	<% end %>
+</script>
+
+	

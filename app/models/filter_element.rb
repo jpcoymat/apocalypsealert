@@ -21,7 +21,7 @@ class FilterElement
   def options_for_collect
     options = ""
     @filter_options.each do |option|
-      options += '<option value="' + option.try(:id) + '">' + option.try(:name) + '</option>'
+      options += '<option value="' + option.try(:id).try(:to_s) + '">' + option.try(:name) + '</option>'
     end
     return options
   end

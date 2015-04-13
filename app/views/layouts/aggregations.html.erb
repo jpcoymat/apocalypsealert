@@ -1,20 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <title>Apocalypsealert</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'sb-admin-2' %>
+  <%= stylesheet_link_tag 'aggregations', media: 'all', 'data-turbolinks-track' => true %>
+  <%= stylesheet_link_tag 'sb-admin-2' %>
+  <%= stylesheet_link_tag "chosen" %>
+  <%= stylesheet_link_tag "chosen-bootstrap" %>
+  <%= stylesheet_link_tag "filter" %>  
+
+  <%= javascript_include_tag 'aggregations', 'data-turbolinks-track' => true %>
+
   <%= yield :head %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-  <div id="wrapper"> 
     <%= render partial: "shared/aggregations_menu" %>
- 	  <% if notice %>
-		<div class="alert alert-danger" role="alert"><p><%= notice %></p></div>
-		<% end %>
-		<%= yield %>
-	</div>
+	  <div class="row-offcanvas row-offcanvas-left">
+		  <div id="sidebar" class="sidebar-offcanvas">
+			  <div class="col-md-12">
+				  <%= render partial: "global_filter" %>
+				</div>
+			</div>
+			<div id="main">	
+			  <div class="col-md-12">
+			    <%= yield %>
+				</div>
+			</div>
+		</div><!--/row-offcanvas -->
 </body>
 </html>
