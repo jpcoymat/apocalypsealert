@@ -7,7 +7,7 @@ class LoginController < ApplicationController
       @user = User.authenticate(params[:user_login][:username],params[:user_login][:password])
       if @user
         session[:user_id] = @user.id
-        redirect_to dashboard_path 
+        redirect_to aggregations_global_path 
       else
         flash[:notice] ="Username/password invalid"
         render action: "login"
