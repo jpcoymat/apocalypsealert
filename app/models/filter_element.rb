@@ -15,7 +15,7 @@ class FilterElement
   end
  
   def display_name
-    @element_name.try(:titleize)
+    @element_name.gsub("_id","").try(:titleize)
   end
   
   def options_for_collect

@@ -12,7 +12,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="fa fa-pencil-square-o fa-fw"></i>  <i class="fa fa-caret-down"></i>
+              <i class="fa fa-pencil-square-o fa-fw"></i> Orders <i class="fa fa-caret-down"></i>
           </a>
           <ul class="dropdown-menu" role="menu">
             <li><%= link_to "Order Line Lookup", lookup_order_lines_path %></li>
@@ -24,7 +24,7 @@
         <!-- dropdown shipments -->
         <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	        <i class="fa fa-truck fa-fw"></i><i class="fa fa-caret-down"></i>
+	        <i class="fa fa-truck fa-fw"></i>Shipments<i class="fa fa-caret-down"></i>
 	      </a>
 	      <ul class="dropdown-menu" role="menu">
           <li><%= link_to "Shipment Line Lookup", lookup_shipment_lines_path %></li>
@@ -36,7 +36,7 @@
       <!-- dropdown inventory -->
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	        <i class="fa fa-home fa-fw"></i><i class="fa fa-caret-down"></i>
+	        <i class="fa fa-home fa-fw"></i>Inventory<i class="fa fa-caret-down"></i>
 	      </a>
 	      <ul class="dropdown-menu" role="menu">
           <li><%= link_to "Inventory Lookup", lookup_inventory_projections_path %></li>
@@ -52,7 +52,7 @@
       <!-- dropdown exceptions-->
       <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="fa fa-exclamation-triangle fa-fw"></i>  <i class="fa fa-caret-down"></i>
+              <i class="fa fa-exclamation-triangle fa-fw"></i>Exceptions<i class="fa fa-caret-down"></i>
           </a>
           <ul class="dropdown-menu" role="menu">
             <li><%= link_to "Exceptions Listing", scv_exceptions_path %></li>
@@ -64,7 +64,7 @@
       <!-- dropdown config -->
       <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="fa fa-wrench fa-fw"></i>  <i class="fa fa-caret-down"></i>
+              <i class="fa fa-wrench fa-fw"></i>Configuration<i class="fa fa-caret-down"></i>
           </a>
           <ul class="dropdown-menu" role="menu">
             <li><%= link_to "Users", users_path  %></li>
@@ -84,7 +84,7 @@
       <!-- dropdown user -->
       <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+              <i class="fa fa-user fa-fw"></i>My Profile<i class="fa fa-caret-down"></i>
           </a>
           <ul class="dropdown-menu dropdown-user">
               <li><a href="/users/<%= @user.id %>"><i class="fa fa-user fa-fw"></i> User Profile</a>

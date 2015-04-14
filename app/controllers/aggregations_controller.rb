@@ -22,6 +22,37 @@ class AggregationsController < ApplicationController
     @move_filter.filter_elements = [@modes, @carriers, @forwarders]
   end
   
+  def refresh_global
+    shipment_ids, order_ids = [], []
+    order_attribute_results, shipment_attribute_results = {}, {}
+    user_params = params
+    user_params.delete("controller")
+    user_params.delete("action")    
+    user_params.each do |key,value|
+      order_attribute_results[key], shipment_attribute_results[key] = [],[] 
+      values = value.split(",").map { |s| s.to_i }
+      for val in values
+        oat = AttributeTracker.new("OrderLine", key, val)
+        order_attribute_results[key] += oat.value
+        sat = AttributeTracker.new("ShipmentLine", key, val)
+        shipment_attribute_results[key] += sat.value 
+      end
+    end
+    order_ids = order_attribute_results[order_attribute_results.first.first]
+    order_attribute_results.each do |k,v|
+      order_ids &= v unless k==order_attribute_results.first.first
+    end
+    shipment_ids = shipment_attribute_results[shipment_attribute_results.first.first]
+    shipment_attribute_results.each do |k,v|
+      shipment_ids &= v unless k==shipment_attribute_results.first.first
+    end
+    respond_to do |format|
+      format.json {render json: {order_ids: order_ids, shipment_ids: shipment_ids } }
+      format.html {render json: {order_ids: order_ids, shipment_ids: shipment_ids } }
+    end
+  end
+     
+  
   protected
   
     def set_master_data
@@ -37,12 +68,12 @@ class AggregationsController < ApplicationController
     def set_global_filter
       set_master_data
       @global_filter = Filter.new(filter_name: "global")
-      @products_filter = FilterElement.new(element_name: "products", filter_options: @products, multiselectable: true)
-      @product_categories_filter = FilterElement.new(element_name: "product_categories", multiselectable: true, filter_options: @product_categories)
-      @origin_locations_filter = FilterElement.new(element_name: "origin_locations", multiselectable: true, filter_options: @locations)
-      @origin_location_groups_filter = FilterElement.new(element_name: "origin_location_groups", multiselectable: true, filter_options: @location_groups)
-      @destination_locations_filter = FilterElement.new(element_name: "destination_locations", multiselectable: true, filter_options: @locations)
-      @destination_location_groups_filter = FilterElement.new(element_name: "destination_location_groups", multiselectable: true, filter_options: @location_groups)
+      @products_filter = FilterElement.new(element_name: "product_id", filter_options: @products, multiselectable: true, enabled_for_quick_filter: true)
+      @product_categories_filter = FilterElement.new(element_name: "product_category_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @product_categories)
+      @origin_locations_filter = FilterElement.new(element_name: "origin_location_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @locations)
+      @origin_location_groups_filter = FilterElement.new(element_name: "origin_location_group_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @location_groups)
+      @destination_locations_filter = FilterElement.new(element_name: "destination_location_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @locations)
+      @destination_location_groups_filter = FilterElement.new(element_name: "destination_location_group_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @location_groups)
       @global_filter.filter_elements = [@products_filter, @product_categories_filter, @origin_locations_filter, @origin_location_groups_filter, @destination_locations_filter, @destination_location_groups_filter]
     end
 

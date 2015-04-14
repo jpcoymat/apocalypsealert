@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   get 'aggregations/source'
 
   get 'aggregations/move'
+  
+  get 'aggregations/refresh_global'
 
   mount Resque::Server.new, at: "/resque"
 
