@@ -46,12 +46,35 @@ class AggregationsController < ApplicationController
     shipment_attribute_results.each do |k,v|
       shipment_ids &= v unless k==shipment_attribute_results.first.first
     end
+    @response = [{name: "Quantity", data: [OrderLine.where(id: order_ids).sum(:quantity), 
+                                          ShipmentLine.where(id: shipment_ids).sum(:quantity) ] } ]
     respond_to do |format|
-      format.json {render json: {order_ids: order_ids, shipment_ids: shipment_ids } }
-      format.html {render json: {order_ids: order_ids, shipment_ids: shipment_ids } }
+      format.json {render json: @response }
+      format.html {render json: @response }
     end
   end
      
+  def source
+    shipment_ids = []
+    shipment_attribute_results = {}
+    user_params = params
+    user_params.delete("controller")
+    user_params.delete("action")    
+    user_params.each do |key,value|
+      shipment_attribute_results[key] = []
+      values = value.split(",").map { |s| s.to_i }
+      for val in values
+        sat = AttributeTracker.new("ShipmentLine", key, val)
+        shipment_attribute_results[key] += sat.value 
+      end
+    end
+    shipment_ids = shipment_attribute_results[shipment_attribute_results.first.first]
+    shipment_attribute_results.each do |k,v|
+      shipment_ids &= v unless k==shipment_attribute_results.first.first
+    end
+    
+  end
+
   
   protected
   

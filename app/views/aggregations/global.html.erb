@@ -1,4 +1,41 @@
+<% content_for :head do %>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<% end %>
 
-<h1>Aggregations#global</h1>
+<h1>Global View</h1>
 
-<p>Find me in app/views/aggregations/global.html.erb</p>
+<div id="global_view" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+$(function () {
+    $('#global_view').highcharts({
+        title: {
+            text: 'Supply Chain Summary'
+        },
+        xAxis: {
+            categories: ["Source", "Move"],
+						title: {text: "Phase"}
+        },
+        series: [{name: "Quantity", type: 'bar', data: [<%= OrderLine.sum(:quantity).to_i %>, <%= ShipmentLine.sum(:quantity).to_i %>]}],
+        plotOptions: {
+	        series: {
+		        stacking: 'normal',
+            cursor: 'pointer',
+						point: {
+							events: {
+								click: function() {
+									var url ="/aggregations/" + this.category.toLowerCase() + "?";
+									lastParametersUsed.forEach(function(parameter) {
+										url += parameter.attribute_name + "=" + parameter.attribute_value + "&";
+									})
+									location.href = url;
+								}
+							}
+						}
+	        }
+		   
+        }
+    });
+});
+
+</script>

@@ -19,7 +19,7 @@
 					  <div class="form-group">
 						  <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-xs-3 control-label" %>
 						  <div class="col-xs-5">
-					      <%= select_tag filter_element.element_name, options_from_collection_for_select(filter_element.filter_options, "id", "name"), multiple: filter_element.multiselectable, class: 'form-control chosen-select', id: "pop-"+filter_element.element_name  %>
+					      <%= select_tag filter_element.element_name, options_from_collection_for_select(filter_element.filter_options, "id", "name"), multiple: filter_element.multiselectable, class: 'form-control chzn-select', id: "pop-"+filter_element.element_name,  tabindex: "2"  %>
 					    </div>
 					    <div class="checkbox" >
 						    <label>
@@ -42,14 +42,21 @@
 <script type="text/javascript" charset="utf-8">
 	<% @global_filter.filter_elements.each do |filter_element| %>
 	  $("#<%= filter_element.element_name %>").chosen({search_contains: true});
-	  $("#pop-<%= filter_element.element_name %>").chosen({search_contains: true, width: '100%'});
+	  //$("#pop-<%= filter_element.element_name %>").chosen({search_contains: true, width: '100%'});
 	  <% if filter_element.enabled_for_quick_filter %>
 	    $("#chbx-<%= filter_element.element_name %>").prop('checked', true);
 	  <% end %>
 	<% end %>
+
+  $("#fullFilter").on('shown.bs.modal', function (){
+	  $('.chzn-select', this).chosen({search_contains: true});
+	});
+
+  var lastParametersUsed =[];
 	
 	function refreshData() {
 		var parameters = [];
+		lastParametersUsed =[];
 		<% @global_filter.filter_elements.each do |filter_element|  %>
 		  parameters.push({'<%= filter_element.element_name %>': $("#<%= filter_element.element_name %>").val()}); 
 		<% end %>
@@ -59,13 +66,28 @@
 	    var parameter_value = arrayItem[parameter_key];
 	    if (parameter_value !== null) {
 		    url +=  parameter_key + "=" + parameter_value + "&"
+		    lastParametersUsed.push({attribute_name: parameter_key, attribute_value: parameter_value});  
  	    }
     }); 
+    console.log(lastParametersUsed);
 	  $.get(url, function(data){
-		  console.log(data);
+		  console.log(lastParametersUsed);
+		  var chart = $("#global_view").highcharts();
+		  var newData;
+		  if (typeof(data) != "object") {
+         newData = $.parseJSON(data);
+      } else {
+         newData = data;
+      }
+      $.each(chart.series, function( index, value ) {
+          chart.series[index].setData(newData[index].data.map(Number));
+        }); 
 	  });
 	  
 	}
+	
+	
+	
 	
 </script>
 

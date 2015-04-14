@@ -74,7 +74,7 @@ class DashboardController < ApplicationController
     @response = []
     @location_groups.each do |lg|
       @response << {name: lg.name, data: [lg.source_exception_quantity(product_categories: product_categories).to_i,
-					  lg.make_exception_quantity(product_categories: product_categories).to_i,
+					                                lg.make_exception_quantity(product_categories: product_categories).to_i,
                                           lg.move_exception_quantity(product_categories: product_categories).to_i,
                                           lg.store_exception_quantity(product_categories: product_categories).to_i,
                                           lg.deliver_exception_quantity(product_categories: product_categories).to_i]}
