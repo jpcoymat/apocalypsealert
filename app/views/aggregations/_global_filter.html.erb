@@ -19,7 +19,7 @@
 					  <div class="form-group">
 						  <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-xs-3 control-label" %>
 						  <div class="col-xs-5">
-					      <%= select_tag filter_element.element_name, options_from_collection_for_select(filter_element.filter_options, "id", "name"), multiple: filter_element.multiselectable, class: 'form-control chosen-select', id: "pop-"+filter_element.element_name, data: {placeholder: ''} %>
+					      <%= select_tag filter_element.element_name, options_from_collection_for_select(filter_element.filter_options, "id", "name"), multiple: filter_element.multiselectable, class: 'form-control chosen-select', id: "pop-"+filter_element.element_name  %>
 					    </div>
 					    <div class="checkbox" >
 						    <label>
