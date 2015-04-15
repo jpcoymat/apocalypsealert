@@ -1,2 +1,83 @@
-<h1>Aggregations#source</h1>
-<p>Find me in app/views/aggregations/source.html.erb</p>
+<% content_for :head do %>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<% end %>
+
+<h1>Source View</h1>
+
+<div id="source_view" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script type="text/javascript">
+$(function () {
+    $('#source_view').highcharts({
+	      chart: {
+				  type: 'column'
+				},
+        title: {
+          text: 'Source Phase Summary'
+        },
+        xAxis: {
+          categories: [
+          <% @product_categories.each do |pc| %>
+            '<%= pc.name %>'
+            <% unless pc == @product_categories.last %>
+              ,
+            <% end %>
+          <% end %> 
+          ],
+					title: {text: "Product Categories"}
+        },
+        yAxis: {
+				  min: 0,
+				  title: {
+				    text: 'Total Quantity'
+				  },
+				  stackLabels: {
+					  enabled: true,
+					  style: {
+						  fontWeight: 'bold',
+							color:  'gray'
+						}
+				  }
+				},
+				legend: {
+				  align: 'right',
+					x: -30,
+					verticalAlign: 'top',
+					y: 25,
+					floating: true,
+					backgroundColor: 'white',
+					borderColor: '#CCC',
+					borderWidth: 1,
+					shadow: false
+				},
+				tooltip: {
+				  formatter: function () {
+					  return '<b>' + this.x + '</b><br/>' + this.series.name + ': ' + this.y + '<br/>' + 'Total: ' + this.point.stackTotal;
+					}
+			  },	
+        series: [
+          <% @chart_data.each do |chart_series| %>
+            {name: '<%= chart_series[:name] %>',
+            data: <%= chart_series[:data] %> }
+            <% unless chart_series == @chart_data.last %>
+              ,
+            <% end %>  
+          <% end %>
+        ],
+        plotOptions: {
+		      column: {
+            stacking: 'normal',
+            dataLabels: {
+	            enabled: true,
+	            color:  'white',
+	            style: {
+		            textShadow: '0 0 3px black'
+	            }
+            }			
+ 		      }
+        }
+    });
+});
+
+</script>
+

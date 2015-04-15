@@ -4,22 +4,36 @@ class AggregationsController < ApplicationController
   before_action :set_global_filter
 
   def global
-    @filter_partial = "global_filter"
+    @target_url = aggregations_refresh_global_path
+    @chart_div_id = "global_view"
   end
 
   def source
-    @source_filter = Filter.new("source")
-    @suppliers = FilterElement.new("suppliers")
-    @source_filter.filter_elements = [@suppliers]
-    
+    @supplier_filter = FilterElement.new(element_name: "suppliers", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true, filter_options: @other_orgs)
+    @filter_object.filter_elements << @supplier_filter
+    populate_filter_parameters
+    @order_line_ids = object_filter("OrderLine")
+    @order_lines = OrderLine.where(id: @order_line_ids)
+    @chart_data = []
+    OrderLine.statuses.each do |k,v|
+      status_hash = {name: k.titleize}
+      status_data = []
+      @product_categories.each do |pc|
+        status_data <<  @order_lines.where(product_id: pc.products, status: v).sum(:quantity).to_i
+      end
+      status_hash[:data] = status_data
+      @chart_data << status_hash
+    end
+        
   end
 
   def move
-    @move_filter = Filter.new("move")
-    @modes = FilterElement.new("mode")
-    @carriers = FilterElement.new("carriers")
-    @forwarders = FilterElement.new("forwarders")
+    @move_filter = Filter.new(filter_name: "move")
+    @modes = FilterElement.new(element_name: "mode", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true)
+    @carriers = FilterElement.new(element_name:"carriers", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true)
+    @forwarders = FilterElement.new(element_name:"forwarders", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true)
     @move_filter.filter_elements = [@modes, @carriers, @forwarders]
+    @shipmen_line_ides = object_filter("ShipmentLine")
   end
   
   def refresh_global
@@ -53,29 +67,7 @@ class AggregationsController < ApplicationController
       format.html {render json: @response }
     end
   end
-     
-  def source
-    shipment_ids = []
-    shipment_attribute_results = {}
-    user_params = params
-    user_params.delete("controller")
-    user_params.delete("action")    
-    user_params.each do |key,value|
-      shipment_attribute_results[key] = []
-      values = value.split(",").map { |s| s.to_i }
-      for val in values
-        sat = AttributeTracker.new("ShipmentLine", key, val)
-        shipment_attribute_results[key] += sat.value 
-      end
-    end
-    shipment_ids = shipment_attribute_results[shipment_attribute_results.first.first]
-    shipment_attribute_results.each do |k,v|
-      shipment_ids &= v unless k==shipment_attribute_results.first.first
-    end
-    
-  end
-
-  
+       
   protected
   
     def set_master_data
@@ -90,15 +82,44 @@ class AggregationsController < ApplicationController
     
     def set_global_filter
       set_master_data
-      @global_filter = Filter.new(filter_name: "global")
+      @filter_object = Filter.new(filter_name: "global")
       @products_filter = FilterElement.new(element_name: "product_id", filter_options: @products, multiselectable: true, enabled_for_quick_filter: true)
       @product_categories_filter = FilterElement.new(element_name: "product_category_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @product_categories)
       @origin_locations_filter = FilterElement.new(element_name: "origin_location_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @locations)
       @origin_location_groups_filter = FilterElement.new(element_name: "origin_location_group_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @location_groups)
       @destination_locations_filter = FilterElement.new(element_name: "destination_location_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @locations)
       @destination_location_groups_filter = FilterElement.new(element_name: "destination_location_group_id", multiselectable: true, enabled_for_quick_filter: true, filter_options: @location_groups)
-      @global_filter.filter_elements = [@products_filter, @product_categories_filter, @origin_locations_filter, @origin_location_groups_filter, @destination_locations_filter, @destination_location_groups_filter]
+      @filter_object.filter_elements = [@products_filter, @product_categories_filter, @origin_locations_filter, @origin_location_groups_filter, @destination_locations_filter, @destination_location_groups_filter]
     end
 
+    def object_filter(object_class)
+      object_ids = []
+      object_attribute_results = {}
+      user_params = params
+      user_params.delete("controller")
+      user_params.delete("action")    
+      user_params.each do |key,value|
+        object_attribute_results[key] = []
+        values = value.split(",").map { |s| s.to_i }
+        for val in values
+          at = AttributeTracker.new(object_class, key, val)
+          object_attribute_results[key] += at.value 
+        end
+      end
+      object_ids = object_attribute_results[object_attribute_results.first.first]
+      object_attribute_results.each do |k,v|
+        object_ids &= v unless k==object_attribute_results.first.first
+      end
+      return object_ids
+    end
+    
+    def populate_filter_parameters
+      params.each do |k,v|
+        array_index = @filter_object.filter_elements.find_index {|filter_elem| filter_elem.element_name == k}
+        if array_index
+          @filter_object.filter_elements[array_index].element_value = v
+        end
+      end
+    end
   
 end
