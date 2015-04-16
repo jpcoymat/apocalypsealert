@@ -11,6 +11,10 @@ Rails.application.routes.draw do
   get 'aggregations/move'
   
   get 'aggregations/refresh_global'
+  
+  get 'aggregations/refresh_source'
+  
+  get 'aggregations/refresh_move'
 
   mount Resque::Server.new, at: "/resque"
 
@@ -175,6 +179,6 @@ Rails.application.routes.draw do
     get 'category_breakdown', action: "category_breakdown"
   end
 
-  root to: 'dashboard#index'
+  root to: 'aggregations#global'
 
 end

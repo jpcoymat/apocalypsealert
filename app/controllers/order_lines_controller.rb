@@ -15,6 +15,8 @@ class OrderLinesController < ApplicationController
     @locations = @user_org.locations
     @all_order_lines = @user_org.order_lines
     @organizations = Organization.all
+    @product_categories = @user_org.product_categories
+    @order_lines = []
     if request.post? 
       @order_lines = @all_order_lines.where(search_params).order(:order_line_number)
       @order_line = @order_lines.first 
@@ -146,14 +148,22 @@ class OrderLinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_line_params
-      params.require(:order_line).permit(:status, :order_type, :is_active, :product_name, :order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :supplier_organization_id, :customer_organization_id)
+      params.require(:order_line).permit(:status, :order_type, :is_active, :product_name, :order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :supplier_organization_id, :customer_organization_id, :product_ctegory_name, :product_category_id)
     end
 
     def search_params
       search_params = order_line_params.delete_if {|k,v| v.blank?}
-      if search_params.key?("product_name")
+      if search_params.key?("product_id")
+        nil
+      elsif search_params.key?("product_name")
         search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.try(:id)
         search_params.delete("product_name")
+      elsif search_params.key?("product_category_id")
+        search_params["product_id"] =  Product.where(product_category_id: search_params["product_category_id"]).all
+        search_params.delete("product_category_id")
+      elsif search_params.key?("product_category_name")
+        search_params["product_id"] = ProductCategory.where(name: search_params["product_category_name"]).try(:products).try(:all)
+        search_params.delete("product_category_name")
       end
       search_params
     end

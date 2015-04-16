@@ -18,14 +18,18 @@ class FilterElement
     @element_name.gsub("_id","").try(:titleize)
   end
   
-  def options_for_collect
-    options = ""
-    @filter_options.each do |option|
-      options += '<option value="' + option.try(:id).try(:to_s) + '">' + option.try(:name) + '</option>'
+  def filter_select_options
+    options_string = ""
+    @filter_options.each do |filter_option|
+      if filter_option.class.to_s == "String"
+        options_string += '<option value="' + filter_option + '">' + filter_option + '</option>'
+      else
+        options_string += '<option value="' + filter_option.try(:id).try(:to_s) + '">' + filter_option.try(:name).try(:to_s) + '</option>'
+      end      
     end
-    return options
+    return options_string
   end
-
+  
 
 end
    

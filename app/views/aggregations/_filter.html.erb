@@ -1,7 +1,7 @@
 <h3>Quick Filter <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#fullFilter">Pop</button></h3>
 <ul class="nav nav-pills nav-stacked">
 <% @filter_object.filter_elements.each do |filter_element| %>
-  <li><%= select_tag filter_element.element_name, options_from_collection_for_select(filter_element.filter_options, "id", "name"), multiple: filter_element.multiselectable, class: 'form-control chosen-select', data: {placeholder: filter_element.display_name} %></li>
+  <li><%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chosen-select', data: {placeholder: filter_element.display_name} %></li>
 <% end %>
 <li><button type="submit" class="btn btn-primary" onclick="javacript:refreshData()">Refresh</button></li>
 </ul>
@@ -19,7 +19,7 @@
 					  <div class="form-group">
 						  <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-xs-3 control-label" %>
 						  <div class="col-xs-5">
-					      <%= select_tag filter_element.element_name, options_from_collection_for_select(filter_element.filter_options, "id", "name"), multiple: filter_element.multiselectable, class: 'form-control chzn-select', id: "pop-"+filter_element.element_name,  tabindex: "2"  %>
+					      <%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chzn-select', id: "pop-"+filter_element.element_name,  tabindex: "2"  %>
 					    </div>
 					    <div class="checkbox" >
 						    <label>
@@ -40,6 +40,9 @@
 
 
 <script type="text/javascript" charset="utf-8">
+  
+  var lastParametersUsed =[];
+
 	<% @filter_object.filter_elements.each do |filter_element| %>
 	  $("#<%= filter_element.element_name %>").chosen({search_contains: true});
 	  <% if filter_element.enabled_for_quick_filter %>
@@ -47,6 +50,7 @@
 	  <% end %>
 	  <% if filter_element.element_value %>
 	  $("#<%= filter_element.element_name %>").val(<%= filter_element.element_value %>);
+	  lastParametersUsed.push({attribute_name: '<%= filter_element.element_name %>', attribute_value: '<%= filter_element.element_value %>'});
  	  $("#<%= filter_element.element_name %>").trigger("chosen:updated");
 	  <% end %>
 	<% end %>
@@ -55,7 +59,6 @@
 	  $('.chzn-select', this).chosen({search_contains: true});
 	});
 
-  var lastParametersUsed =[];
 	
 	function refreshData() {
 		var parameters = [];

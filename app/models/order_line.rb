@@ -52,6 +52,10 @@ class OrderLine < ActiveRecord::Base
   def self.major_attributes
     @@major_attributes = [:origin_location_id, :origin_location_group_id, :destination_location_id, :destination_location_group_id, :supplier_organization_id, :product_id, :product_category_id, :order_type]
   end
+  
+  def self.records_for_organization(organization: organization)
+    where("customer_organization_id = ? or supplier_organization_id = ?", organization.id, organization.id)
+  end
 
   def origin_location
     @origin_location = Location.where(id: self.origin_location_id).first

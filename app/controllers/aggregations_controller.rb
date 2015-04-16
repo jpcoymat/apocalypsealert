@@ -1,39 +1,12 @@
 class AggregationsController < ApplicationController
 
   before_filter :authorize
-  before_action :set_global_filter
+  before_action :set_global_filter, only: [:global, :source, :move]
+  before_action :populate_filter_parameters, only: [:global, :source, :move]
 
   def global
     @target_url = aggregations_refresh_global_path
     @chart_div_id = "global_view"
-  end
-
-  def source
-    @supplier_filter = FilterElement.new(element_name: "suppliers", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true, filter_options: @other_orgs)
-    @filter_object.filter_elements << @supplier_filter
-    populate_filter_parameters
-    @order_line_ids = object_filter("OrderLine")
-    @order_lines = OrderLine.where(id: @order_line_ids)
-    @chart_data = []
-    OrderLine.statuses.each do |k,v|
-      status_hash = {name: k.titleize}
-      status_data = []
-      @product_categories.each do |pc|
-        status_data <<  @order_lines.where(product_id: pc.products, status: v).sum(:quantity).to_i
-      end
-      status_hash[:data] = status_data
-      @chart_data << status_hash
-    end
-        
-  end
-
-  def move
-    @move_filter = Filter.new(filter_name: "move")
-    @modes = FilterElement.new(element_name: "mode", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true)
-    @carriers = FilterElement.new(element_name:"carriers", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true)
-    @forwarders = FilterElement.new(element_name:"forwarders", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true)
-    @move_filter.filter_elements = [@modes, @carriers, @forwarders]
-    @shipmen_line_ides = object_filter("ShipmentLine")
   end
   
   def refresh_global
@@ -67,6 +40,34 @@ class AggregationsController < ApplicationController
       format.html {render json: @response }
     end
   end
+
+
+  def source
+    @filter_object.filter_elements << FilterElement.new(element_name: "supplier_organization_id", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true, filter_options: @other_orgs)
+    @target_url = aggregations_refresh_source_path
+    @chart_div_id = "source_view"        
+    source_chart_data
+    
+  end
+
+  def refresh_source
+    source_chart_data
+    respond_to do |format|
+      format.html {render json: @chart_data }
+      format.json {render json: @chart_data }
+    end
+  end
+
+  def move
+    @filter_object.filter_elements << FilterElement.new(element_name: "mode", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true, filter_options: ShipmentLine.modes)
+    @filter_object.filter_elements << FilterElement.new(element_name: "carrier_organization_id", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true, filter_options: @other_orgs)
+    @filter_object.filter_elements << FilterElement.new(element_name: "forwarder_organization_id", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true,filter_options: @other_orgs)
+  end
+
+
+  def refresh_move
+    
+  end
        
   protected
   
@@ -97,18 +98,22 @@ class AggregationsController < ApplicationController
       object_attribute_results = {}
       user_params = params
       user_params.delete("controller")
-      user_params.delete("action")    
-      user_params.each do |key,value|
-        object_attribute_results[key] = []
-        values = value.split(",").map { |s| s.to_i }
-        for val in values
-          at = AttributeTracker.new(object_class, key, val)
-          object_attribute_results[key] += at.value 
+      user_params.delete("action")   
+      unless user_params.empty? 
+        user_params.each do |key,value|
+          object_attribute_results[key] = []
+          values = value.split(",").map { |s| s.to_i }
+          for val in values
+            at = AttributeTracker.new(object_class, key, val)
+            object_attribute_results[key] += at.value 
+          end
         end
-      end
-      object_ids = object_attribute_results[object_attribute_results.first.first]
-      object_attribute_results.each do |k,v|
-        object_ids &= v unless k==object_attribute_results.first.first
+        object_ids = object_attribute_results[object_attribute_results.first.first]
+        object_attribute_results.each do |k,v|
+          object_ids &= v unless k==object_attribute_results.first.first
+        end
+      else
+        object_ids = eval("#{object_class}.records_for_organization(organization: User.find(session[:user_id]).organization)")
       end
       return object_ids
     end
@@ -119,6 +124,27 @@ class AggregationsController < ApplicationController
         if array_index
           @filter_object.filter_elements[array_index].element_value = v
         end
+      end
+    end
+    
+    def move_chart_data
+      @shipment_line_ids = object_filter("ShipmentLine")
+      @shipment_lines = ShipmentLine.where(id: @shipment_line_ids)
+    end
+    
+    def source_chart_data
+      @product_categories = User.find(session[:user_id]).organization.product_categories
+      @order_line_ids = object_filter("OrderLine")
+      @order_lines = OrderLine.where(id: @order_line_ids)
+      @chart_data = []
+      OrderLine.statuses.each do |k,v|
+        status_hash = {name: k.titleize, status_value: v}
+        status_data = []
+        @product_categories.each do |pc|
+          status_data <<  @order_lines.where(product_id: pc.products, status: v).sum(:quantity).to_i
+        end
+        status_hash[:data] = status_data
+        @chart_data << status_hash
       end
     end
   

@@ -38,6 +38,9 @@ class ShipmentLine < ActiveRecord::Base
     @@major_attributes = [:origin_location_id, :origin_location_group_id, :destination_location_id, :destination_location_group_id, :carrier_organization_id, :product_id, :product_category_id, :shipment_type, :forwarder_organization_id, :mode]
   end
 
+  def self.records_for_organization(organization: organization)
+    where("carrier_organization_id = ? or forwarder_organization_id = ? or customer_organization_id = ?", organization.id, organization.id, organization.id)
+  end
 
   def origin_location
     @origin_location = Location.where(id: self.origin_location_id).first

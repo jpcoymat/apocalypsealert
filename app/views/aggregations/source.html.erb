@@ -5,12 +5,13 @@
 
 <h1>Source View</h1>
 
-<div id="source_view" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div id="source_view" style="min-width: 310px; height: 600px; margin: 0 auto"></div>
 <script type="text/javascript">
 $(function () {
     $('#source_view').highcharts({
 	      chart: {
-				  type: 'column'
+				  type: 'column',
+				  marginBottom: 120
 				},
         title: {
           text: 'Source Phase Summary'
@@ -40,10 +41,6 @@ $(function () {
 				  }
 				},
 				legend: {
-				  align: 'right',
-					x: -30,
-					verticalAlign: 'top',
-					y: 25,
 					floating: true,
 					backgroundColor: 'white',
 					borderColor: '#CCC',
@@ -58,6 +55,7 @@ $(function () {
         series: [
           <% @chart_data.each do |chart_series| %>
             {name: '<%= chart_series[:name] %>',
+             series_value: '<%= chart_series[:status_value] %>',
             data: <%= chart_series[:data] %> }
             <% unless chart_series == @chart_data.last %>
               ,
@@ -65,6 +63,21 @@ $(function () {
           <% end %>
         ],
         plotOptions: {
+					series: {
+		        stacking: 'normal',
+            cursor: 'pointer',
+						point: {
+							events: {
+								click: function() {
+									var url ="<%= lookup_order_lines_path%>?product_category_name=" + this.category + "&";
+									lastParametersUsed.forEach(function(parameter) {
+										url += parameter.attribute_name + "=" + parameter.attribute_value + "&";
+									})
+									location.href = url;
+								}
+							}
+						}
+	        },	        
 		      column: {
             stacking: 'normal',
             dataLabels: {

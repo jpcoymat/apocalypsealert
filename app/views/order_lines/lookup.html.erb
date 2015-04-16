@@ -10,6 +10,7 @@
   <option value="status">Status</option>
   <option value="order_type">Order Type</option>
   <option value="product">Product</option>
+  <option value="product_category">Product Category</option>
   <option value="origin_location">Origin Location</option>
   <option value="destination_location">Destination Location</option>
   <option value="supplier">Supplier</option>
@@ -30,7 +31,6 @@
 <br \>
 <hr>
 <br \>
-<% if request.post? %>
 
   <% if @order_lines.empty? %>
     <p>No Order Lines match your search criteria.</p>
@@ -87,7 +87,6 @@
     </div>
 
   <% end %>
-<% end %>
 <br /> <br />
 <%= link_to "Create New Order Line", new_order_line_path %>
 <br /> <br />
@@ -120,32 +119,35 @@ $(function() {
  
   function addCriteria() {
     var criteriaType = $('#form_criteria').val();
-	switch(criteriaType) {
-	  case "order_line_number":
-	    addOrderLineCriteria();
-            break;
-          case "order_type":
-            addOrderTypeCriteria(); 
-            break;
-          case "status":
-            addStatusCriteria();
-            break;
-	  case "product":
-	    addProductCritera();
-            break;
-	  case "origin_location":
-	    addOriginLocationCriteria();
-            break;
-	  case "destination_location":
-	    addDestinationLocationCriteria();
-            break;
-	  case "supplier":
-	    addSupplierCriteria();
-            break;
-	  case "customer":
-	    addCustomerCriteria();
-            break;
-	}
+	  switch(criteriaType) {
+	    case "order_line_number":
+	      addOrderLineCriteria();
+        break;
+      case "order_type":
+        addOrderTypeCriteria(); 
+        break;
+      case "status":
+        addStatusCriteria();
+        break;
+	    case "product":
+	      addProductCritera();
+        break;
+		  case "product_category":
+		    addProductCategoryCriteria();
+		    break;
+	    case "origin_location":
+	      addOriginLocationCriteria();
+        break;
+	    case "destination_location":
+	      addDestinationLocationCriteria();
+        break;
+	    case "supplier":
+	      addSupplierCriteria();
+        break;
+	    case "customer":
+	      addCustomerCriteria();
+        break;
+	  }
   }
   
   function addOrderLineCriteria() {
@@ -184,6 +186,21 @@ $(function() {
     });
 
     } 
+  }
+
+  function addProductCategoryCriteria() {
+	  var elementExists = checkExistingElement('product_category_name');
+	  if (elementExists) {
+		  null;
+	  }
+	  else {
+		  var htmlToAdd = '<div class="form-group" id="product_category_div"><label class="col-sm-2 control-label" for="order_line_Product Category Name">Product Category</label><div class="col-sm-2"><select class="form-control" id="order_line_product_category_id" name="order_line[product_category_id]">';
+		  <% @product_categories.each do |pc| %>
+		  htmlToAdd += '<option value="<%= pc.id.to_s %>"><%= pc.name %></options>'; 
+		  <% end %>
+		  htmlToAdd += '</select></div><button type="button" class="btn btn-warning" onclick="removeCriteria(\'product_category_div\')"><span class="glyphicon glyphicon-minus"></button></div>';
+		  $('#search_params').append(htmlToAdd);
+	  }  
   }
   
   function addOriginLocationCriteria() {
