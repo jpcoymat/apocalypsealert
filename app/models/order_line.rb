@@ -4,6 +4,7 @@ class OrderLine < ActiveRecord::Base
   enum status: [ :open, :partially_shipped, :fully_shipped, :closed, :cancelled]
 
   belongs_to :product
+  belongs_to :buyer_group
 
   validates :order_line_number, :quantity, :customer_organization_id, :product_id, :eta, :etd, :origin_location_id, :destination_location_id, presence: true
   validates_uniqueness_of :order_line_number, scope: :customer_organization_id
@@ -18,6 +19,8 @@ class OrderLine < ActiveRecord::Base
   has_many :milestones, as: :associated_object
 
   after_save :enqueue_for_attribute_processing
+  
+  before_save :set_cost
 
 
   def self.import(file_path)
@@ -50,7 +53,7 @@ class OrderLine < ActiveRecord::Base
   end
 
   def self.major_attributes
-    @@major_attributes = [:origin_location_id, :origin_location_group_id, :destination_location_id, :destination_location_group_id, :supplier_organization_id, :product_id, :product_category_id, :order_type]
+    @@major_attributes = [:origin_location_id, :origin_location_group_id, :destination_location_id, :destination_location_group_id, :supplier_organization_id, :product_id, :product_category_id, :order_type, :buyer_group_id]
   end
   
   def self.records_for_organization(organization: organization)
@@ -229,6 +232,12 @@ class OrderLine < ActiveRecord::Base
 
     def enqueue_for_attribute_processing
       Resque.enqueue(AttributeBreakdownJob, {object_class: self.class.to_s, object_id: self.id}.to_json)
+    end
+    
+    def set_cost
+      unless self.quantity.nil? 
+        self.total_cost = self.product.try(:unit_cost)*self.quantity
+      end
     end
 
 end

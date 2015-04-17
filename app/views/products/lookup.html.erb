@@ -35,11 +35,14 @@
   <% else %>
     <div class="row">
       <table class="table table-striped">
-        <tr><th>Product Name</th><th>Product Code</th><th>Product Category</th></tr>
+        <tr><th>Product Name</th><th>Product Code</th><th>Product Category</th><th>Unit Weight (KG)</th><th>Unit Vol. (CBM)</th><th>Unit Cost</th></tr>
         <% for product in @products %>
         <tr><td><%= product.name %></td>
           <td><%= product.code %></td>
-          <td><%= product.product_category.try(:name) %></td>
+          <td><%= product.product_category.try(:name) 	%></td>
+					<td><%= product.unit_weight										%></td>
+					<td><%= product.unit_volume										%></td>
+					<td><%= number_to_currency(product.unit_cost)	%></td>
           <td><%= link_to "Edit", edit_product_path(product) %></td>
           <% if product.deleteable? %>
            <td><%= button_to "Destroy", product_path(product), method: :delete %></td>

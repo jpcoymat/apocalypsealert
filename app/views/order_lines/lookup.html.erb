@@ -37,15 +37,16 @@
   <% else %>
     <table class="table table-fixedheader">
     <thead>
-      <tr> <th width="10%">Order Number </th> 
+      <tr> <th width="10%">Ord Nbr </th> 
            <th width="10%">Status</th> 
-           <th width="7.5%">ETD</th> 
-           <th width="7.5%">ETA</th> 
-           <th width="20%">Product</th> 
+           <th width="5%">ETD</th> 
+           <th width="5%">ETA</th> 
+           <th width="15%">Product</th> 
            <th width="10%">Order Qty</th> 
+					 <th width="10%">Total Cost</th>
            <th width="10%">Shipped Qty</th>
-           <th width="15%">Shipment Count</th>
-           <th colspan="2" width="10%"> Options </th> 
+           <th width="10%">Shipment Count</th>
+           <th colspan="2" width="15%"> Options </th> 
       </tr>
     </thead>
     <tbody style="height:350px">
@@ -57,10 +58,11 @@
           >
               <td width="10%"><%= order_line.order_line_number %></td>
               <td width="10%"><%= order_line.status.titleize %></td>
-              <td width="7.5%"><%= order_line.etd.to_formatted_s(:short) %></td>
-              <td width="7.5%"><%= order_line.eta.to_formatted_s(:short) %></td>
-              <td width="20%"><%= order_line.product.name %></td>
+              <td width="5%"><%= order_line.etd.to_formatted_s(:short) %></td>
+              <td width="5%"><%= order_line.eta.to_formatted_s(:short) %></td>
+              <td width="15%"><%= order_line.product.name %></td>
               <td width="10%"><%= number_with_delimiter(order_line.quantity)        %></td>
+							<td width="10%"><%= number_to_currency(order_line.total_cost)					%></td>
               <td width="10%"><%= number_with_delimiter(order_line.shipped_quantity) %></td>
               <td width="15%">
               <% if order_line.total_shipments > 0 %>

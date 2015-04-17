@@ -17,6 +17,8 @@ class ShipmentLine < ActiveRecord::Base
   has_many :milestones, as: :associated_object
 
   after_save :enqueue_for_attribute_processing
+  
+  before_save :calculate_weight_volume_cost
  
   def next_leg_shipment
     @next_leg_shipment = nil
@@ -220,6 +222,25 @@ class ShipmentLine < ActiveRecord::Base
       Resque.enqueue(AttributeBreakdownJob, {object_class: self.class.to_s, object_id: self.id}.to_json)
     end
     
+    def calculate_weight_volume_cost
+      unless self.quantity.nil?
+        calculate_weight
+        calculate_volume
+        calculate_cost
+      end
+    end
+    
+    def calculate_weight
+      self.total_weight = self.quantity*self.product.try(:unit_weight)
+    end
+    
+    def calculate_volume
+      self.total_volume = self.quantity*self.product.try(:unit_volume)
+    end
+    
+    def calculate_cost
+      self.total_cost = self.quantity*self.product.try(:unit_cost)
+    end
 
 
 end

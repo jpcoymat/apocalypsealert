@@ -1,17 +1,18 @@
 <h1>Order Line Details</h1>
 <dl class="dl-horizontal">
-                <dt>Order Line Number    	</dt>   <dd><%= @order_line.order_line_number  	%></dd>
-		<dt>Status			</dt>	<dd><%= @order_line.status.titleize	%></dd>
-		<dt>Order Type			</dt>	<dd><%= @order_line.order_type.titleize %></dd>
-  		<dt>Customer Organization	</dt>	<dd><%= @order_line.customer_organization_name	%></dd>
-		<dt>Supplier Organization	</dt>	<dd><%= @order_line.supplier_organization_name 	%></dd>
-                <dt>ETA    			</dt>   <dd><%= @order_line.eta.to_formatted_s(:short)			%></dd>
-                <dt>ETD	 			</dt>   <dd><%= @order_line.etd.to_formatted_s(:short)			%></dd>
-                <dt>Product             	</dt>   <dd><%= @order_line.product.name             		%></dd>
-                <dt>Origin Location     	</dt>   <dd><%= @order_line.origin_location.try(:name)        	%></dd>
-		<dt>Destination Location	</dt>	<dd><%= @order_line.destination_location.try(:name)	%></dd>	
-                <dt>Quantity			</dt>	<dd><%= @order_line.quantity.to_s	%></dd>
-        </dl>
+	<dt>Order Line Number    	</dt> <dd><%= @order_line.order_line_number  	%></dd>
+	<dt>Status								</dt>	<dd><%= @order_line.status.titleize	%></dd>
+	<dt>Order Type						</dt>	<dd><%= @order_line.order_type.titleize %></dd>
+  <dt>Customer Organization	</dt>	<dd><%= @order_line.customer_organization_name	%></dd>
+	<dt>Supplier Organization	</dt>	<dd><%= @order_line.supplier_organization_name 	%></dd>
+  <dt>ETA    								</dt> <dd><%= @order_line.eta.to_formatted_s(:short)			%></dd>
+  <dt>ETD	 									</dt> <dd><%= @order_line.etd.to_formatted_s(:short)			%></dd>
+  <dt>Product             	</dt> <dd><%= @order_line.product.name             		%></dd>
+  <dt>Origin Location     	</dt>	<dd><%= @order_line.origin_location.try(:name)        	%></dd>
+	<dt>Destination Location	</dt>	<dd><%= @order_line.destination_location.try(:name)	%></dd>	
+  <dt>Quantity							</dt>	<dd><%= @order_line.quantity.to_s	%></dd>
+  <dt>Total Cost						</dt>	<dd><%= number_to_currency @order_line.total_cost	%></dd>
+</dl>
 <br /><br />
 <h4>Associated Ship Lines</h4>
 

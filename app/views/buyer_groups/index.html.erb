@@ -1,0 +1,29 @@
+<h1>Listing buyer_groups</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Organization</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @buyer_groups.each do |buyer_group| %>
+      <tr>
+        <td><%= buyer_group.organization_id %></td>
+        <td><%= buyer_group.name %></td>
+        <td><%= buyer_group.description %></td>
+        <td><%= link_to 'Show', buyer_group %></td>
+        <td><%= link_to 'Edit', edit_buyer_group_path(buyer_group) %></td>
+        <td><%= link_to 'Destroy', buyer_group, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Buyer group', new_buyer_group_path %>

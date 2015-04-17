@@ -16,3 +16,21 @@
     <%= form.select :product_category_id, @user.organization.product_categories.collect {|pc| [pc.name, pc.id]}, {include_blank: true}, class: "form-control" %>
   </div>
 </div> 
+<div class="form-group">
+  <%= form.label "Unit Weight (KG)", class: "col-sm-2 control-label"  %> 
+  <div class="col-xs-4">
+    <%= form.text_field :unit_weight, class: "form-control"  %>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Unit Volume (CBM)", class: "col-sm-2 control-label"  %> 
+  <div class="col-xs-4">
+    <%= form.text_field :unit_volume, class: "form-control"  %>
+  </div>
+</div>
+<div class="form-group">
+  <%= form.label "Unit Cost (USD$)", class: "col-sm-2 control-label"  %> 
+  <div class="col-xs-4">
+    <%= form.text_field :unit_cost, class: "form-control"  %>
+  </div>
+</div>

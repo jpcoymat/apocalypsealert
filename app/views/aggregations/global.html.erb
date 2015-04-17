@@ -4,7 +4,9 @@
 <% end %>
 
 <h1>Global View</h1>
-
+<div class="row">
+	<label>View Attribute</label> <%= select_tag "view_attribute", '<option value="quantity">Quantity</option><option value="cost">Cost</option>' %>
+</div>
 <div id="global_view" style="min-width: 310px; height: 600px; margin: 0 auto"></div>
 <script type="text/javascript">
 $(function () {

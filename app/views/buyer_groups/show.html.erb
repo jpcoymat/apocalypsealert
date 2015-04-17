@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Organization:</strong>
+  <%= @buyer_group.organization_id %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @buyer_group.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @buyer_group.description %>
+</p>
+
+<%= link_to 'Edit', edit_buyer_group_path(@buyer_group) %> |
+<%= link_to 'Back', buyer_groups_path %>

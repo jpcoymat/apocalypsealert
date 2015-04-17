@@ -11,10 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141018223903) do
+ActiveRecord::Schema.define(version: 20150416202334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "buyer_groups", force: true do |t|
+    t.integer  "organization_id"
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "filters", force: true do |t|
+    t.string "filter_name"
+    t.text   "filter_elements"
+    t.string "page"
+  end
 
   create_table "inventory_projections", force: true do |t|
     t.integer  "location_id"
@@ -90,6 +104,8 @@ ActiveRecord::Schema.define(version: 20141018223903) do
     t.boolean  "is_active"
     t.string   "order_type"
     t.integer  "status",                   default: 0
+    t.integer  "buyer_group_id"
+    t.decimal  "total_cost"
   end
 
   create_table "organizations", force: true do |t|
@@ -117,6 +133,18 @@ ActiveRecord::Schema.define(version: 20141018223903) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "product_category_id"
+    t.decimal  "unit_cost"
+    t.decimal  "unit_weight"
+    t.decimal  "unit_volume"
+  end
+
+  create_table "saved_search_criteria", force: true do |t|
+    t.string   "name"
+    t.string   "filter_name"
+    t.text     "parameters"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "organization_id"
   end
 
   create_table "scv_exceptions", force: true do |t|
@@ -156,6 +184,9 @@ ActiveRecord::Schema.define(version: 20141018223903) do
     t.boolean  "is_active"
     t.string   "shipment_type"
     t.integer  "status",                    default: 0
+    t.decimal  "total_cost"
+    t.decimal  "total_weight"
+    t.decimal  "total_volume"
   end
 
   create_table "users", force: true do |t|
@@ -167,6 +198,7 @@ ActiveRecord::Schema.define(version: 20141018223903) do
     t.integer  "organization_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "saved_search_criteria_id"
   end
 
   create_table "work_orders", force: true do |t|
