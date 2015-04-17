@@ -5,8 +5,11 @@ class AggregationsController < ApplicationController
   before_action :populate_filter_parameters, only: [:global, :source, :move]
 
   def global
+    @user_org = User.find(session[:user_id]).organization
     @target_url = aggregations_refresh_global_path
     @chart_div_id = "global_view"
+    @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(customer_organization_id: @user_org.id)[0]
+    @ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(customer_organization_id: @user_org.id)[0]
   end
   
   def refresh_global
@@ -15,26 +18,35 @@ class AggregationsController < ApplicationController
     user_params = params
     user_params.delete("controller")
     user_params.delete("action")    
-    user_params.each do |key,value|
-      order_attribute_results[key], shipment_attribute_results[key] = [],[] 
-      values = value.split(",").map { |s| s.to_i }
-      for val in values
-        oat = AttributeTracker.new("OrderLine", key, val)
-        order_attribute_results[key] += oat.value
-        sat = AttributeTracker.new("ShipmentLine", key, val)
-        shipment_attribute_results[key] += sat.value 
+    unless user_params.empty?
+      user_params.each do |key,value|
+        order_attribute_results[key], shipment_attribute_results[key] = [],[] 
+        values = value.split(",").map { |s| s.to_i }
+        for val in values
+          oat = AttributeTracker.new("OrderLine", key, val)
+          order_attribute_results[key] += oat.value
+          sat = AttributeTracker.new("ShipmentLine", key, val)
+          shipment_attribute_results[key] += sat.value 
+        end
+     end
+      order_ids = order_attribute_results[order_attribute_results.first.first]
+      order_attribute_results.each do |k,v|
+        order_ids &= v unless k==order_attribute_results.first.first
       end
+      shipment_ids = shipment_attribute_results[shipment_attribute_results.first.first]
+      shipment_attribute_results.each do |k,v|
+        shipment_ids &= v unless k==shipment_attribute_results.first.first
+      end
+    else
+       user_org = User.find(session[:user_id]).organization
+       order_ids = user_org.order_lines.ids
+       shipment_ids = user_org.shipment_lines.ids
     end
-    order_ids = order_attribute_results[order_attribute_results.first.first]
-    order_attribute_results.each do |k,v|
-      order_ids &= v unless k==order_attribute_results.first.first
-    end
-    shipment_ids = shipment_attribute_results[shipment_attribute_results.first.first]
-    shipment_attribute_results.each do |k,v|
-      shipment_ids &= v unless k==shipment_attribute_results.first.first
-    end
-    @response = [{name: "Quantity", data: [OrderLine.where(id: order_ids).sum(:quantity), 
-                                          ShipmentLine.where(id: shipment_ids).sum(:quantity) ] } ]
+    order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: order_ids)[0]
+    ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: shipment_ids)[0]
+    @response = {quantity: {name: "Quantity", data: [order_line_data.quantity, ship_line_data.quantity ] },
+                  cost: {name: "Cost", data: [order_line_data.total_cost, ship_line_data.total_cost ] } } 
+    logger.debug @response.to_json
     respond_to do |format|
       format.json {render json: @response }
       format.html {render json: @response }

@@ -41,30 +41,18 @@
 
 <script type="text/javascript" charset="utf-8">
   
-  var lastParametersUsed =[];
+  var lastParametersUsed;
+  var newData;
+  var serverData = {quantity: {name: "Quantity", data: [<%= @order_line_data.quantity.to_i %>, <%= @ship_line_data.quantity.to_i %> ] },
+                   cost: {name: "Cost", data: [<%= @order_line_data.total_cost.to_i %>, <%= @ship_line_data.total_cost.to_i %>] } }; 
+  var attribute_view = "quantity"
 
-	<% @filter_object.filter_elements.each do |filter_element| %>
-	  $("#<%= filter_element.element_name %>").chosen({search_contains: true});
-	  <% if filter_element.enabled_for_quick_filter %>
-	  $("#chbx-<%= filter_element.element_name %>").prop('checked', true);
-	  <% end %>
-	  <% if filter_element.element_value %>
-	  $("#<%= filter_element.element_name %>").val(<%= filter_element.element_value %>);
-	  lastParametersUsed.push({attribute_name: '<%= filter_element.element_name %>', attribute_value: '<%= filter_element.element_value %>'});
- 	  $("#<%= filter_element.element_name %>").trigger("chosen:updated");
-	  <% end %>
-	<% end %>
-
-  $("#fullFilter").on('shown.bs.modal', function (){
-	  $('.chzn-select', this).chosen({search_contains: true});
-	});
-
-	
 	function refreshData() {
 		var parameters = [];
+		attribute_view = $("#attribute_view").val();
 		lastParametersUsed =[];
 		<% @filter_object.filter_elements.each do |filter_element|  %>
-		  parameters.push({'<%= filter_element.element_name %>': $("#<%= filter_element.element_name %>").val()}); 
+		parameters.push({'<%= filter_element.element_name %>': $("#<%= filter_element.element_name %>").val()}); 
 		<% end %>
     var url =  "<%= @target_url %>?" 
     parameters.forEach( function(arrayItem) {
@@ -75,23 +63,54 @@
 		    lastParametersUsed.push({attribute_name: parameter_key, attribute_value: parameter_value});  
  	    }
     }); 
-    console.log(lastParametersUsed);
 	  $.get(url, function(data){
-		  console.log(lastParametersUsed);
-		  var chart = $("#<%= @chart_div_id %>").highcharts();
-		  var newData;
 		  if (typeof(data) != "object") {
-         newData = $.parseJSON(data);
+         serverData = $.parseJSON(data);
       } else {
-         newData = data;
+         serverData = data;
       }
+      console.log(serverData);
+      newData = serverData[attribute_view]
+		  var chart = $("#<%= @chart_div_id %>").highcharts();
       $.each(chart.series, function( index, value ) {
-          chart.series[index].setData(newData[index].data.map(Number));
-        }); 
-	  });
-	  
+          chart.series[index].setData(newData.data.map(Number));
+      }); 
+	  }); 
 	}
+
+
+	$(function () {
+
+	<% @filter_object.filter_elements.each do |filter_element| %>
+	$("#<%= filter_element.element_name %>").chosen({search_contains: true});
+	<% if filter_element.enabled_for_quick_filter %>
+	$("#chbx-<%= filter_element.element_name %>").prop('checked', true);
+	<% end %>
+	<% if filter_element.element_value %>
+	$("#<%= filter_element.element_name %>").val(<%= filter_element.element_value %>);
+	lastParametersUsed.push({attribute_name: '<%= filter_element.element_name %>', attribute_value: '<%= filter_element.element_value %>'});
+ 	$("#<%= filter_element.element_name %>").trigger("chosen:updated");
+	<% end %>
+	<% end %>
+
+  $("#fullFilter").on('shown.bs.modal', function (){
+	  $('.chzn-select', this).chosen({search_contains: true});
+	});
+
+  $("#attribute_view").change(function(){
+	  console.log("change happened!");
+	  attribute_view = $(this).val();
+	  newData = serverData[attribute_view];
+	  var chart = $("#<%= @chart_div_id %>").highcharts();
+    $.each(chart.series, function( index, value ) {
+        chart.series[index].setData(newData.data.map(Number));
+        chart.series[index].update({name: newData.name}, false);
+        chart.redraw();
+    }); 
+	   
+  });
 	
+});	
 	
 </script>
 

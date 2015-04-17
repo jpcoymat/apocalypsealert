@@ -4,8 +4,12 @@
 <% end %>
 
 <h1>Global View</h1>
-<div class="row">
-	<label>View Attribute</label> <%= select_tag "view_attribute", '<option value="quantity">Quantity</option><option value="cost">Cost</option>' %>
+<div class="container">
+		<label>View Attribute</label> 
+	  <select id="attribute_view">
+		  <option value="quantity">Quantity</option>
+		  <option value="cost">Cost</option>
+	  </select>
 </div>
 <div id="global_view" style="min-width: 310px; height: 600px; margin: 0 auto"></div>
 <script type="text/javascript">
@@ -18,7 +22,9 @@ $(function () {
             categories: ["Source", "Move"],
 						title: {text: "Phase"}
         },
-        series: [{name: "Quantity", type: 'bar', data: [<%= OrderLine.sum(:quantity).to_i %>, <%= ShipmentLine.sum(:quantity).to_i %>]}],
+        series: [{name: "Quantity", 
+								type: 'bar', 
+								data: [<%= @order_line_data.quantity.to_i %>, <%= @ship_line_data.quantity.to_i %>]}],
         plotOptions: {
 	        series: {
 		        stacking: 'normal',
