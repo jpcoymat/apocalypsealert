@@ -1,49 +1,76 @@
 <% content_for :head do %>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
 <% end %>
 
 <h1>Global View</h1>
 <div class="container">
-		<label>View Attribute</label> 
-	  <select id="attribute_view">
-		  <option value="quantity">Quantity</option>
-		  <option value="cost">Cost</option>
-	  </select>
+  <div class="row" >
+	  <div class="col-md-6">
+	    <button type="button" id="go">Switch View Format</button>
+    </div>
+	  <div class="col-md-6">
+ 		  <label>View Attribute</label> 
+	    <select id="attribute_view">
+		    <option value="quantity">Quantity</option>
+		    <option value="cost">Cost</option>
+	    </select>
+	  </div>
+  </div>
+  <div class="row">
+    <div class="flip-container" >
+	    <div class="page1">
+        <div id="global_view"></div>
+      </div>
+      <div class="page2">
+			  <div id="table_view">
+				  <%= render partial: "global_table" %>
+				</div>
+	    </div>
+	  </div>
+	</div>
 </div>
-<div id="global_view" style="min-width: 310px; height: 600px; margin: 0 auto"></div>
-<script type="text/javascript">
-$(function () {
-    $('#global_view').highcharts({
-        title: {
-            text: 'Supply Chain Summary'
-        },
-        xAxis: {
-            categories: ["Source", "Move"],
-						title: {text: "Phase"}
-        },
-        series: [{name: "Quantity", 
-								type: 'bar', 
-								data: [<%= @order_line_data.quantity.to_i %>, <%= @ship_line_data.quantity.to_i %>]}],
-        plotOptions: {
-	        series: {
-		        stacking: 'normal',
-            cursor: 'pointer',
-						point: {
-							events: {
-								click: function() {
-									var url ="/aggregations/" + this.category.toLowerCase() + "?";
-									lastParametersUsed.forEach(function(parameter) {
-										url += parameter.attribute_name + "=" + parameter.attribute_value + "&";
-									})
-									location.href = url;
+<script type="text/javascript" charset="utf-8">
+	$(function() {
+		
+	  $('#<%= @chart_div_id %>').highcharts({
+	        title: {
+	          text: 'Supply Chain Summary'
+	        },
+	        xAxis: {
+	            categories: serverData[group_by].chart_categories,
+							title: {text: "Phase"}
+	        },
+	        series: [{name: serverData[group_by].series[attribute_view].name, 
+									type: 'bar', 
+									data: serverData[group_by].series[attribute_view].data}],
+	        plotOptions: {
+		        series: {
+			        stacking: 'normal',
+	            cursor: 'pointer',
+							point: {
+								events: {
+									click: function() {
+										var url ="/aggregations/" + this.category.toLowerCase() + "?";
+										lastParametersUsed.forEach(function(parameter) {
+											url += parameter.attribute_name + "=" + parameter.attribute_value + "&";
+										})
+										location.href = url;
+									}
 								}
 							}
-						}
+		        }
 	        }
-		   
-        }
+	  });
+	  $('#go').click(function() {
+      var page1 = $('.page1');
+      var page2 = $('.page2');
+      var toHide = page1.is(':visible') ? page1 : page2;
+      var toShow = page2.is(':visible') ? page1 : page2;
+         
+      toHide.removeClass('flip in').addClass('flip out').hide();
+      toShow.removeClass('flip out').addClass('flip in').show();
     });
-});
-
+	});
 </script>

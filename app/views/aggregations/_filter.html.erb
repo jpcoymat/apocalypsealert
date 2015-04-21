@@ -38,80 +38,118 @@
 	  </div>
 </div>
 
+ <script type="text/javascript" charset="utf-8">
 
-<script type="text/javascript" charset="utf-8">
-  
-  var lastParametersUsed;
+  var lastParametersUsed = [];
   var newData;
-  var serverData = {quantity: {name: "Quantity", data: [<%= @order_line_data.quantity.to_i %>, <%= @ship_line_data.quantity.to_i %> ] },
-                   cost: {name: "Cost", data: [<%= @order_line_data.total_cost.to_i %>, <%= @ship_line_data.total_cost.to_i %>] } }; 
-  var attribute_view = "quantity"
+  var serverData = $.parseJSON('<%= @initial_data.to_json.html_safe %>'); 
+  var attribute_view = "quantity";
+  var group_by = '<%= @default_group_by %>';
 
-	function refreshData() {
-		var parameters = [];
+  console.log(serverData);
+
+  function refreshData() {
+    var parameters = [];
 		attribute_view = $("#attribute_view").val();
 		lastParametersUsed =[];
 		<% @filter_object.filter_elements.each do |filter_element|  %>
 		parameters.push({'<%= filter_element.element_name %>': $("#<%= filter_element.element_name %>").val()}); 
 		<% end %>
-    var url =  "<%= @target_url %>?" 
-    parameters.forEach( function(arrayItem) {
-	    var parameter_key =   Object.keys(arrayItem)[0];
-	    var parameter_value = arrayItem[parameter_key];
-	    if (parameter_value !== null) {
-		    url +=  parameter_key + "=" + parameter_value + "&"
-		    lastParametersUsed.push({attribute_name: parameter_key, attribute_value: parameter_value});  
- 	    }
-    }); 
-	  $.get(url, function(data){
+		var url =  "<%= @target_url %>?" 
+		parameters.forEach( function(arrayItem) {
+		  var parameter_key =   Object.keys(arrayItem)[0];
+		  var parameter_value = arrayItem[parameter_key];
+		  if (parameter_value !== null) {
+			  url +=  parameter_key + "=" + parameter_value + "&"
+			  lastParametersUsed.push({attribute_name: parameter_key, attribute_value: parameter_value});  
+		  }
+		}); 
+
+		$.get(url, function(data){
 		  if (typeof(data) != "object") {
-         serverData = $.parseJSON(data);
-      } else {
-         serverData = data;
-      }
-      console.log(serverData);
-      newData = serverData[attribute_view]
+		    serverData = $.parseJSON(data);
+		  } 
+		  else {
+		    serverData = data;
+		  }
+		  resetTable(serverData[group_by]);
+		  newData = serverData[group_by].series[attribute_view];
 		  var chart = $("#<%= @chart_div_id %>").highcharts();
-      $.each(chart.series, function( index, value ) {
-          chart.series[index].setData(newData.data.map(Number));
-      }); 
-	  }); 
+		  $.each(chart.series, function( index, value ) {
+	      chart.series[index].update({data: newData.data}, false);
+		  }); 
+		  chart.redraw();
+		}); 
+  }
+	
+	function resetTable(tableData){
+		console.log(tableData);
+		var columnHeaders = tableData.chart_categories;
+		var series = tableData.series;
+		var html = '<table class="table table-striped" id="global_table"> <tr><th></th>';
+		$.each(columnHeaders, function(index, value) {
+			html += '<th>' + value + '</th>'
+		});
+		html += '</tr>';
+		console.log(series);
+		$.each(series, function(key, value) {
+			console.log(key + ":" + value);
+			html += '<tr>';
+			var serie = value;
+			console.log(serie);
+			$.each(serie, function(key,value){
+				if (key == "name") {
+					console.log("outputting name");
+				  html += '<td>' + value + '</td>';
+			  }
+				else {
+					console.log("outputting serie.data");
+					console.log(value);
+					$.each(value, function(key,value){
+						console.log("looping thru serie.data array values");
+						console.log("key: " + key);
+						console.log("value: " + value);
+	          html += '<td>' + value + '</td>' ;
+				  });
+				}
+			})
+			html += '</tr>';
+		});
+		html += '</table>';
+		console.log(html);
+		$("#global_table").replaceWith(html);
 	}
+	
+	$(function() {
+		
 
+	  <% @filter_object.filter_elements.each do |filter_element| %>
+	  $("#<%= filter_element.element_name %>").chosen({search_contains: true});
+	  <% if filter_element.enabled_for_quick_filter %>
+	  $("#chbx-<%= filter_element.element_name %>").prop('checked', true);
+	  <% end %>
+	  <% if filter_element.element_value %>
+	  $("#<%= filter_element.element_name %>").val(<%= filter_element.element_value %>);
+	  lastParametersUsed.push({attribute_name: '<%= filter_element.element_name %>', attribute_value: '<%= filter_element.element_value %>'});
+	  $("#<%= filter_element.element_name %>").trigger("chosen:updated");
+	  <% end %>
+	  <% end %>
 
-	$(function () {
+	  $("#fullFilter").on('shown.bs.modal', function (){
+	    $('.chzn-select', this).chosen({search_contains: true});
+	  });
 
-	<% @filter_object.filter_elements.each do |filter_element| %>
-	$("#<%= filter_element.element_name %>").chosen({search_contains: true});
-	<% if filter_element.enabled_for_quick_filter %>
-	$("#chbx-<%= filter_element.element_name %>").prop('checked', true);
-	<% end %>
-	<% if filter_element.element_value %>
-	$("#<%= filter_element.element_name %>").val(<%= filter_element.element_value %>);
-	lastParametersUsed.push({attribute_name: '<%= filter_element.element_name %>', attribute_value: '<%= filter_element.element_value %>'});
- 	$("#<%= filter_element.element_name %>").trigger("chosen:updated");
-	<% end %>
-	<% end %>
-
-  $("#fullFilter").on('shown.bs.modal', function (){
-	  $('.chzn-select', this).chosen({search_contains: true});
+	  $("#attribute_view").change(function(){
+	    attribute_view = $(this).val();
+	    var newChartData = serverData[group_by].series[attribute_view];
+	    var chart = $("#<%= @chart_div_id %>").highcharts();
+	    $.each(chart.series, function( index, value ) {
+	      chart.series[index].update({name: newChartData.name, data: newChartData.data}, false);
+	    }); 
+	    chart.redraw();
+	  });
 	});
-
-  $("#attribute_view").change(function(){
-	  console.log("change happened!");
-	  attribute_view = $(this).val();
-	  newData = serverData[attribute_view];
-	  var chart = $("#<%= @chart_div_id %>").highcharts();
-    $.each(chart.series, function( index, value ) {
-        chart.series[index].setData(newData.data.map(Number));
-        chart.series[index].update({name: newData.name}, false);
-        chart.redraw();
-    }); 
-	   
-  });
 	
-});	
-	
-</script>
+ </script>
 
 	

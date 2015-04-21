@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   get 'aggregations/refresh_source'
   
   get 'aggregations/refresh_move'
-
+  
   mount Resque::Server.new, at: "/resque"
 
   resources :product_categories

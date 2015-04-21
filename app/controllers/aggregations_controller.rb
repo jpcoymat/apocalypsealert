@@ -5,13 +5,29 @@ class AggregationsController < ApplicationController
   before_action :populate_filter_parameters, only: [:global, :source, :move]
 
   def global
+    logger.debug @filter_object.filter_elements.to_s
     @user_org = User.find(session[:user_id]).organization
     @target_url = aggregations_refresh_global_path
     @chart_div_id = "global_view"
+    @default_group_by = "global"
     @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(customer_organization_id: @user_org.id)[0]
     @ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(customer_organization_id: @user_org.id)[0]
+    @initial_data = {global: {
+                      series: {
+                        quantity: {
+                          name: "Quantity", 
+                          data: [@order_line_data.quantity.to_i, @ship_line_data.quantity.to_i ] 
+                        },
+                        cost: {
+                          name: "Cost", 
+                          data: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i] 
+                        }
+                      },
+                      chart_categories: ["Source","Move"] 
+                    }}
+                     
   end
-  
+
   def refresh_global
     shipment_ids, order_ids = [], []
     order_attribute_results, shipment_attribute_results = {}, {}
@@ -28,7 +44,7 @@ class AggregationsController < ApplicationController
           sat = AttributeTracker.new("ShipmentLine", key, val)
           shipment_attribute_results[key] += sat.value 
         end
-     end
+      end
       order_ids = order_attribute_results[order_attribute_results.first.first]
       order_attribute_results.each do |k,v|
         order_ids &= v unless k==order_attribute_results.first.first
@@ -38,14 +54,25 @@ class AggregationsController < ApplicationController
         shipment_ids &= v unless k==shipment_attribute_results.first.first
       end
     else
-       user_org = User.find(session[:user_id]).organization
-       order_ids = user_org.order_lines.ids
-       shipment_ids = user_org.shipment_lines.ids
+      user_org = User.find(session[:user_id]).organization
+      order_ids = user_org.order_lines.ids
+      shipment_ids = user_org.shipment_lines.ids
     end
-    order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: order_ids)[0]
-    ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: shipment_ids)[0]
-    @response = {quantity: {name: "Quantity", data: [order_line_data.quantity, ship_line_data.quantity ] },
-                  cost: {name: "Cost", data: [order_line_data.total_cost, ship_line_data.total_cost ] } } 
+    @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: order_ids)[0]
+    @ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: shipment_ids)[0]
+    @response = {global: {
+                      series: {
+                        quantity: {
+                          name: "Quantity", 
+                          data: [@order_line_data.quantity.to_i, @ship_line_data.quantity.to_i ] 
+                        },
+                        cost: {
+                          name: "Cost", 
+                          data: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i] 
+                        }
+                      },
+                      chart_categories: ["Source","Move"] 
+                    }} 
     logger.debug @response.to_json
     respond_to do |format|
       format.json {render json: @response }
@@ -147,17 +174,22 @@ class AggregationsController < ApplicationController
     def source_chart_data
       @product_categories = User.find(session[:user_id]).organization.product_categories
       @order_line_ids = object_filter("OrderLine")
-      @order_lines = OrderLine.where(id: @order_line_ids)
-      @chart_data = []
+      @order_lines = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: @order_line_ids)
+      @initial_data = {}
+      quantity_hash, cost_hash = {}, {}
       OrderLine.statuses.each do |k,v|
-        status_hash = {name: k.titleize, status_value: v}
-        status_data = []
+        status_quantity_hash = {name: k.titleize, status_value: v} 
+        status_cost_hash = {name: k.titleize, status_value: v} 
+        status_quantity_data, status_cost_data = [], []
         @product_categories.each do |pc|
-          status_data <<  @order_lines.where(product_id: pc.products, status: v).sum(:quantity).to_i
+          order_line_data = @order_lines.where(product_id: pc.products, status: v)[0]
+          status_quantity_data <<  order_line_data.quantity.to_i
+          status_cost_data << order_line_data.quantity.to_i
         end
-        status_hash[:data] = status_data
-        @chart_data << status_hash
+        status_quantity_hash[:data], status_cost_hash[:data] = status_quantity_data, status_cost_data        
       end
+      logger.debug @initial_data
+      @initial_data 
     end
   
 end
