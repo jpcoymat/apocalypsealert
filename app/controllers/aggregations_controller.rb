@@ -190,7 +190,6 @@ class AggregationsController < ApplicationController
         end
         status_quantity_hash[:data], status_cost_hash[:data] = status_quantity_data, status_cost_data   
         @initial_data[:product_categories] =  {series: {}, chart_categories: chart_categories}
-        @initial_data[:product_categories][:series] = {status_quantity_hash, status_cost_hash}     
       end
       logger.debug @initial_data
       @initial_data 
