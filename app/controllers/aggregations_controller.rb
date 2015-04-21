@@ -181,12 +181,16 @@ class AggregationsController < ApplicationController
         status_quantity_hash = {name: k.titleize, status_value: v} 
         status_cost_hash = {name: k.titleize, status_value: v} 
         status_quantity_data, status_cost_data = [], []
+        chart_categories_pc = []
         @product_categories.each do |pc|
+          chart_categories << pc.name
           order_line_data = @order_lines.where(product_id: pc.products, status: v)[0]
           status_quantity_data <<  order_line_data.quantity.to_i
           status_cost_data << order_line_data.quantity.to_i
         end
-        status_quantity_hash[:data], status_cost_hash[:data] = status_quantity_data, status_cost_data        
+        status_quantity_hash[:data], status_cost_hash[:data] = status_quantity_data, status_cost_data   
+        @initial_data[:product_categories] =  {series: {}, chart_categories: chart_categories}
+        @initial_data[:product_categories][:series] = {status_quantity_hash, status_cost_hash}     
       end
       logger.debug @initial_data
       @initial_data 
