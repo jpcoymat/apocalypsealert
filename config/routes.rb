@@ -4,6 +4,8 @@ require 'resque_scheduler/server'
 
 Rails.application.routes.draw do
 
+  resources :saved_search_criteria
+  
   resources :buyer_groups
 
   get 'aggregations/global'

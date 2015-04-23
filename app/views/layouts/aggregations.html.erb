@@ -7,7 +7,6 @@
   
   <title>Apocalypsealert</title>
   <%= stylesheet_link_tag 'aggregations', media: 'all', 'data-turbolinks-track' => true %>
-  <%= stylesheet_link_tag 'sb-admin-2' %>
   <%= stylesheet_link_tag "filter" %>  
   <%= stylesheet_link_tag "chosen-bootstrap" %>
   <%= stylesheet_link_tag "flip" %>
@@ -30,5 +29,6 @@
 				</div>
 			</div>
 		</div><!--/row-offcanvas -->
+		<%= render partial: "modal_filter" %>
 </body>
 </html>

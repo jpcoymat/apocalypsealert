@@ -8,6 +8,8 @@ class User < ActiveRecord::Base
   validate      :password_must_be_present
 
   belongs_to :organization
+  
+  belongs_to :saved_search_criterium
 
   def full_name
     self.first_name + " " + self.last_name

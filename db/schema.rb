@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150416202334) do
+ActiveRecord::Schema.define(version: 20150423164717) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -140,8 +140,8 @@ ActiveRecord::Schema.define(version: 20150416202334) do
 
   create_table "saved_search_criteria", force: true do |t|
     t.string   "name"
-    t.string   "filter_name"
-    t.text     "parameters"
+    t.string   "page"
+    t.text     "search_parameters"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "organization_id"
@@ -198,7 +198,7 @@ ActiveRecord::Schema.define(version: 20150416202334) do
     t.integer  "organization_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "saved_search_criteria_id"
+    t.integer  "saved_search_criterium_id"
   end
 
   create_table "work_orders", force: true do |t|

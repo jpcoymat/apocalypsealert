@@ -5,6 +5,8 @@ class Organization < ActiveRecord::Base
   has_many :products
   has_many :users
   has_many :product_categories
+  has_many :saved_search_criteria
+  
 
   def suppliers
     suppliers_from_orders = []

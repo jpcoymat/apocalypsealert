@@ -3,15 +3,17 @@ class AggregationsController < ApplicationController
   before_filter :authorize
   before_action :set_global_filter, only: [:global, :source, :move]
   before_action :populate_filter_parameters, only: [:global, :source, :move]
+  before_action :set_saved_search_criterium, only: [:global]
 
   def global
-    logger.debug @filter_object.filter_elements.to_s
     @user_org = User.find(session[:user_id]).organization
     @target_url = aggregations_refresh_global_path
     @chart_div_id = "global_view"
     @default_group_by = "global"
-    @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(customer_organization_id: @user_org.id)[0]
-    @ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(customer_organization_id: @user_org.id)[0]
+    search_params = @default_saved_criterium.search_parameters || {}
+    search_params[:customer_organization_id] =  @user_org.id
+    @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(search_params)[0]
+    @ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(search_params)[0]
     @initial_data = {global: {
                       series: {
                         quantity: {
@@ -73,7 +75,6 @@ class AggregationsController < ApplicationController
                       },
                       chart_categories: ["Source","Move"] 
                     }} 
-    logger.debug @response.to_json
     respond_to do |format|
       format.json {render json: @response }
       format.html {render json: @response }
@@ -193,6 +194,20 @@ class AggregationsController < ApplicationController
       end
       logger.debug @initial_data
       @initial_data 
+    end
+    
+    def set_saved_search_criterium
+      @default_saved_criterium = @user.saved_search_criterium || {}
+      logger.debug @default_saved_criterium.to_s
+      @saved_search_criteria = SavedSearchCriterium.where(organization_id: @user_org.id, page: page_requested)
+      logger.debug page_requested
+    end
+    
+    def page_requested
+      page = request.fullpath[/[^?]+/]
+      page = page[1 .. page.length-1]
+      page = page.partition("/").last
+      return page  
     end
   
 end

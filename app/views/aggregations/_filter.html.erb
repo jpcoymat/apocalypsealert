@@ -1,42 +1,18 @@
 <h3>Quick Filter <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#fullFilter">Pop</button></h3>
-<ul class="nav nav-pills nav-stacked">
+<h4>Search Criteria</h4>
+<%= select_tag :saved_search_criterium_id, options_from_collection_for_select(@saved_search_criteria, "id", "name", @default_saved_criterium.id), class: 'form-control' %>
+<br \>
+<br \>
+<ul class="nav nav-pills nav-stacked" id="quick_filter">
 <% @filter_object.filter_elements.each do |filter_element| %>
   <li><%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chosen-select', data: {placeholder: filter_element.display_name} %></li>
 <% end %>
-<li><button type="submit" class="btn btn-primary" onclick="javacript:refreshData()">Refresh</button></li>
+  <li>
+	  <button type="submit" class="btn btn-primary" onclick="javacript:refreshData()">Run</button>
+	  <button type="submit" class="btn btn-primary" onclick="javacript:saveAndRun()">Save & Run</button>
+  </li>
 </ul>
 
-<div id="fullFilter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title" id="myModalLabel">Filter Options</h4>
-	      </div>
-	      <div class="modal-body">
-	        <form class="form-horizontal">
-					<% @filter_object.filter_elements.each do |filter_element| %>
-					  <div class="form-group">
-						  <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-xs-3 control-label" %>
-						  <div class="col-xs-5">
-					      <%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chzn-select', id: "pop-"+filter_element.element_name,  tabindex: "2"  %>
-					    </div>
-					    <div class="checkbox" >
-						    <label>
-							    <input type="checkbox" id="chbx-<%= filter_element.element_name %>">
-							  </label>
-							</div>
-					  </div>
-					<% end %>
-	        </form>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-primary" data-dismiss="modal">Filter</button>
-	        <button type="button" class="btn btn-primary">Filter and Save</button>
-	      </div>
-	    </div>
-	  </div>
-</div>
 
  <script type="text/javascript" charset="utf-8">
 
@@ -45,26 +21,48 @@
   var serverData = $.parseJSON('<%= @initial_data.to_json.html_safe %>'); 
   var attribute_view = "quantity";
   var group_by = '<%= @default_group_by %>';
+	var baseUrl =  "<%= @target_url %>?" ;
 
-  console.log(serverData);
-
-  function refreshData() {
-    var parameters = [];
-		attribute_view = $("#attribute_view").val();
-		lastParametersUsed =[];
-		<% @filter_object.filter_elements.each do |filter_element|  %>
-		parameters.push({'<%= filter_element.element_name %>': $("#<%= filter_element.element_name %>").val()}); 
-		<% end %>
-		var url =  "<%= @target_url %>?" 
-		parameters.forEach( function(arrayItem) {
-		  var parameter_key =   Object.keys(arrayItem)[0];
-		  var parameter_value = arrayItem[parameter_key];
+  var savedCriterium;
+  var parameters = [];
+	<% @filter_object.filter_elements.each do |filter_element|  %>
+	parameters.push('<%= filter_element.element_name %>'); 
+	<% end %>
+	
+	function toObject(paramArray){
+		var toObj = {};
+		paramArray.forEach(function(parameter){
+			console.log(parameter.attribute_name);
+			console.log(parameter.attribute_value);
+			toObj[parameter.attribute_name] = parameter.attribute_value;
+		});
+		console.log(toObj);
+		return toObj;
+	}
+	
+	function getUrl(){
+		var url = baseUrl;
+		lastParametersUsed = getLastParameters();
+		lastParametersUsed.forEach(function(arrayItem) {
+			url += arrayItem.attribute_name + "=" + arrayItem.attribute_value + "&"; 
+		});
+		return url;
+	}
+	
+	function getLastParameters(){
+		var lastParams = []
+	  parameters.forEach( function(arrayItem) {
+		  var parameter_value = $("#"+arrayItem).val();
 		  if (parameter_value !== null) {
-			  url +=  parameter_key + "=" + parameter_value + "&"
-			  lastParametersUsed.push({attribute_name: parameter_key, attribute_value: parameter_value});  
+			  lastParams.push({attribute_name: arrayItem, attribute_value: parameter_value});  
 		  }
-		}); 
-
+		});
+		return lastParams;	
+	}
+	
+  function refreshData() {
+		attribute_view = $("#attribute_view").val();
+    var url = getUrl();
 		$.get(url, function(data){
 		  if (typeof(data) != "object") {
 		    serverData = $.parseJSON(data);
@@ -83,7 +81,6 @@
   }
 	
 	function resetTable(tableData){
-		console.log(tableData);
 		var columnHeaders = tableData.chart_categories;
 		var series = tableData.series;
 		var html = '<table class="table table-striped" id="global_table"> <tr><th></th>';
@@ -91,24 +88,15 @@
 			html += '<th>' + value + '</th>'
 		});
 		html += '</tr>';
-		console.log(series);
 		$.each(series, function(key, value) {
-			console.log(key + ":" + value);
 			html += '<tr>';
 			var serie = value;
-			console.log(serie);
 			$.each(serie, function(key,value){
 				if (key == "name") {
-					console.log("outputting name");
 				  html += '<td>' + value + '</td>';
 			  }
 				else {
-					console.log("outputting serie.data");
-					console.log(value);
 					$.each(value, function(key,value){
-						console.log("looping thru serie.data array values");
-						console.log("key: " + key);
-						console.log("value: " + value);
 	          html += '<td>' + value + '</td>' ;
 				  });
 				}
@@ -116,28 +104,56 @@
 			html += '</tr>';
 		});
 		html += '</table>';
-		console.log(html);
 		$("#results_table").replaceWith(html);
 	}
 	
+	function populateFilter(savedCriterium){
+		$.each(savedCriterium.search_parameters, function(k,v) {
+		  $("#" + k).val(v);	
+		});
+	}
+	
+	function cleanAndResetQuickFilter(newCriteria){
+		console.log("clearing old values");
+		$('.chosen-select','#quick_filter').val('').trigger('chosen:updated');
+		console.log("starting to set new values");
+		$.each(newCriteria, function(k,v) {
+			console.log("setting value for " + k + " with value " + v);
+			$("#"+k).val(v).trigger('chosen:updated');
+		});
+	}
+	
+	function saveAndRun(){
+		var url = "/saved_search_criteria/" + savedCriterium.id + ".json";
+		lastParametersUsed = getLastParameters();
+		savedCriterium.search_parameters = toObject(lastParametersUsed);
+		console.log(savedCriterium);
+		$.ajax({
+			type: "PUT",
+			url: url,
+			data: {saved_search_criterium: savedCriterium},
+			success: function(){
+			  console.log("yay!")	
+			}		
+		});
+		refreshData();
+	}
+	
+	
+	
 	$(function() {
 		
-
-	  <% @filter_object.filter_elements.each do |filter_element| %>
-	  $("#<%= filter_element.element_name %>").chosen({search_contains: true});
-	  <% if filter_element.enabled_for_quick_filter %>
-	  $("#chbx-<%= filter_element.element_name %>").prop('checked', true);
-	  <% end %>
-	  <% if filter_element.element_value %>
-	  $("#<%= filter_element.element_name %>").val(<%= filter_element.element_value %>);
-	  lastParametersUsed.push({attribute_name: '<%= filter_element.element_name %>', attribute_value: '<%= filter_element.element_value %>'});
-	  $("#<%= filter_element.element_name %>").trigger("chosen:updated");
-	  <% end %>
-	  <% end %>
-
-	  $("#fullFilter").on('shown.bs.modal', function (){
-	    $('.chzn-select', this).chosen({search_contains: true});
-	  });
+		attribute_view = $("#attribute_view").val();
+		
+		<% if @default_saved_criterium %>
+		savedCriterium = $.parseJSON('<%= @default_saved_criterium.to_json.html_safe %>'); 
+		<% else %>
+		savedCriterium = {};
+		<% end %>
+		
+		if (savedCriterium) {
+			console.log(savedCriterium.id);
+		};
 
 	  $("#attribute_view").change(function(){
 	    attribute_view = $(this).val();
@@ -148,6 +164,27 @@
 	    }); 
 	    chart.redraw();
 	  });
+	  
+	  $("#saved_search_criterium_id").change(function(){
+		  var savedSearchCriteriumId = $(this).val();
+		  var url = "/saved_search_criteria/" + savedSearchCriteriumId + ".json";		
+		  console.log(savedSearchCriteriumId);
+		  $.get(url, function(data){
+			  if (typeof(data) != "object") {
+			    savedCriterium = $.parseJSON(data);
+			  } 
+			  else {
+			    savedCriterium = data;
+			  }
+			  console.log(savedCriterium);
+			  cleanAndResetQuickFilter(savedCriterium.search_parameters);
+			
+			});
+			
+	  }); 
+	
+	  populateFilter(savedCriterium);
+	
 	});
 	
  </script>
