@@ -11,18 +11,17 @@ class AggregationsController < ApplicationController
     @chart_div_id = "global_view"
     @default_group_by = "global"
     search_params = @default_saved_criterium.search_parameters || {}
-    search_params[:customer_organization_id] =  @user_org.id
-    @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(search_params)[0]
-    @ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(search_params)[0]
+    logger.debug search_params.to_s
+    order_ids = object_filter("OrderLine", search_params)
+    shipment_ids = object_filter("ShipmentLine", search_params)
+    @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: order_ids)[0]
+    @ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: shipment_ids)[0]
     @initial_data = {global: {
                       series: {
-                        quantity: {
-                          name: "Quantity", 
-                          data: [@order_line_data.quantity.to_i, @ship_line_data.quantity.to_i ] 
-                        },
-                        cost: {
-                          name: "Cost", 
-                          data: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i] 
+                        global: {
+                          name: "Global", 
+                          data: {quantity: [@order_line_data.quantity.to_i, @ship_line_data.quantity.to_i ],
+                                cost: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i]}
                         }
                       },
                       chart_categories: ["Source","Move"] 
@@ -33,48 +32,20 @@ class AggregationsController < ApplicationController
   def refresh_global
     shipment_ids, order_ids = [], []
     order_attribute_results, shipment_attribute_results = {}, {}
-    user_params = params
-    user_params.delete("controller")
-    user_params.delete("action")    
-    unless user_params.empty?
-      user_params.each do |key,value|
-        order_attribute_results[key], shipment_attribute_results[key] = [],[] 
-        values = value.split(",").map { |s| s.to_i }
-        for val in values
-          oat = AttributeTracker.new("OrderLine", key, val)
-          order_attribute_results[key] += oat.value
-          sat = AttributeTracker.new("ShipmentLine", key, val)
-          shipment_attribute_results[key] += sat.value 
-        end
-      end
-      order_ids = order_attribute_results[order_attribute_results.first.first]
-      order_attribute_results.each do |k,v|
-        order_ids &= v unless k==order_attribute_results.first.first
-      end
-      shipment_ids = shipment_attribute_results[shipment_attribute_results.first.first]
-      shipment_attribute_results.each do |k,v|
-        shipment_ids &= v unless k==shipment_attribute_results.first.first
-      end
-    else
-      user_org = User.find(session[:user_id]).organization
-      order_ids = user_org.order_lines.ids
-      shipment_ids = user_org.shipment_lines.ids
-    end
+    order_ids = object_filter("OrderLine", params)   
+    shipment_ids = object_filter("ShipmentLine", params)
     @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: order_ids)[0]
     @ship_line_data = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: shipment_ids)[0]
     @response = {global: {
                       series: {
-                        quantity: {
-                          name: "Quantity", 
-                          data: [@order_line_data.quantity.to_i, @ship_line_data.quantity.to_i ] 
-                        },
-                        cost: {
-                          name: "Cost", 
-                          data: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i] 
+                        global: {
+                          name: "Global", 
+                          data: {quantity: [@order_line_data.quantity.to_i, @ship_line_data.quantity.to_i ],
+                                cost: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i]}
                         }
                       },
                       chart_categories: ["Source","Move"] 
-                    }} 
+                    }}
     respond_to do |format|
       format.json {render json: @response }
       format.html {render json: @response }
@@ -133,10 +104,10 @@ class AggregationsController < ApplicationController
       @filter_object.filter_elements = [@products_filter, @product_categories_filter, @origin_locations_filter, @origin_location_groups_filter, @destination_locations_filter, @destination_location_groups_filter]
     end
 
-    def object_filter(object_class)
+    def object_filter(object_class, search_params = params)
       object_ids = []
       object_attribute_results = {}
-      user_params = params
+      user_params = search_params
       user_params.delete("controller")
       user_params.delete("action")   
       unless user_params.empty? 
@@ -176,16 +147,24 @@ class AggregationsController < ApplicationController
       @product_categories = User.find(session[:user_id]).organization.product_categories
       @order_line_ids = object_filter("OrderLine")
       @order_lines = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: @order_line_ids)
-      @initial_data = {}
+      @initial_data = {product_categories: {
+                                series: { },
+                                chart_categories: @product_categories.pluck(:name)
+                                }
+                      }
+       
+
+
+
+
+
       quantity_hash, cost_hash = {}, {}
-      OrderLine.statuses.each do |k,v|
-        status_quantity_hash = {name: k.titleize, status_value: v} 
-        status_cost_hash = {name: k.titleize, status_value: v} 
+      OrderLine.statuses.each do |stat_string, stat_value|
+        status_quantity_hash = {name: stat_string.titleize, status_value: stat_value} 
+        status_cost_hash = {name: stat_string.titleize, status_value: stat_value} 
         status_quantity_data, status_cost_data = [], []
-        chart_categories_pc = []
         @product_categories.each do |pc|
-          chart_categories << pc.name
-          order_line_data = @order_lines.where(product_id: pc.products, status: v)[0]
+          order_line_data = @order_lines.where(product_id: pc.products, status: stat_value)[0]
           status_quantity_data <<  order_line_data.quantity.to_i
           status_cost_data << order_line_data.quantity.to_i
         end

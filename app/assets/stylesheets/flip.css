@@ -13,9 +13,11 @@
 }
 
 .flip-container {
+	width: 90%;
     position: absolute;   
     -webkit-perspective: 1000;
     -moz-perspective: 1000;
+    margin: 0 auto;
 }
 .flip {
     -webkit-backface-visibility:hidden;

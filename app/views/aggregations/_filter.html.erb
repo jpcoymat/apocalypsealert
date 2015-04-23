@@ -19,7 +19,7 @@
   var lastParametersUsed = [];
   var newData;
   var serverData = $.parseJSON('<%= @initial_data.to_json.html_safe %>'); 
-  var attribute_view = "quantity";
+  var attribute_view = $("#attribute_view").val();
   var group_by = '<%= @default_group_by %>';
 	var baseUrl =  "<%= @target_url %>?" ;
 
@@ -28,6 +28,24 @@
 	<% @filter_object.filter_elements.each do |filter_element|  %>
 	parameters.push('<%= filter_element.element_name %>'); 
 	<% end %>
+	
+	function capitalize(txt){
+		return txt.substr(0,1).toUpperCase() + txt.substr(1);
+	}
+	
+	function numberWithDelimiter(val){
+		val = val.toFixed(2);
+	  while (/(\d+)(\d{3})/.test(val.toString())){
+	    val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+	  }
+	  return val;
+	}
+	
+	function numberToCurrency(val){
+		val = numberWithDelimiter(val);
+		val = "$" + val;
+		return val
+	}
 	
 	function toObject(paramArray){
 		var toObj = {};
@@ -54,7 +72,7 @@
 	  parameters.forEach( function(arrayItem) {
 		  var parameter_value = $("#"+arrayItem).val();
 		  if (parameter_value !== null) {
-			  lastParams.push({attribute_name: arrayItem, attribute_value: parameter_value});  
+			  lastParams.push({attribute_name: arrayItem, attribute_value: parameter_value + ""});  
 		  }
 		});
 		return lastParams;	
@@ -71,10 +89,10 @@
 		    serverData = data;
 		  }
 		  resetTable(serverData[group_by]);
-		  newData = serverData[group_by].series[attribute_view];
+		  newData = serverData[group_by].series.global.data[attribute_view];
 		  var chart = $("#<%= @chart_div_id %>").highcharts();
 		  $.each(chart.series, function( index, value ) {
-	      chart.series[index].update({data: newData.data}, false);
+	      chart.series[index].update({data: newData}, false);
 		  }); 
 		  chart.redraw();
 		}); 
@@ -82,25 +100,26 @@
 	
 	function resetTable(tableData){
 		var columnHeaders = tableData.chart_categories;
-		var series = tableData.series;
+		var seriesData = tableData.series.global.data;
 		var html = '<table class="table table-striped" id="global_table"> <tr><th></th>';
 		$.each(columnHeaders, function(index, value) {
 			html += '<th>' + value + '</th>'
 		});
-		html += '</tr>';
-		$.each(series, function(key, value) {
-			html += '<tr>';
-			var serie = value;
-			$.each(serie, function(key,value){
-				if (key == "name") {
-				  html += '<td>' + value + '</td>';
+		html += '<th>Total</th></tr>';
+		$.each(seriesData, function(key, value) {
+			html += '<tr><td>' + capitalize(key) + '</td>';
+			var dataArray = value;
+			var total = 0;
+			$.each(dataArray, function(k, v){
+				total += v;
+				if (key == "cost") {
+				  html += '<td>' + numberToCurrency(v) + '</td>';
 			  }
 				else {
-					$.each(value, function(key,value){
-	          html += '<td>' + value + '</td>' ;
-				  });
+				  html += '<td>' + numberWithDelimiter(v) + '</td>' ;
 				}
-			})
+			});
+			(key =="cost") ? html +=  '<td>' + numberToCurrency(total) + '</td>' : html +=  '<td>' + numberWithDelimiter(total) + '</td>'
 			html += '</tr>';
 		});
 		html += '</table>';
@@ -114,11 +133,8 @@
 	}
 	
 	function cleanAndResetQuickFilter(newCriteria){
-		console.log("clearing old values");
 		$('.chosen-select','#quick_filter').val('').trigger('chosen:updated');
-		console.log("starting to set new values");
 		$.each(newCriteria, function(k,v) {
-			console.log("setting value for " + k + " with value " + v);
 			$("#"+k).val(v).trigger('chosen:updated');
 		});
 	}
@@ -127,7 +143,6 @@
 		var url = "/saved_search_criteria/" + savedCriterium.id + ".json";
 		lastParametersUsed = getLastParameters();
 		savedCriterium.search_parameters = toObject(lastParametersUsed);
-		console.log(savedCriterium);
 		$.ajax({
 			type: "PUT",
 			url: url,
@@ -157,10 +172,10 @@
 
 	  $("#attribute_view").change(function(){
 	    attribute_view = $(this).val();
-	    var newChartData = serverData[group_by].series[attribute_view];
+	    var newChartData = serverData[group_by].series.global.data[attribute_view];
 	    var chart = $("#<%= @chart_div_id %>").highcharts();
 	    $.each(chart.series, function( index, value ) {
-	      chart.series[index].update({name: newChartData.name, data: newChartData.data}, false);
+	      chart.series[index].update({data: newChartData}, false);
 	    }); 
 	    chart.redraw();
 	  });
