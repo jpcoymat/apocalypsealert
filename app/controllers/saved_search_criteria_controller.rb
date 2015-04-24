@@ -24,7 +24,7 @@ class SavedSearchCriteriaController < ApplicationController
     @saved_search_criterium = SavedSearchCriterium.new(saved_search_criterium_params)
     respond_to do |format|
       if @saved_search_criterium.save
-        format.json { render :show, status: :created, location: @saved_search_criterium }
+        format.json { render json: @saved_search_criterium, status: :ok }
       else
         format.json { render json: @saved_search_criterium.errors, status: :unprocessable_entity }
       end

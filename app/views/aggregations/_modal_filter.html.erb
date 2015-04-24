@@ -1,27 +1,73 @@
-<div id="fullFilter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="newFilter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	        <span aria-hidden="true"> &times; </span>
 	      </button>
-        <h4 class="modal-title" id="myModalLabel">Filter Options</h4>
+        <h4 class="modal-title">New Filter </h4>
       </div>
       <div class="modal-body">
-        <form class="form-horizontal">
-        <% @filter_object.filter_elements.each do |filter_element| %>
+        <form class="form-horizontal" id="newFilterForm">
+	        <div class="form-group">
+	        	<label class="col-sm-2 control-label">Filter Name</label>
+						<div class="col-sm-8">
+						  <input type="text" class="form-control" id="pop-name" placeholder="Filter Name">
+						</div>
+	        </div>  
+          <% @filter_object.filter_elements.each do |filter_element| %>
           <div class="form-group">
-            <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-md-3 control-label" %>
-            <div class="col-md-5">
-              <%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chosen-select', id: "pop-"+filter_element.element_name, tabindex: "2"  %>
-            </div>
-            <div class="checkbox" >
-              <label>
-                <input type="checkbox" id="chbx-<%= filter_element.element_name %>">
-              </label>
+            <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-sm-2 control-label" %>
+            <div class="col-sm-8">
+	            <select class="form-control chosen-select" id="pop-<%= filter_element.element_name  %>" name="<%= filter_element.element_name  %>" multiple="multiple" >
+		          <% filter_element.filter_options.each do |fo| %>
+		            <option value="<%= fo.try(:id) %>"><%= fo.try(:name)%> </option>
+							<% end %>
+            </div>  
+            <div class="col-sm-2">
+              <input type="checkbox" id="chbx-<%= filter_element.element_name %>">
             </div>
           </div>
         <% end %>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:runFilter('newFilterForm')">Filter</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:runAndSaveFilter('newFilterForm')">Filter and Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="savedFilter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	        <span aria-hidden="true"> &times; </span>
+	      </button>
+        <h4 class="modal-title">Edit Filter </h4>
+      </div>
+      <div class="modal-body"> 
+        <div class="form-horizontal" id="savedFilterForm">
+	        <div class="form-group">
+	        	<label class="col-sm-2 control-label">Filter Name</label>
+						<div class="col-sm-10">
+						  <input type="text" class="form-control" id="pop-name" placeholder="Filter Name">
+						</div>
+	        </div>  
+          <% @filter_object.filter_elements.each do |filter_element| %>
+          <div class="form-group">
+            <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-sm-2 control-label" %>
+            <div class="col-sm-8">
+              <%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chosen-select', id: "pop-"+filter_element.element_name  %>
+            </div>  
+            <div class="col-sm-2">
+              <input type="checkbox" id="chbx-<%= filter_element.element_name %>">
+            </div>
+          </div>
+          <% end %>
         </form>
       </div>
       <div class="modal-footer">
@@ -31,26 +77,121 @@
     </div>
   </div>
 </div>
+
+
+
 <script type="text/javascript" charset="utf-8">
+
+var baseSavedSearchCriteriaUrl = "/saved_search_criteria";
+
+
+function createSearchParametersHash(formId){
+	var filterFormFields = $("#" + formId + " select").serializeArray();
+	var search_parameters = {};
+	filterFormFields.forEach(function(formField) {
+		if (search_parameters[formField.name] == undefined) {
+		  search_parameters[formField.name] = formField.value; 	
+		}
+		else {
+			search_parameters[formField.name] = search_parameters[formField.name] + ',' + formField.value ;
+		}
+	});
+	return search_parameters;
+}
+
+function constructUrl(searchParameters){
+	var url = baseUrl;
+	for (var key in searchParameters) {
+		if (searchParameters.hasOwnProperty(key)) {
+		  url += key + "=" + searchParameters[key] + "&";	
+		};
+	};	
+	return url;
+}
+
+function getData(url){
+  $.get(url, function(data){
+	  if (typeof(data) != "object") {
+	    serverData = $.parseJSON(data);
+	  } 
+	  else {
+	    serverData = data;
+	  }
+	  resetTable(serverData[group_by]);
+	  newData = serverData[group_by].series[defaultSeries].data[attribute_view];
+	  var chart = $("#<%= @chart_div_id %>").highcharts();
+	  $.each(chart.series, function( index, value ) {
+      chart.series[index].update({data: newData}, false);
+	  }); 
+	  chart.redraw();
+	});	
+}
+
+function runFilter(formId){
+	var searchParameters = createSearchParametersHash(formId)
+	var url = constructUrl(searchParameters);
+	getData(url);   	
+}
+
+function initSavedSearchCriterium(formId){
+  saved_search_criterium = {name: $("#" + formId + " #pop-name").val(), page: '<%= @page %>', organization_id: <%= @user_org.id %>};
+  saved_search_criterium.search_parameters = 	createSearchParametersHash(formId);
+  return saved_search_criterium;
+}
+
+function runAndSaveFilter(formId){
+	savedSearchCriterium = initSavedSearchCriterium(formId);
+	$.ajax({
+		type: "POST",
+		url: baseSavedSearchCriteriaUrl,
+		data: {saved_search_criterium: savedSearchCriterium},
+		success: function(data){
+			if (typeof(data) != "object") {
+		    savedSearchCriterium = $.parseJSON(data);
+		  } 
+		  else {
+		    savedSearchCriterium = data;
+		  }
+			var url = constructUrl(savedSearchCriterium.search_parameters);
+			cleanAndResetQuickFilter(savedSearchCriterium);
+			getData(url);
+		}
+	});
+}
+
+function populateFilterValues(){
+	var criterium_parameters = savedCriterium.search_parameters
+	$.each(criterium_parameters, function(k,v){
+	  $("#" + k).val(v.split(',')).trigger('chosen:updated');		
+	});
+}
+
+
 $(function() {
-
-  <% @filter_object.filter_elements.each do |filter_element| %>
-	$("#<%= filter_element.element_name %>").chosen({search_contains: true});
-	<% if filter_element.enabled_for_quick_filter %>
-	$("#chbx-<%= filter_element.element_name %>").prop('checked', true);
-	<% end %>
-  <% if filter_element.element_value %>
-	$("#<%= filter_element.element_name %>").val(<%= filter_element.element_value %>);
-		  lastParametersUsed.push({attribute_name: '<%= filter_element.element_name %>', attribute_value: '<%= filter_element.element_value %>'});
-	$("#<%= filter_element.element_name %>").trigger("chosen:updated");
-	<% end %>
-	<% end %>
-
-	$("#fullFilter").on('shown.bs.modal', function (){
+	
+	$("#newFilter").on('shown.bs.modal', function (){
 	  <% @filter_object.filter_elements.each do |filter_element| %>
 	  $("#pop-<%= filter_element.element_name %>").chosen('destroy').chosen({search_contains: true});
+	  <% if filter_element.enabled_for_quick_filter %>
+		$("#chbx-<%= filter_element.element_name %>").prop('checked', true);
+		<% end %>
 	  <% end %>  				
 	});
+
+
+	$("#savedFilter").on('shown.bs.modal', function (){
+	  <% @filter_object.filter_elements.each do |filter_element| %>
+	  $("#pop-<%= filter_element.element_name %>").chosen('destroy').chosen({search_contains: true});
+	  <% if filter_element.enabled_for_quick_filter %>
+		$("#chbx-<%= filter_element.element_name %>").prop('checked', true);
+		<% end %>
+	  <% end %>
+		
+		populateFilterValues();
+	  				
+	});
+  
+
 });	
 
 </script>
