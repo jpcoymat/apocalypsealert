@@ -5,8 +5,8 @@
 </div>
 <br \>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#savedFilter">Expand</button>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newFilter">New Filter</button>
+<button id="edit_filter" type="button" class="btn btn-primary" data-toggle="modal" data-target="#savedFilter" disabled="disabled">Edit Filter</button>
+<button id="new_filter" type="button" class="btn btn-primary" data-toggle="modal" data-target="#newFilter">New Filter</button>
 <br \>
 <br \>
 
@@ -28,14 +28,36 @@
   var serverData = $.parseJSON('<%= @initial_data.to_json.html_safe %>'); 
   var attribute_view = $("#attribute_view").val();
   var group_by = '<%= @default_group_by %>';
-	var baseUrl =  "<%= @target_url %>?" ;
-	var defaultSeries = "<%= @default_series %>";
-
+  var baseUrl =  "<%= @target_url %>?" ;
+  
   var savedCriterium;
   var parameters = [];
 	<% @filter_object.filter_elements.each do |filter_element|  %>
 	parameters.push('<%= filter_element.element_name %>'); 
 	<% end %>
+
+	function createSeriesArray() {
+		var seriesObject = serverData[group_by].series;
+		var seriesArray = [];
+	  for (series in seriesObject) {
+		  var single_series = seriesObject[series];
+	  	seriesArray.push({name: single_series.name, data: single_series.data[attribute_view]});
+	  };	
+	  return seriesArray;
+	}
+	
+	function resetChartData(){
+		var seriesArray = createSeriesArray();
+		var chart = $("#<%= @chart_div_id %>").highcharts();
+		chart.xAxis[0].setCategories(serverData[group_by].chart_categories, false);
+		chart.xAxis[0].setTitle({text: group_by}, false);
+		chart.yAxis[0].setTitle({text: capitalize(attribute_view)},false);
+		$.each(chart.series, function(index, value) {
+			chart.series[index].update({data: seriesArray[index].data, name: seriesArray[index].name},false);
+		});
+	  chart.redraw(); 
+	}
+	
 	
 	function capitalize(txt){
 		return txt.substr(0,1).toUpperCase() + txt.substr(1);
@@ -93,20 +115,15 @@
 		  else {
 		    serverData = data;
 		  }
-		  resetTable(serverData[group_by]);
-		  newData = serverData[group_by].series[defaultSeries].data[attribute_view];
-		  var chart = $("#<%= @chart_div_id %>").highcharts();
-		  $.each(chart.series, function( index, value ) {
-	      chart.series[index].update({data: newData}, false);
-		  }); 
-		  chart.redraw();
+		  //resetTable();
+			resetChartData();
 		}); 
   }
 	
-	function resetTable(tableData){
-		var columnHeaders = tableData.chart_categories;
-		var seriesData = tableData.series[defaultSeries].data;
-		var html = '<table class="table table-striped" id="global_table"> <tr><th></th>';
+	function resetTable(){
+		var columnHeaders = serverData[group_by].chart_categories;
+		var seriesData = serverData[group_by].series;
+		var html = '<table class="table table-striped" id="results_table"> <tr><th></th>';
 		$.each(columnHeaders, function(index, value) {
 			html += '<th>' + value + '</th>'
 		});
@@ -157,55 +174,46 @@
 			  else {
 			    savedCriterium = data;
 			  }
-			  console.log(savedCriterium);
-				console.log("yay!")	;
 			}		
 		});
 		refreshData();
-	}
-	
-	
+	}	
 	
 	$(function() {
 		
-		attribute_view = $("#attribute_view").val();
-		
+		attribute_view = '<%= @default_attribute_view %>';
 		savedCriterium = {};
-		
 
 	  $("#attribute_view").change(function(){
 	    attribute_view = $(this).val();
-	    var newChartData = serverData[group_by].series[defaultSeries].data[attribute_view];
-	    var chart = $("#<%= @chart_div_id %>").highcharts();
-	    $.each(chart.series, function( index, value ) {
-	      chart.series[index].update({data: newChartData}, false);
-	    }); 
-	    chart.redraw();
+	    resetChartData();
 	  });
 	  
 	  $("#saved_search_criterium_id").change(function(){
 		  var savedSearchCriteriumId = $(this).val();
-		  var url = "/saved_search_criteria/" + savedSearchCriteriumId + ".json";		
-		  console.log(savedSearchCriteriumId);
-		  $.get(url, function(data){
-			  if (typeof(data) != "object") {
-			    savedCriterium = $.parseJSON(data);
-			  } 
-			  else {
-			    savedCriterium = data;
-			  }
-			  console.log(savedCriterium);
-			  cleanAndResetQuickFilter(savedCriterium);
-			
-			});
-			
+		  if (savedSearchCriteriumId == "") {
+			  $('.chosen-select','#quick_filter').val('').trigger('chosen:updated');
+			  $("#edit_filter").prop('disabled', 'disabled');    
+		  }
+		  else {
+			  $("#edit_filter").removeProp('disabled');
+        var url = "/saved_search_criteria/" + savedSearchCriteriumId + ".json";		
+			  $.get(url, function(data){
+				  if (typeof(data) != "object") {
+				    savedCriterium = $.parseJSON(data);
+				  } 
+				  else {
+				    savedCriterium = data;
+				  }
+				  cleanAndResetQuickFilter(savedCriterium);
+				});			
+		  }
 	  }); 
 		
 	  <% @filter_object.filter_elements.each do |filter_element| %>
 		$("#<%= filter_element.element_name %>").chosen({search_contains: true});
+		$("#<%= filter_element.element_name %>").val('<%= filter_element.element_value %>'.split(',')).trigger('chosen:updated');	
 		<% end %>
-
-	
 	
 	});
 	

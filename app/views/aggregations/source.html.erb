@@ -1,17 +1,59 @@
 <% content_for :head do %>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
 <% end %>
 
 <h1>Source View</h1>
-<div class="container">
-		<label>View Attribute</label> 
-	  <select id="attribute_view">
-		  <option value="quantity">Quantity</option>
-		  <option value="cost">Cost</option>
-	  </select>
+<div class="container" width="100%">
+  <form class="form-horizontal">
+	  <div class="form-group">
+		  <label class="control-label col-xs-2">View Form </label>
+		  <div class="col-xs-2">
+        <select id="view_type" class="form-control" >
+    	    <option value="chart">Chart</option>
+    	    <option value="table">Table</option>	
+        </select>
+      </div>
+      <div class="col-xs-3">
+      </div>
+	    <label class="control-label col-xs-2">View Attribute</label> 
+      <div class="col-xs-2">
+        <select id="attribute_view" class="form-control">
+	        <option value="quantity">Quantity</option>
+	        <option value="cost">Cost</option>
+        </select>        	
+      </div>
+    </div>
+  </form>
 </div>
-<div id="source_view" style="min-width: 310px; height: 600px; margin: 0 auto"></div>
+<div class="container" width="100%">
+  <div class="flip-container" >
+    <div class="page1">
+      <div id="source_view">    	
+      </div>
+    </div>
+    <div class="page2">
+		  <%= render partial: @table_partial %>
+    </div>
+  </div>
+</div>
+<div class="container" width="100%" height="600px"></div>
+<div class="container" width="100%" >
+  <form class="form-horizontal">
+	  <div class="form-group">
+		  <label class="control-label col-xs-2">Group By</label>
+		  <div class="col-xs-2">
+        <select id="group_by" class="form-control" >
+    	    <option value="product_categories">Product Categories</option>
+    	    <option value="origin_location_groups">Origin Location Groups</option>	
+    	    <option value="destination_location_groups">Destination Location Groups</option>	
+        </select>
+      </div>
+    </div>
+  </form>
+</div>
+	
 <script type="text/javascript">
 $(function () {
     $('#source_view').highcharts({
@@ -23,7 +65,7 @@ $(function () {
           text: 'Source Phase Summary'
         },
         xAxis: {
-          categories: seriesObject = serverData[group_by].chart_categories,
+          categories: serverData[group_by].chart_categories,
 					title: {text: "Product Categories"}
         },
         yAxis: {
@@ -80,20 +122,13 @@ $(function () {
       toShow.removeClass('flip out').addClass('flip in').show();
     });
 
+    $("#group_by").change(function(){
+			group_by = $(this).val();
+			resetChartData();
+		});
+
 });
 
-function createSeriesArray(){
-	
-	var seriesObject = serverData[group_by].series;
-	var seriesArray = [];
-  for (series in seriesObject) {
-	  var single_series = seriesObject[series];
-  	seriesArray.push({name: single_series.name, data: single_series.data[attribute_view]});
-  };	
-  console.log(seriesArray);
-  return seriesArray;
-	
-}
 
 
 </script>

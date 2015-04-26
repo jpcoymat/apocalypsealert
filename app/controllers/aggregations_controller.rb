@@ -11,6 +11,7 @@ class AggregationsController < ApplicationController
     @chart_div_id = "global_view"
     @default_group_by = "global"
     @default_series = "global"
+    @table_partial = "global_table"
     order_ids = object_filter("OrderLine")
     shipment_ids = object_filter("ShipmentLine")
     @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: order_ids)[0]
@@ -25,7 +26,7 @@ class AggregationsController < ApplicationController
                       },
                       chart_categories: ["Source","Move"] 
                     }}
-                     
+                         
   end
 
   def refresh_global
@@ -56,13 +57,14 @@ class AggregationsController < ApplicationController
     @filter_object.filter_elements << FilterElement.new(element_name: "supplier_organization_id", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true, filter_options: @other_orgs)
     @target_url = aggregations_refresh_source_path
     @default_group_by = "product_categories"
-    @chart_div_id = "source_view"        
-    source_chart_data
+    @chart_div_id = "source_view"      
+    @table_partial = "source_table"  
+    @initial_data = source_chart_data
     
   end
 
   def refresh_source
-    source_chart_data
+    @chart_data = source_chart_data
     respond_to do |format|
       format.html {render json: @chart_data }
       format.json {render json: @chart_data }
@@ -90,6 +92,7 @@ class AggregationsController < ApplicationController
       @product_categories = @user_org.product_categories
       @location_groups  = @user_org.location_groups 
       @page = page_requested
+      @default_attribute_view = "quantity"
       @other_orgs = Organization.where("id != ?", @user_org.id)
     end
     
@@ -146,9 +149,10 @@ class AggregationsController < ApplicationController
     
     def source_chart_data
       @product_categories = User.find(session[:user_id]).organization.product_categories
+      @location_groups = User.find(session[:user_id]).organization.location_groups
       @order_line_ids = object_filter("OrderLine")
       @order_lines = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: @order_line_ids)
-      @initial_data = {product_categories: {
+      chart_data = {product_categories: {
                         series: {},
                         chart_categories: @product_categories.pluck(:name)
                       },
@@ -162,16 +166,28 @@ class AggregationsController < ApplicationController
                       }
       }
       OrderLine.statuses.each do |status_string, status_value| 
-        product_category_status_series = {name: status_string, data: {quantity: [], cost: []}}
+        product_category_status_series = {name: status_string.titleize, data: {quantity: [], cost: []}}
+        origin_grp_status_series = {name: status_string.titleize, data: {quantity: [], cost: []}}
+        dest_grp_status_series = {name: status_string.titleize, data: {quantity: [], cost: []}}
         @product_categories.each do |pc|
           @order_lines = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: @order_line_ids, product: pc.products, status: status_value)
           product_category_status_series[:data][:quantity] << @order_lines[0].quantity.to_i
           product_category_status_series[:data][:cost] << @order_lines[0].total_cost.to_i
         end
-        @initial_data[:product_categories][:series][status_string] = product_category_status_series
+        @location_groups.each do |lg|
+          @order_lines = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: @order_line_ids, origin_location_id: lg.locations, status: status_value)
+          origin_grp_status_series[:data][:quantity] << @order_lines[0].quantity.to_i
+          origin_grp_status_series[:data][:cost] << @order_lines[0].total_cost.to_i
+          @order_lines = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: @order_line_ids, destination_location_id: lg.locations, status: status_value)
+          dest_grp_status_series[:data][:quantity] << @order_lines[0].quantity.to_i
+          dest_grp_status_series[:data][:cost] << @order_lines[0].total_cost.to_i          
+        end
+        chart_data[:product_categories][:series][status_string] = product_category_status_series
+        chart_data[:origin_location_groups][:series][status_string] = origin_grp_status_series
+        chart_data[:destination_location_groups][:series][status_string] = dest_grp_status_series
       end
-      logger.debug @initial_data.to_json
-      @initial_data 
+      logger.debug chart_data.to_json
+      return chart_data 
     end
     
     def set_saved_search_criterium

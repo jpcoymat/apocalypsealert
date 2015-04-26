@@ -10,19 +10,20 @@
       <div class="modal-body">
         <form class="form-horizontal" id="newFilterForm">
 	        <div class="form-group">
-	        	<label class="col-sm-2 control-label">Filter Name</label>
-						<div class="col-sm-8">
-						  <input type="text" class="form-control" id="pop-name" placeholder="Filter Name">
+	        	<label class="col-sm-4 control-label">Filter Name</label>
+						<div class="col-sm-6">
+						  <input type="text" class="form-control" id="new-name" placeholder="Filter Name">
 						</div>
 	        </div>  
           <% @filter_object.filter_elements.each do |filter_element| %>
           <div class="form-group">
-            <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-sm-2 control-label" %>
-            <div class="col-sm-8">
-	            <select class="form-control chosen-select" id="pop-<%= filter_element.element_name  %>" name="<%= filter_element.element_name  %>" multiple="multiple" >
+            <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-sm-4 control-label" %>
+            <div class="col-sm-6">
+	            <select class="form-control chosen-select" id="new-<%= filter_element.element_name  %>" name="<%= filter_element.element_name  %>" multiple="multiple" >
 		          <% filter_element.filter_options.each do |fo| %>
 		            <option value="<%= fo.try(:id) %>"><%= fo.try(:name)%> </option>
 							<% end %>
+							</select>
             </div>  
             <div class="col-sm-2">
               <input type="checkbox" id="chbx-<%= filter_element.element_name %>">
@@ -52,16 +53,16 @@
       <div class="modal-body"> 
         <div class="form-horizontal" id="savedFilterForm">
 	        <div class="form-group">
-	        	<label class="col-sm-2 control-label">Filter Name</label>
-						<div class="col-sm-10">
-						  <input type="text" class="form-control" id="pop-name" placeholder="Filter Name">
+	        	<label class="col-sm-4 control-label">Filter Name</label>
+						<div class="col-sm-6">
+						  <input type="text" class="form-control" id="saved-name" placeholder="Filter Name">
 						</div>
 	        </div>  
           <% @filter_object.filter_elements.each do |filter_element| %>
           <div class="form-group">
-            <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-sm-2 control-label" %>
-            <div class="col-sm-8">
-              <%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chosen-select', id: "pop-"+filter_element.element_name  %>
+            <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-sm-4 control-label" %>
+            <div class="col-sm-6">
+              <%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chosen-select', id: "saved-"+filter_element.element_name  %>
             </div>  
             <div class="col-sm-2">
               <input type="checkbox" id="chbx-<%= filter_element.element_name %>">
@@ -86,9 +87,11 @@ var baseSavedSearchCriteriaUrl = "/saved_search_criteria";
 
 
 function createSearchParametersHash(formId){
+	console.log("constructing parameter hash");
 	var filterFormFields = $("#" + formId + " select").serializeArray();
 	var search_parameters = {};
 	filterFormFields.forEach(function(formField) {
+		console.log(formField.name + " : " + formField.value);
 		if (search_parameters[formField.name] == undefined) {
 		  search_parameters[formField.name] = formField.value; 	
 		}
@@ -117,24 +120,28 @@ function getData(url){
 	  else {
 	    serverData = data;
 	  }
-	  resetTable(serverData[group_by]);
-	  newData = serverData[group_by].series[defaultSeries].data[attribute_view];
-	  var chart = $("#<%= @chart_div_id %>").highcharts();
-	  $.each(chart.series, function( index, value ) {
-      chart.series[index].update({data: newData}, false);
-	  }); 
-	  chart.redraw();
+    resetChartData();
 	});	
 }
 
 function runFilter(formId){
+	console.log("initiating search");
 	var searchParameters = createSearchParametersHash(formId)
 	var url = constructUrl(searchParameters);
 	getData(url);   	
 }
 
 function initSavedSearchCriterium(formId){
-  saved_search_criterium = {name: $("#" + formId + " #pop-name").val(), page: '<%= @page %>', organization_id: <%= @user_org.id %>};
+	var prefix;
+	if (formId == "newFilterForm") {
+		prefix = "new-";
+	}
+	else {
+		prefix = "saved-";
+	};
+  saved_search_criterium = {name: $("#" + formId + " #" + prefix + "name").val(), 
+														page: '<%= @page %>', 
+														organization_id: <%= @user_org.id %>};
   saved_search_criterium.search_parameters = 	createSearchParametersHash(formId);
   return saved_search_criterium;
 }
@@ -160,9 +167,9 @@ function runAndSaveFilter(formId){
 }
 
 function populateFilterValues(){
-	var criterium_parameters = savedCriterium.search_parameters
-	$.each(criterium_parameters, function(k,v){
-	  $("#" + k).val(v.split(',')).trigger('chosen:updated');		
+	$("#saved-name").val(savedCriterium.name);
+	$.each(savedCriterium.search_parameters, function(k,v){
+	  $("#saved-" + k).val(v.split(',')).trigger('chosen:updated');		
 	});
 }
 
@@ -171,7 +178,7 @@ $(function() {
 	
 	$("#newFilter").on('shown.bs.modal', function (){
 	  <% @filter_object.filter_elements.each do |filter_element| %>
-	  $("#pop-<%= filter_element.element_name %>").chosen('destroy').chosen({search_contains: true});
+	  $("#new-<%= filter_element.element_name %>").chosen('destroy').chosen({search_contains: true});
 	  <% if filter_element.enabled_for_quick_filter %>
 		$("#chbx-<%= filter_element.element_name %>").prop('checked', true);
 		<% end %>
@@ -181,7 +188,7 @@ $(function() {
 
 	$("#savedFilter").on('shown.bs.modal', function (){
 	  <% @filter_object.filter_elements.each do |filter_element| %>
-	  $("#pop-<%= filter_element.element_name %>").chosen('destroy').chosen({search_contains: true});
+	  $("#saved-<%= filter_element.element_name %>").chosen('destroy').chosen({search_contains: true});
 	  <% if filter_element.enabled_for_quick_filter %>
 		$("#chbx-<%= filter_element.element_name %>").prop('checked', true);
 		<% end %>

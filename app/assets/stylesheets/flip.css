@@ -1,8 +1,9 @@
 
 .page1 {
-    width: 100%;
+    width: 90%;
     height: 600px;
     position: relative;
+    margin: 0 auto;
 }
 
 .page2 {
@@ -10,11 +11,13 @@
     height: 600px;
     position: relative;
     display: none;
+    margin: 0 auto;
 }
 
 .flip-container {
 	width: 90%;
     position: absolute;   
+	height: 600px;
     -webkit-perspective: 1000;
     -moz-perspective: 1000;
     margin: 0 auto;
