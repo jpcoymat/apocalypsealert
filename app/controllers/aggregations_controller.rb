@@ -11,7 +11,6 @@ class AggregationsController < ApplicationController
     @chart_div_id = "global_view"
     @default_group_by = "global"
     @default_series = "global"
-    @table_partial = "global_table"
     order_ids = object_filter("OrderLine")
     shipment_ids = object_filter("ShipmentLine")
     @order_line_data = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: order_ids)[0]
@@ -21,7 +20,7 @@ class AggregationsController < ApplicationController
                         global: {
                           name: "Global", 
                           data: {quantity: [@order_line_data.quantity.to_i, @ship_line_data.quantity.to_i ],
-                                cost: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i]}
+                                total_cost: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i]}
                         }
                       },
                       chart_categories: ["Source","Move"] 
@@ -41,7 +40,7 @@ class AggregationsController < ApplicationController
                         global: {
                           name: "Global", 
                           data: {quantity: [@order_line_data.quantity.to_i, @ship_line_data.quantity.to_i ],
-                                cost: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i]}
+                                total_cost: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i]}
                         }
                       },
                       chart_categories: ["Source","Move"] 
@@ -58,7 +57,6 @@ class AggregationsController < ApplicationController
     @target_url = aggregations_refresh_source_path
     @default_group_by = "product_categories"
     @chart_div_id = "source_view"      
-    @table_partial = "source_table"  
     @initial_data = source_chart_data
     
   end
@@ -78,7 +76,6 @@ class AggregationsController < ApplicationController
     @target_url = aggregations_refresh_move_path
     @default_group_by = "product_categories"
     @chart_div_id = "move_view"
-    @table_partial = "source_table"
     @initial_data = move_chart_data
   end
 
@@ -230,21 +227,21 @@ class AggregationsController < ApplicationController
                       }
       }
       OrderLine.statuses.each do |status_string, status_value| 
-        product_category_status_series = {name: status_string.titleize, data: {quantity: [], cost: []}}
-        origin_grp_status_series = {name: status_string.titleize, data: {quantity: [], cost: []}}
-        dest_grp_status_series = {name: status_string.titleize, data: {quantity: [], cost: []}}
+        product_category_status_series = {name: status_string.titleize, data: {quantity: [], total_cost: []}}
+        origin_grp_status_series = {name: status_string.titleize, data: {quantity: [], total_cost: []}}
+        dest_grp_status_series = {name: status_string.titleize, data: {quantity: [], total_cost: []}}
         @product_categories.each do |pc|
           @order_lines = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: @order_line_ids, product: pc.products, status: status_value)
           product_category_status_series[:data][:quantity] << @order_lines[0].quantity.to_i
-          product_category_status_series[:data][:cost] << @order_lines[0].total_cost.to_i
+          product_category_status_series[:data][:total_cost] << @order_lines[0].total_cost.to_i
         end
         @location_groups.each do |lg|
           @order_lines = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: @order_line_ids, origin_location_id: lg.locations, status: status_value)
           origin_grp_status_series[:data][:quantity] << @order_lines[0].quantity.to_i
-          origin_grp_status_series[:data][:cost] << @order_lines[0].total_cost.to_i
+          origin_grp_status_series[:data][:total_cost] << @order_lines[0].total_cost.to_i
           @order_lines = OrderLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost").where(id: @order_line_ids, destination_location_id: lg.locations, status: status_value)
           dest_grp_status_series[:data][:quantity] << @order_lines[0].quantity.to_i
-          dest_grp_status_series[:data][:cost] << @order_lines[0].total_cost.to_i          
+          dest_grp_status_series[:data][:total_cost] << @order_lines[0].total_cost.to_i          
         end
         chart_data[:product_categories][:series][status_string] = product_category_status_series
         chart_data[:origin_location_groups][:series][status_string] = origin_grp_status_series

@@ -115,34 +115,45 @@
 		  else {
 		    serverData = data;
 		  }
-		  //resetTable();
+			console.log("About to refresh table data");
+		  resetTable();
 			resetChartData();
 		}); 
   }
 	
 	function resetTable(){
+		console.log("Starting to reset Table");
 		var columnHeaders = serverData[group_by].chart_categories;
+		console.log("Headers: ");
+		console.log(columnHeaders);
 		var seriesData = serverData[group_by].series;
+		console.log("Series: ");
+		console.log(seriesData);
 		var html = '<table class="table table-striped" id="results_table"> <tr><th></th>';
 		$.each(columnHeaders, function(index, value) {
+			console.log("Column header: " + value);
 			html += '<th>' + value + '</th>'
 		});
 		html += '<th>Total</th></tr>';
 		$.each(seriesData, function(key, value) {
-			html += '<tr><td>' + capitalize(key) + '</td>';
-			var dataArray = value;
+			var single_series = value;
+			var series_name = single_series.name;
+			var series_data = single_series.data[attribute_view];
+			console.log("Series name: " + series_name);
+			console.log("Series data: " + series_data);
+			html += '<tr><td>' + capitalize(series_name) + '</td>';
 			var total = 0;
-			$.each(dataArray, function(k, v){
-				total += v;
-				if (key == "cost") {
-				  html += '<td>' + numberToCurrency(v) + '</td>';
-			  }
-				else {
-				  html += '<td>' + numberWithDelimiter(v) + '</td>' ;
+			$.each(series_data, function(index, data_point) {
+			  total += data_point;
+			  if (attribute_view == "cost") {
+				  html += '<td>' + numberToCurrency(data_point) + '</td>';
 				}
+				else {
+					html += '<td>' + numberWithDelimiter(data_point) + '</td>' ;
+				}	
 			});
-			(key =="cost") ? html +=  '<td>' + numberToCurrency(total) + '</td>' : html +=  '<td>' + numberWithDelimiter(total) + '</td>'
-			html += '</tr>';
+			(attribute_view == "cost") ? total = numberToCurrency(total) :  total = numberWithDelimiter(total) ;
+			html += '<td>' + total + '</td></tr>'
 		});
 		html += '</table>';
 		$("#results_table").replaceWith(html);
@@ -187,6 +198,7 @@
 	  $("#attribute_view").change(function(){
 	    attribute_view = $(this).val();
 	    resetChartData();
+	    resetTable();
 	  });
 	  
 	  $("#saved_search_criterium_id").change(function(){

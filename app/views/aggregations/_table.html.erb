@@ -1,0 +1,20 @@
+<table class="table table-striped" id="results_table">
+	<tr>
+		<th></th>
+		<% @initial_data[@default_group_by.to_sym][:chart_categories].each do |category| 	%>
+		<th><%= category %></th>
+		<% end %>
+		<th > Total </th>
+	</tr>
+	<% @initial_data[@default_group_by.to_sym][:series].each do |series_name, series_data| %>
+	<tr>
+		<td><%= series_data[:name].titleize %></td>
+		<% series_total = 0 %>
+		<% series_data[:data][:quantity].each do |data_point| %>
+      <% series_total += data_point %>
+		  <td><%= number_with_delimiter(data_point)%></td>
+		<% end %>
+		<td><%= number_with_delimiter(series_total) %></td>
+	</tr>
+	<% end %>
+</table>

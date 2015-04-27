@@ -20,7 +20,7 @@
         <div class="col-xs-2">
 	        <select id="attribute_view" class="form-control">
 		        <option value="quantity">Quantity</option>
-		        <option value="cost">Cost</option>
+		        <option value="total_cost">Cost</option>
 	        </select>        	
         </div>
 	    </div>
@@ -32,7 +32,7 @@
         <div id="global_view"></div>
       </div>
       <div class="page2">
-			  <%= render partial: @table_partial %>
+			  <%= render partial: "table" %>
 	    </div>
 	  </div>
 	</div>

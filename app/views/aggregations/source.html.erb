@@ -5,7 +5,7 @@
 <% end %>
 
 <h1>Source View</h1>
-<div class="container" width="100%">
+<div class="row" width="100%">
   <form class="form-horizontal">
 	  <div class="form-group">
 		  <label class="control-label col-xs-2">View Form </label>
@@ -15,43 +15,35 @@
     	    <option value="table">Table</option>	
         </select>
       </div>
-      <div class="col-xs-3">
+			<label class="control-label col-xs-2">Group By</label>
+      <div class="col-xs-2">
+	      <select id="group_by" class="form-control" >
+    	    <option value="product_categories">Product Categories</option>
+    	    <option value="origin_location_groups">Origin Location Groups</option>	
+    	    <option value="destination_location_groups">Destination Location Groups</option>	
+					<option value="modes">Modes</option>
+        </select>
       </div>
 	    <label class="control-label col-xs-2">View Attribute</label> 
       <div class="col-xs-2">
         <select id="attribute_view" class="form-control">
 	        <option value="quantity">Quantity</option>
-	        <option value="cost">Cost</option>
+	        <option value="total_cost">Cost</option>
         </select>        	
       </div>
     </div>
   </form>
 </div>
-<div class="container" width="100%">
+<div class="row" width="100%">
   <div class="flip-container" >
     <div class="page1">
       <div id="<%= @chart_div_id %>">    	
       </div>
     </div>
     <div class="page2">
-		  <%= render partial: @table_partial %>
+		  <%= render partial: "table" %>
     </div>
   </div>
-</div>
-<div class="container" width="100%" height="600px"></div>
-<div class="container" width="100%" >
-  <form class="form-horizontal">
-	  <div class="form-group">
-		  <label class="control-label col-xs-2">Group By</label>
-		  <div class="col-xs-2">
-        <select id="group_by" class="form-control" >
-    	    <option value="product_categories">Product Categories</option>
-    	    <option value="origin_location_groups">Origin Location Groups</option>	
-    	    <option value="destination_location_groups">Destination Location Groups</option>	
-        </select>
-      </div>
-    </div>
-  </form>
 </div>
 	
 <script type="text/javascript">
@@ -125,6 +117,8 @@ $(function () {
     $("#group_by").change(function(){
 			group_by = $(this).val();
 			resetChartData();
+			resetTable();
+	    
 		});
 
 });
