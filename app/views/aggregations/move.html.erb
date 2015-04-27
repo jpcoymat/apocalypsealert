@@ -1,43 +1,136 @@
 <% content_for :head do %>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
 <% end %>
 
 <h1>Move View</h1>
-
-<div id="move_view" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div class="container" width="100%">
+  <form class="form-horizontal">
+	  <div class="form-group">
+		  <label class="control-label col-xs-2">View Form </label>
+		  <div class="col-xs-2">
+        <select id="view_type" class="form-control" >
+    	    <option value="chart">Chart</option>
+    	    <option value="table">Table</option>	
+        </select>
+      </div>
+      <div class="col-xs-3">
+      </div>
+	    <label class="control-label col-xs-2">View Attribute</label> 
+      <div class="col-xs-2">
+        <select id="attribute_view" class="form-control">
+	        <option value="quantity">Quantity</option>
+	        <option value="cost">Cost</option>
+        </select>        	
+      </div>
+    </div>
+  </form>
+</div>
+<div class="container" width="100%">
+  <div class="flip-container" >
+    <div class="page1">
+      <div id="<%= @chart_div_id %>">    	
+      </div>
+    </div>
+    <div class="page2">
+		  <%= render partial: @table_partial %>
+    </div>
+  </div>
+</div>
+<div class="container" width="100%" height="600px"></div>
+<div class="container" width="100%" >
+  <form class="form-horizontal">
+	  <div class="form-group">
+		  <label class="control-label col-xs-2">Group By</label>
+		  <div class="col-xs-2">
+        <select id="group_by" class="form-control" >
+    	    <option value="product_categories">Product Categories</option>
+    	    <option value="origin_location_groups">Origin Location Groups</option>	
+    	    <option value="destination_location_groups">Destination Location Groups</option>	
+					<option value="modes">Modes</option>
+        </select>
+      </div>
+    </div>
+  </form>
+</div>
+	
 <script type="text/javascript">
 $(function () {
-    $('#move_view').highcharts({
+    $('#<%= @chart_div_id %>').highcharts({
+	      chart: {
+				  type: 'column',
+				  marginBottom: 120
+				},
         title: {
-            text: 'Supply Chain Summary'
+          text: 'Source Phase Summary'
         },
         xAxis: {
-            categories: ["Source", "Move"],
-						title: {text: "Phase"}
+          categories: serverData[group_by].chart_categories,
+					title: {text: "Product Categories"}
         },
-        series: [{name: "Quantity", type: 'bar', data: [<%= OrderLine.sum(:quantity).to_i %>, <%= ShipmentLine.sum(:quantity).to_i %>]}],
-        plotOptions: {
-	        series: {
-		        stacking: 'normal',
-            cursor: 'pointer',
-						point: {
-							events: {
-								click: function() {
-									var url ="/aggregations/" + this.category.toLowerCase() + "?";
-									lastParametersUsed.forEach(function(parameter) {
-										url += parameter.attribute_name + "=" + parameter.attribute_value + "&";
-									})
-									location.href = url;
-								}
-							}
+        yAxis: {
+				  min: 0,
+				  title: {
+				    text: 'Total Quantity'
+				  },
+				  stackLabels: {
+					  enabled: true,
+					  style: {
+						  fontWeight: 'bold',
+							color:  'gray'
 						}
-	        }
-		   
+				  }
+				},
+				legend: {
+					floating: true,
+					backgroundColor: 'white',
+					borderColor: '#CCC',
+					borderWidth: 1,
+					shadow: false
+				},
+				tooltip: {
+				  formatter: function () {
+					  return '<b>' + this.x + '</b><br/>' + this.series.name + ': ' + this.y + '<br/>' + 'Total: ' + this.point.stackTotal;
+					}
+			  },	
+        series: createSeriesArray(),
+        plotOptions: {
+					series: {
+		        stacking: 'normal',
+            cursor: 'pointer'
+	        },	        
+		      column: {
+            stacking: 'normal',
+            dataLabels: {
+	            enabled: true,
+	            color:  'white',
+	            style: {
+		            textShadow: '0 0 3px black'
+	            }
+            }			
+ 		      }
         }
     });
+
+	  $('#view_type').change(function() {
+      var page1 = $('.page1');
+      var page2 = $('.page2');
+      var toHide = page1.is(':visible') ? page1 : page2;
+      var toShow = page2.is(':visible') ? page1 : page2;
+         
+      toHide.removeClass('flip in').addClass('flip out').hide();
+      toShow.removeClass('flip out').addClass('flip in').show();
+    });
+
+    $("#group_by").change(function(){
+			group_by = $(this).val();
+			resetChartData();
+		});
+
 });
 
-</script>
 
+
+</script>
 

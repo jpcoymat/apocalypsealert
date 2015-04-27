@@ -30,7 +30,7 @@
 <div class="container" width="100%">
   <div class="flip-container" >
     <div class="page1">
-      <div id="source_view">    	
+      <div id="<%= @chart_div_id %>">    	
       </div>
     </div>
     <div class="page2">
@@ -56,7 +56,7 @@
 	
 <script type="text/javascript">
 $(function () {
-    $('#source_view').highcharts({
+    $('#<%= @chart_div_id %>').highcharts({
 	      chart: {
 				  type: 'column',
 				  marginBottom: 120

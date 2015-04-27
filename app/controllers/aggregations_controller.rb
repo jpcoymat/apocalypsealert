@@ -75,11 +75,20 @@ class AggregationsController < ApplicationController
     @filter_object.filter_elements << FilterElement.new(element_name: "mode", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true, filter_options: ShipmentLine.modes)
     @filter_object.filter_elements << FilterElement.new(element_name: "carrier_organization_id", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true, filter_options: @other_orgs)
     @filter_object.filter_elements << FilterElement.new(element_name: "forwarder_organization_id", multiselectable: true, enabled_for_quick_filter: true, typeahead_enabled: true,filter_options: @other_orgs)
+    @target_url = aggregations_refresh_move_path
+    @default_group_by = "product_categories"
+    @chart_div_id = "move_view"
+    @table_partial = "source_table"
+    @initial_data = move_chart_data
   end
 
 
   def refresh_move
-    
+    @chart_data = move_chart_data
+    respond_to do |format|
+      format.html {render json: @chart_data}
+      format.json {render json: @chart_data}
+    end
   end
        
   protected
@@ -117,7 +126,7 @@ class AggregationsController < ApplicationController
       unless user_params.empty? 
         user_params.each do |key,value|
           object_attribute_results[key] = []
-          values = value.split(",").map { |s| s.to_i }
+          values = value.split(",").map { |s| s }
           for val in values
             at = AttributeTracker.new(object_class, key, val)
             object_attribute_results[key] += at.value 
@@ -144,7 +153,62 @@ class AggregationsController < ApplicationController
     
     def move_chart_data
       @shipment_line_ids = object_filter("ShipmentLine")
-      @shipment_lines = ShipmentLine.where(id: @shipment_line_ids)
+      @product_categories = User.find(session[:user_id]).organization.product_categories
+      @location_groups = User.find(session[:user_id]).organization.location_groups
+      chart_data = {product_categories: {
+                      series: {},
+                      chart_categories: @product_categories.pluck(:name)
+                    },
+                    modes: {
+                      series: {},
+                      chart_categories: ShipmentLine.modes
+                    },
+                    origin_location_groups:{
+                      series: {},
+                      chart_categories: @location_groups.pluck(:name)
+                    },
+                    destination_location_groups: {
+                      series: {},
+                      chart_categories: @location_groups.pluck(:name)
+                    }            
+      }
+      ShipmentLine.statuses.each do |status_string, status_value|
+        product_category_status_series = {name: status_string.titleize, data:{quantity: [], total_cost: [], total_weight: [], total_volume: []}}
+        mode_status_series = {name: status_string.titleize, data:{quantity: [], total_cost: [], total_weight: [], total_volume: []}}
+        origin_grp_status_series = {name: status_string.titleize, data:{quantity: [], total_cost: [], total_weight: [], total_volume: []}}
+        dest_grp_status_series = {name: status_string.titleize, data:{quantity: [], total_cost: [], total_weight: [], total_volume: []}}
+        @product_categories.each do |pc|
+          @ship_lines = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost, sum(total_weight) as total_weight, sum(total_volume) as total_volume").where(id: @shipment_line_ids, product: pc.products, status: status_value)
+          product_category_status_series[:data][:quantity] << @ship_lines[0].quantity.to_i
+          product_category_status_series[:data][:total_cost] << @ship_lines[0].total_cost.to_i
+          product_category_status_series[:data][:total_weight] << @ship_lines[0].total_weight.to_i
+          product_category_status_series[:data][:total_volume] << @ship_lines[0].total_volume.to_i
+        end
+        @location_groups.each do |lg|
+          @ship_lines = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost, sum(total_weight) as total_weight, sum(total_volume) as total_volume").where(id: @shipment_line_ids, origin_location_id: lg.locations, status: status_value)
+          origin_grp_status_series[:data][:quantity] << @ship_lines[0].quantity.to_i
+          origin_grp_status_series[:data][:total_cost] << @ship_lines[0].total_cost.to_i
+          origin_grp_status_series[:data][:total_weight] << @ship_lines[0].total_weight.to_i
+          origin_grp_status_series[:data][:total_volume] << @ship_lines[0].total_volume.to_i
+          @ship_lines = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost, sum(total_weight) as total_weight, sum(total_volume) as total_volume").where(id: @shipment_line_ids, destination_location_id: lg.locations, status: status_value)
+          dest_grp_status_series[:data][:quantity] << @ship_lines[0].quantity.to_i
+          dest_grp_status_series[:data][:total_cost] << @ship_lines[0].total_cost.to_i
+          dest_grp_status_series[:data][:total_weight] << @ship_lines[0].total_weight.to_i
+          dest_grp_status_series[:data][:total_volume] << @ship_lines[0].total_volume.to_i
+        end
+        ShipmentLine.modes.each  do |mode|
+          @ship_lines = ShipmentLine.select("sum(quantity) as quantity, sum(total_cost) as total_cost, sum(total_weight) as total_weight, sum(total_volume) as total_volume").where(id: @shipment_line_ids, mode: mode, status: status_value)
+          mode_status_series[:data][:quantity] << @ship_lines[0].quantity.to_i
+          mode_status_series[:data][:total_cost] << @ship_lines[0].total_cost.to_i
+          mode_status_series[:data][:total_weight] << @ship_lines[0].total_weight.to_i
+          mode_status_series[:data][:total_volume] << @ship_lines[0].total_volume.to_i
+        end
+        chart_data[:product_categories][:series][status_string] = product_category_status_series
+        chart_data[:origin_location_groups][:series][status_string] = origin_grp_status_series
+        chart_data[:destination_location_groups][:series][status_string] = dest_grp_status_series
+        chart_data[:modes][:series][status_string] = mode_status_series
+      end
+      return chart_data
     end
     
     def source_chart_data
@@ -186,15 +250,12 @@ class AggregationsController < ApplicationController
         chart_data[:origin_location_groups][:series][status_string] = origin_grp_status_series
         chart_data[:destination_location_groups][:series][status_string] = dest_grp_status_series
       end
-      logger.debug chart_data.to_json
       return chart_data 
     end
     
     def set_saved_search_criterium
       @default_saved_criterium = @user.saved_search_criterium || {}
-      logger.debug @default_saved_criterium.to_s
       @saved_search_criteria = SavedSearchCriterium.where(organization_id: @user_org.id, page: page_requested)
-      logger.debug page_requested
     end
     
     def page_requested
