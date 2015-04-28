@@ -8,30 +8,6 @@ class OrderLinesController < ApplicationController
   # GET /order_lines
   # GET /order_lines.json
 
-  def lookup
-    @user = User.find(session[:user_id])
-    @user_org = @user.organization
-    @products = @user_org.products
-    @locations = @user_org.locations
-    @all_order_lines = @user_org.order_lines
-    @organizations = Organization.all
-    @product_categories = @user_org.product_categories
-    @order_lines = []
-    if request.post? 
-      @order_lines = @all_order_lines.where(search_params).order(:order_line_number)
-      @order_line = @order_lines.first 
-      @root_shipments = @order_line.immediate_shipment_lines
-      @graphs = []
-      @root_shipments.each do |shipment|
-        graph = ShipmentGraph.new(shipment)
-        @graphs << graph
-      end
-      respond_to do |format|
-        format.html
-        format.json {render json: @order_lines}
-      end
-    end
-  end
 
   def file_upload
    render partial: "shared/file_upload", locals: {target_path: import_file_order_lines_path}
@@ -59,7 +35,25 @@ class OrderLinesController < ApplicationController
 
   def index
     @user = User.find(session[:user_id])
-    @order_lines = OrderLine.where(organization_id: @user.organization_id).all
+    @user_org = @user.organization
+    @products = @user_org.products
+    @locations = @user_org.locations
+    @all_order_lines = @user_org.order_lines
+    @organizations = Organization.all
+    @product_categories = @user_org.product_categories
+    search_hash = search_params
+    if search_hash
+      @order_lines = @all_order_lines.where(search_hash).order(:order_line_number)
+      unless @order_lines.empty?
+        @order_line = @order_lines.first 
+        @root_shipments = @order_line.immediate_shipment_lines
+        @graphs = []
+        @root_shipments.each do |shipment|
+          graph = ShipmentGraph.new(shipment)
+          @graphs << graph
+        end
+      end
+    end
   end
 
   # GET /order_lines/1
@@ -148,24 +142,33 @@ class OrderLinesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_line_params
-      params.require(:order_line).permit(:status, :order_type, :is_active, :product_name, :order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :supplier_organization_id, :customer_organization_id, :product_ctegory_name, :product_category_id)
+      params.require(:order_line).permit(:status, :order_type, :is_active, :product_name, :order_line_number, :quantity, :eta, :etd, :origin_location_id, :destination_location_id, :supplier_organization_id, :customer_organization_id, :product_category_name, :product_category_id, :origin_location_group_id, :origin_location_group_name, :destination_location_group_id, :destination_location_group_name)
     end
 
     def search_params
-      search_params = order_line_params.delete_if {|k,v| v.blank?}
-      if search_params.key?("product_id")
-        nil
-      elsif search_params.key?("product_name")
-        search_params["product_id"] =  Product.where(name: search_params["product_name"]).first.try(:id)
-        search_params.delete("product_name")
-      elsif search_params.key?("product_category_id")
-        search_params["product_id"] =  Product.where(product_category_id: search_params["product_category_id"]).all
-        search_params.delete("product_category_id")
-      elsif search_params.key?("product_category_name")
-        search_params["product_id"] = ProductCategory.where(name: search_params["product_category_name"]).try(:products).try(:all)
-        search_params.delete("product_category_name")
+      user_params = nil
+      if params[:order_line]
+        user_params = order_line_params.delete_if {|k,v| v.blank?}
+        if user_params.key?("product_name")
+          user_params["product_id"] =  Product.where(name: user_params["product_name"]).first.try(:id)
+        elsif user_params.key?("product_category_id")
+          user_params["product_id"] =  Product.where(product_category_id: user_params["product_category_id"]).try(:ids)
+        elsif user_params.key?("product_category_name")
+          user_params["product_id"] = ProductCategory.where(name: user_params["product_category_name"]).try(:products).try(:ids)
+        end
+        if user_params.key?("origin_location_group_id")
+          user_params["origin_location_id"] = Location.where(location_group_id: user_params["origin_location_group_id"]).try(:ids)
+        elsif user_params.key?("origin_location_group_name")
+          user_params["origin_location_id"] = LocationGroup.where(name: user_params["origin_location_group_name"]).try(:locations).try(:ids)
+        end
+        if user_params.key?("destination_location_group_id")
+          user_params["destination_location_id"] = Location.where(location_group_id: user_params["origin_location_group_id"]).try(:ids)
+        elsif user_params.key?("destination_location_group_name")
+          user_params["destination_location_id"] = LocationGroup.where(name: user_params["destination_location_group_name"]).try(:locations).try(:ids)
+        end
+        user_params.each {|k,v| (k.include?("_name") or k.include?("_group_id") or k.include?("_category_id")) ? user_params.delete(k) : nil }    
       end
-      search_params
+      return user_params
     end
 
     def copy_order_line_file(order_line_file)

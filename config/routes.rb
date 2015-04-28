@@ -80,8 +80,6 @@ Rails.application.routes.draw do
 
   resources :order_lines do
     collection do
-      get 'lookup'
-      post 'lookup'
       get 'file_upload'
       post 'import_file'
     end

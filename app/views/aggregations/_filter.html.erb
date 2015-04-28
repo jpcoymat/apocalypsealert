@@ -24,6 +24,10 @@
  <script type="text/javascript" charset="utf-8">
 
   var lastParametersUsed = [];
+  <% @user_params.each do |attribute_name, attribute_value| %>
+  lastParametersUsed.push({attribute_name: "<%= attribute_name %>", attribute_value: "<%= attribute_value %>"});  
+  <% end %>
+  console.log(lastParametersUsed);
   var newData;
   var serverData = $.parseJSON('<%= @initial_data.to_json.html_safe %>'); 
   var attribute_view = $("#attribute_view").val();
@@ -115,23 +119,16 @@
 		  else {
 		    serverData = data;
 		  }
-			console.log("About to refresh table data");
 		  resetTable();
 			resetChartData();
 		}); 
   }
 	
 	function resetTable(){
-		console.log("Starting to reset Table");
 		var columnHeaders = serverData[group_by].chart_categories;
-		console.log("Headers: ");
-		console.log(columnHeaders);
 		var seriesData = serverData[group_by].series;
-		console.log("Series: ");
-		console.log(seriesData);
 		var html = '<table class="table table-striped" id="results_table"> <tr><th></th>';
 		$.each(columnHeaders, function(index, value) {
-			console.log("Column header: " + value);
 			html += '<th>' + value + '</th>'
 		});
 		html += '<th>Total</th></tr>';
@@ -139,8 +136,6 @@
 			var single_series = value;
 			var series_name = single_series.name;
 			var series_data = single_series.data[attribute_view];
-			console.log("Series name: " + series_name);
-			console.log("Series data: " + series_data);
 			html += '<tr><td>' + capitalize(series_name) + '</td>';
 			var total = 0;
 			$.each(series_data, function(index, data_point) {

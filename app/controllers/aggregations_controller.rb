@@ -117,11 +117,11 @@ class AggregationsController < ApplicationController
     def object_filter(object_class, search_params = params)
       object_ids = []
       object_attribute_results = {}
-      user_params = search_params
-      user_params.delete("controller")
-      user_params.delete("action")   
-      unless user_params.empty? 
-        user_params.each do |key,value|
+      @user_params = search_params
+      @user_params.delete("controller")
+      @user_params.delete("action")   
+      unless @user_params.empty? 
+        @user_params.each do |key,value|
           object_attribute_results[key] = []
           values = value.split(",").map { |s| s }
           for val in values

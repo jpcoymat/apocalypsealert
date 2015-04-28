@@ -1,0 +1,2 @@
+$("#order_line_results").html('<%= escape_javascript(render(partial: "order_lines")) %>');
+$("#OrderLine<%= @order_line.id.to_s%>").addClass('danger');

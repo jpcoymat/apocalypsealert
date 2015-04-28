@@ -5,26 +5,25 @@
 <% end %>
 
 <h1>Source View</h1>
-<div class="row" width="100%">
+<div class="container" width="100%">
   <form class="form-horizontal">
 	  <div class="form-group">
-		  <label class="control-label col-xs-2">View Form </label>
-		  <div class="col-xs-2">
+		  <label class="control-label col-xs-1">View Form </label>
+		  <div class="col-xs-3">
         <select id="view_type" class="form-control" >
     	    <option value="chart">Chart</option>
     	    <option value="table">Table</option>	
         </select>
       </div>
-			<label class="control-label col-xs-2">Group By</label>
-      <div class="col-xs-2">
+			<label class="control-label col-xs-1">Group By</label>
+      <div class="col-xs-3">
 	      <select id="group_by" class="form-control" >
     	    <option value="product_categories">Product Categories</option>
     	    <option value="origin_location_groups">Origin Location Groups</option>	
     	    <option value="destination_location_groups">Destination Location Groups</option>	
-					<option value="modes">Modes</option>
         </select>
       </div>
-	    <label class="control-label col-xs-2">View Attribute</label> 
+	    <label class="control-label col-xs-1">View Attribute</label> 
       <div class="col-xs-2">
         <select id="attribute_view" class="form-control">
 	        <option value="quantity">Quantity</option>
@@ -34,7 +33,7 @@
     </div>
   </form>
 </div>
-<div class="row" width="100%">
+<div class="container" width="100%">
   <div class="flip-container" >
     <div class="page1">
       <div id="<%= @chart_div_id %>">    	
@@ -89,7 +88,19 @@ $(function () {
         plotOptions: {
 					series: {
 		        stacking: 'normal',
-            cursor: 'pointer'
+            cursor: 'pointer',
+						point: {
+							events: {
+								click: function() {
+									var url = orderLineUrl();
+									url += 'order_line[' + groupByUrlTranslation() + ']=' + this.category + '&';
+									url += 'order_line[status]=' + this.series 
+									console.log(url);
+									location.href = url;
+								}
+							}
+						}
+						
 	        },	        
 		      column: {
             stacking: 'normal',
@@ -123,6 +134,29 @@ $(function () {
 
 });
 
+
+function orderLineUrl(){
+	var url = '/order_lines?';
+	console.log(lastParametersUsed);
+	lastParametersUsed.forEach(function(searchParam){
+	  url += 'order_line[' + searchParam.attribute_name + ']=' + searchParam.attribute_value + '&'
+	});
+	return url;
+}
+
+function groupByUrlTranslation(){
+	var group_by_param = '';
+	if (group_by == "product_categories") {
+		group_by_param = "product_category_name";
+	}
+	else if (group_by == "origin_location_groups") {
+		group_by_param = "origin_location_group_name";
+	}
+	else {
+		group_by_param = "destination_location_group_by_name";
+	}
+	return group_by_param;
+}
 
 
 </script>
