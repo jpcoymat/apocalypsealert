@@ -148,26 +148,28 @@ class OrderLinesController < ApplicationController
     def search_params
       user_params = nil
       if params[:order_line]
+        logger.debug "params submitted"
         user_params = order_line_params.delete_if {|k,v| v.blank?}
         if user_params.key?("product_name")
           user_params["product_id"] =  Product.where(name: user_params["product_name"]).first.try(:id)
         elsif user_params.key?("product_category_id")
           user_params["product_id"] =  Product.where(product_category_id: user_params["product_category_id"]).try(:ids)
         elsif user_params.key?("product_category_name")
-          user_params["product_id"] = ProductCategory.where(name: user_params["product_category_name"]).try(:products).try(:ids)
+          user_params["product_id"] = ProductCategory.where(name: user_params["product_category_name"]).first.try(:products).try(:ids)
         end
         if user_params.key?("origin_location_group_id")
           user_params["origin_location_id"] = Location.where(location_group_id: user_params["origin_location_group_id"]).try(:ids)
         elsif user_params.key?("origin_location_group_name")
-          user_params["origin_location_id"] = LocationGroup.where(name: user_params["origin_location_group_name"]).try(:locations).try(:ids)
+          user_params["origin_location_id"] = LocationGroup.where(name: user_params["origin_location_group_name"]).first.try(:locations).try(:ids)
         end
         if user_params.key?("destination_location_group_id")
           user_params["destination_location_id"] = Location.where(location_group_id: user_params["origin_location_group_id"]).try(:ids)
         elsif user_params.key?("destination_location_group_name")
-          user_params["destination_location_id"] = LocationGroup.where(name: user_params["destination_location_group_name"]).try(:locations).try(:ids)
+          user_params["destination_location_id"] = LocationGroup.where(name: user_params["destination_location_group_name"]).first.try(:locations).try(:ids)
         end
         user_params.each {|k,v| (k.include?("_name") or k.include?("_group_id") or k.include?("_category_id")) ? user_params.delete(k) : nil }    
       end
+      logger.debug user_params.to_s
       return user_params
     end
 
