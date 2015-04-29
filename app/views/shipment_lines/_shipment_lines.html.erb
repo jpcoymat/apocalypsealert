@@ -1,0 +1,20 @@
+<% if @shipment_lines.empty? %>
+  <p> No Ship Lines have been created</p>
+<% else %>
+  <table class="table table-striped">
+  <tr><th>Shipment Reference </th> <th>ETA</th> <th>ETD</th> <th>Product</th><th>Quantity</th> <th>Origin Location </th> <th>Destination Location</th></tr>
+  <% @shipment_lines.each do |shipment_line| %>
+     <tr><td><%= shipment_line.shipment_line_number    									%></td>
+         <td><%= shipment_line.eta.to_formatted_s(:short)               %></td>
+         <td><%= shipment_line.etd.to_formatted_s(:short)               %></td>
+         <td><%= shipment_line.product.name               							%></td>
+         <td><%= shipment_line.quantity                   							%></td>
+         <td><%= shipment_line.origin_location.try(:name)      	 				%></td>
+         <td><%= shipment_line.destination_location.try(:name)  				%></td>
+   			 <td><%= link_to "Details", shipment_line_path(shipment_line)		%></td>
+   			 <td><%= link_to "Edit", edit_shipment_line_path(shipment_line)	%></td>
+    </tr>
+  <% end %>
+  </table>
+<% end %>
+           

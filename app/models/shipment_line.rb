@@ -111,6 +111,10 @@ class ShipmentLine < ActiveRecord::Base
   def order_line_number
     order_line.try(:order_line_number)
   end
+  
+  def order_line_id
+    order_line.try(:id)
+  end
 
   def product_name
     product.try(:name)

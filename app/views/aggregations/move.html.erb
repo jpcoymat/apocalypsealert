@@ -92,7 +92,23 @@ $(function () {
         plotOptions: {
 					series: {
 		        stacking: 'normal',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            point: {
+							events: {
+								click: function() {
+									var url = shipLineUrl();
+									var lastAttr = groupByUrlTranslation();
+									if (lastAttr == "mode") {
+										url += 'shipment_line[' + lastAttr + ']=' + toRubyString(this.category) + '&';
+									}
+									else {
+										url += 'shipment_line[' + lastAttr + ']=' + this.category + '&';
+									}
+									console.log(url);
+									location.href = url;
+								}
+							}
+						}								
 	        },	        
 		      column: {
             stacking: 'normal',
@@ -126,7 +142,36 @@ $(function () {
 
 });
 
+function shipLineUrl(){
+	var url = '/shipment_lines?';
+	console.log(lastParametersUsed);
+	lastParametersUsed.forEach(function(searchParam){
+	  url += 'shipment_line[' + searchParam.attribute_name + ']=' + searchParam.attribute_value + '&'
+	});
+	return url;
+}
 
+function groupByUrlTranslation(){
+	var group_by_param = '';
+	if (group_by == "product_categories") {
+		group_by_param = "product_category_name";
+	}
+	else if (group_by == "origin_location_groups") {
+		group_by_param = "origin_location_group_name";
+	}
+	else if (group_by == "destination_location_groups") {
+		group_by_param = "destination_location_group_by_name";
+	}
+	else {
+		group_by_params = "mode"
+	}
+	return group_by_param;
+}
+
+function toRubyString(text) {
+	var rubyString = text.replace(" ", "_").toLowerCase();
+	return rubyString;
+}
 
 </script>
 

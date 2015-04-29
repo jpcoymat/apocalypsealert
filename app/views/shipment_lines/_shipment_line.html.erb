@@ -25,7 +25,13 @@
   </div>
 </div>
 
-<%= render partial: "order_line_autocomplete", locals: {form: form} %>
+<div class="form-group">
+  <%= form.label "Order Line Number", class: "col-sm-2 control-label" %>
+  <div class="col-xs-4">
+    <%= form.select :order_line_id, @order_lines.collect {|ol| [ol.order_line_number, ol.id]}, {include_blank: true}, class: "form-control chosen-select"  %>
+  </div>
+</div>
+
 <div class="form-group">
   <%= form.label "Customer Organization", class: "col-sm-2 control-label" %>
   <div class="col-xs-4">
@@ -49,9 +55,6 @@
   <%= form.label "ETD", class: "col-sm-2 control-label" %>
   <div class="col-xs-2">
     <%= form.text_field :etd %>
-    <script>
-      $( "#shipment_line_etd" ).datepicker({minDate: 0, dateFormat: "yy-mm-dd"});
-    </script>
   </div>
 </div>
 
@@ -59,9 +62,6 @@
   <%= form.label "ETA", class: "col-sm-2 control-label" %>
   <div class="col-xs-2"> 
     <%= form.text_field :eta %>
-    <script>
-      $( "#shipment_line_eta" ).datepicker({minDate: 0, dateFormat: "yy-mm-dd"});
-    </script>  
   </div> 
 </div>
 <%= render partial: "shared/product_form_auto", locals: {form: form, form_element_id: "shipment_lines_product_name"} %>
@@ -83,4 +83,53 @@
     <%= form.text_field :quantity, class: "form-control" %>
   </div>
 </div>
+
+
+<script type="text/javascript" charset="utf-8">
+
+
+var baseOrderLineUrl = '/order_lines/';
+var orderLine;
+
+$(function() {
+
+  $("#shipment_line_etd").datepicker({minDate: 0, dateFormat: "yy-mm-dd"});
+  $("#shipment_line_eta").datepicker({minDate: 0, dateFormat: "yy-mm-dd"});
+  $( "#shipment_line_order_line_id" ).chosen({search_contains: true, allow_single_deselect: true});
+    
+  $("#shipment_line_order_line_id").change(function() {
+    var order_id = $(this).val();
+		if (order_id == "") {
+		  $("#shipment_line_origin_location_id").val('');			  			 
+		  $("#shipment_line_destination_location_id").val('');	
+		  $("#shipment_lines_product_name").val('');	
+		  $("#shipment_line_customer_org_id").val('');
+		}
+		else {
+			console.log("valid order selected");
+			var url = baseOrderLineUrl + order_id + '.json';
+	    $.get(url, function(data){
+				console.log("get initiated");
+		    if (typeof(data) != "object") {
+			    orderLine = $.parseJSON(data);
+			  } 
+			  else {
+			    orderLine = data;
+			  }
+			  console.log(orderLine);
+			  $("#shipment_line_origin_location_id").val(orderLine.origin_location_id);
+			  $("#shipment_line_destination_location_id").val(orderLine.destination_location_id);
+			  $("#shipment_lines_product_name").val(orderLine.product_name);
+			  $("#shipment_line_customer_org_id").val(orderLine.customer_org_id);
+			
+			
+			});
+		}
+  });
+  
+	
+});
+
+</script>
+
 

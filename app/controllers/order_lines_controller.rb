@@ -30,7 +30,7 @@ class OrderLinesController < ApplicationController
     order_line_file = params[:file]
     copy_order_line_file(order_line_file)    
     OrderLine.import(Rails.root.join('public','order_line_uploads').to_s + "/"+order_line_file.original_filename)
-    redirect_to lookup_order_lines_url 
+    redirect_to order_lines_url 
   end
 
   def index
@@ -59,6 +59,10 @@ class OrderLinesController < ApplicationController
   # GET /order_lines/1
   # GET /order_lines/1.json
   def show
+    respond_to do |format|
+      format.html
+      format.json {render json: @order_line, methods: [:product_name]}
+    end
   end
 
   # GET /order_lines/new
@@ -129,7 +133,7 @@ class OrderLinesController < ApplicationController
   def destroy
     @order_line.destroy
     respond_to do |format|
-      format.html { redirect_to lookup_order_lines_url, notice: 'Order line was successfully destroyed.' }
+      format.html { redirect_to order_lines_url, notice: 'Order line was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -163,7 +167,7 @@ class OrderLinesController < ApplicationController
           user_params["origin_location_id"] = LocationGroup.where(name: user_params["origin_location_group_name"]).first.try(:locations).try(:ids)
         end
         if user_params.key?("destination_location_group_id")
-          user_params["destination_location_id"] = Location.where(location_group_id: user_params["origin_location_group_id"]).try(:ids)
+          user_params["destination_location_id"] = Location.where(location_group_id: user_params["destination_location_group_id"]).try(:ids)
         elsif user_params.key?("destination_location_group_name")
           user_params["destination_location_id"] = LocationGroup.where(name: user_params["destination_location_group_name"]).first.try(:locations).try(:ids)
         end

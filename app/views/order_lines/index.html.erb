@@ -50,6 +50,11 @@
     $( "#product_names" ).autocomplete({
       source: product_names
     });
+   
+    <% if @order_line %> 
+    setRowAsSelected("OrderLine<%= @order_line.id.to_s%>") ;
+    <% end %>
+   
   });
 
   function setRowAsSelected(orderLineId) {
@@ -246,7 +251,6 @@
       $('#search_params').append(htmlToAdd);
     }
   }
-
 
   function removeCriteria(form_element) {
     var form_selector = '#' + form_element;

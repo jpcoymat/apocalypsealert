@@ -177,6 +177,7 @@ function updateAndRunFilter(){
 		  else {
 		    savedCriterium = data;
 		  }
+		  $("#saved_search_criterium_id option:selected").text(savedCriterium.name);
 			var url = constructUrl(savedCriterium.search_parameters);
 			cleanAndResetQuickFilter(savedCriterium);
 			getData(url);			
