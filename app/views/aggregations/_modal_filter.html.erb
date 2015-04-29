@@ -34,7 +34,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:runFilter('newFilterForm')">Filter</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:runAndSaveFilter('newFilterForm')">Filter and Save</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:createAndRunFilter()">Filter and Save</button>
       </div>
     </div>
   </div>
@@ -51,7 +51,7 @@
         <h4 class="modal-title">Edit Filter </h4>
       </div>
       <div class="modal-body"> 
-        <div class="form-horizontal" id="savedFilterForm">
+        <form class="form-horizontal" id="savedFilterForm">
 	        <div class="form-group">
 	        	<label class="col-sm-4 control-label">Filter Name</label>
 						<div class="col-sm-6">
@@ -72,8 +72,8 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Filter</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Filter and Save</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:runFilter('savedFilterForm')">Filter</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:updateAndRunFilter()">Filter and Save</button>
       </div>
     </div>
   </div>
@@ -93,10 +93,10 @@ function createSearchParametersHash(formId){
 	filterFormFields.forEach(function(formField) {
 		console.log(formField.name + " : " + formField.value);
 		if (search_parameters[formField.name] == undefined) {
-		  search_parameters[formField.name] = formField.value; 	
+		  search_parameters[formField.name.replace("[]","")] = formField.value; 	
 		}
 		else {
-			search_parameters[formField.name] = search_parameters[formField.name] + ',' + formField.value ;
+			search_parameters[formField.name.replace("[]","")] = search_parameters[formField.name] + ',' + formField.value ;
 		}
 	});
 	return search_parameters;
@@ -131,40 +131,59 @@ function runFilter(formId){
 	getData(url);   	
 }
 
-function initSavedSearchCriterium(formId){
-	var prefix;
-	if (formId == "newFilterForm") {
-		prefix = "new-";
-	}
-	else {
-		prefix = "saved-";
-	};
-  saved_search_criterium = {name: $("#" + formId + " #" + prefix + "name").val(), 
+function initSavedSearchCriterium(){
+  saved_search_criterium = {name: $("#new-name").val(), 
 														page: '<%= @page %>', 
 														organization_id: <%= @user_org.id %>};
-  saved_search_criterium.search_parameters = 	createSearchParametersHash(formId);
+  saved_search_criterium.search_parameters = 	createSearchParametersHash('newFilterForm');
   return saved_search_criterium;
 }
 
-function runAndSaveFilter(formId){
-	savedSearchCriterium = initSavedSearchCriterium(formId);
+function createAndRunFilter(){
+	savedCriterium = initSavedSearchCriterium();
 	$.ajax({
 		type: "POST",
 		url: baseSavedSearchCriteriaUrl,
-		data: {saved_search_criterium: savedSearchCriterium},
+		data: {saved_search_criterium: savedCriterium},
 		success: function(data){
 			if (typeof(data) != "object") {
-		    savedSearchCriterium = $.parseJSON(data);
+		    savedCriterium = $.parseJSON(data);
 		  } 
 		  else {
-		    savedSearchCriterium = data;
+		    savedCriterium = data;
 		  }
-			var url = constructUrl(savedSearchCriterium.search_parameters);
-			cleanAndResetQuickFilter(savedSearchCriterium);
+		  var savedCriteriaDropDown = $("#saved_search_criterium_id");
+		  savedCriteriaDropDown.append('<option value="' + savedCriterium.id  + '">' + savedCriterium.name + '</option>');
+		  savedCriteriaDropDown.val(savedCriterium.id);
+			var url = constructUrl(savedCriterium.search_parameters);
+			cleanAndResetQuickFilter(savedCriterium);
 			getData(url);
 		}
 	});
 }
+
+function updateAndRunFilter(){
+	savedCriterium.search_parameters = createSearchParametersHash('savedFilterForm');
+	savedCriterium.name = $("#saved-name").val();
+	var urlToSave = baseSavedSearchCriteriaUrl + "/" + savedCriterium.id
+	$.ajax({
+		type: "PUT",
+		url: urlToSave,
+		data: {saved_search_criterium: savedCriterium},
+		success: function(data){
+			if (typeof(data) != "object") {
+		    savedCriterium = $.parseJSON(data);
+		  } 
+		  else {
+		    savedCriterium = data;
+		  }
+			var url = constructUrl(savedCriterium.search_parameters);
+			cleanAndResetQuickFilter(savedCriterium);
+			getData(url);			
+		}
+	});
+}
+
 
 function populateFilterValues(){
 	$("#saved-name").val(savedCriterium.name);

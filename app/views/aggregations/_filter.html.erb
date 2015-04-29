@@ -27,7 +27,6 @@
   <% @user_params.each do |attribute_name, attribute_value| %>
   lastParametersUsed.push({attribute_name: "<%= attribute_name %>", attribute_value: "<%= attribute_value %>"});  
   <% end %>
-  console.log(lastParametersUsed);
   var newData;
   var serverData = $.parseJSON('<%= @initial_data.to_json.html_safe %>'); 
   var attribute_view = $("#attribute_view").val();
@@ -167,13 +166,17 @@
 	
 	function saveAndRun(){
 		var url = "/saved_search_criteria/" + savedCriterium.id + ".json";
+		console.log(url);
 		lastParametersUsed = getLastParameters();
+		console.log(lastParametersUsed);
 		savedCriterium.search_parameters = toObject(lastParametersUsed);
+		console.log(savedCriterium);
 		$.ajax({
 			type: "PUT",
 			url: url,
 			data: {saved_search_criterium: savedCriterium},
 			success: function(data){
+				console.log("PUT function successful");
 				if (typeof(data) != "object") {
 			    savedCriterium = $.parseJSON(data);
 			  } 
