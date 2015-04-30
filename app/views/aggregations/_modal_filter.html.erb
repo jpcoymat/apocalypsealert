@@ -20,9 +20,7 @@
             <%= label_tag filter_element.element_name, filter_element.display_name, class: "col-sm-4 control-label" %>
             <div class="col-sm-6">
 	            <select class="form-control chosen-select" id="new-<%= filter_element.element_name  %>" name="<%= filter_element.element_name  %>" multiple="multiple" >
-		          <% filter_element.filter_options.each do |fo| %>
-		            <option value="<%= fo.try(:id) %>"><%= fo.try(:name)%> </option>
-							<% end %>
+		           <%= filter_element.filter_select_options.html_safe %>
 							</select>
             </div>  
             <div class="col-sm-2">
