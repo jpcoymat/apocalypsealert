@@ -1,0 +1,229 @@
+<h3>Quick Filter </h3>
+<h4>Search Criteria</h4>
+<div >
+  <%= select_tag :saved_search_criterium_id, options_from_collection_for_select(@saved_search_criteria, "id", "name"), class: 'form-control', include_blank: true %>
+</div>
+<br \>
+
+<button id="edit_filter" type="button" class="btn btn-primary" data-toggle="modal" data-target="#savedFilter" disabled="disabled">Edit Filter</button>
+<button id="new_filter" type="button" class="btn btn-primary" data-toggle="modal" data-target="#newFilter">New Filter</button>
+<br \>
+<br \>
+
+
+<ul class="nav nav-pills nav-stacked" id="quick_filter">
+<% @filter_object.filter_elements.each do |filter_element| %>
+  <li><%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chosen-select', data: {placeholder: filter_element.display_name} %></li>
+<% end %>
+  <li>
+	  <button type="submit" class="btn btn-primary" onclick="javascript:refreshData()">Run</button>
+	  <button type="submit" class="btn btn-primary" onclick="javascript:saveAndRun()">Save & Run</button>
+  </li>
+</ul>
+
+ <script type="text/javascript" charset="utf-8">
+
+  var lastParametersUsed = [];
+  <% @user_params.each do |attribute_name, attribute_value| %>
+  lastParametersUsed.push({attribute_name: "<%= attribute_name %>", attribute_value: "<%= attribute_value %>"});  
+  <% end %>
+  var newData;
+  var serverData = $.parseJSON('<%= @initial_data.to_json.html_safe %>'); 
+  var attribute_view = $("#attribute_view").val();
+  var group_by = '<%= @default_group_by %>';
+  var baseUrl =  "<%= @target_url %>?" ;
+  
+  var savedCriterium;
+  var parameters = [];
+  <% @filter_object.filter_elements.each do |filter_element|  %>
+  parameters.push('<%= filter_element.element_name %>'); 
+  <% end %>
+
+  function createSeriesArray() {
+    var seriesObject = serverData[group_by].series;
+    var seriesArray = [];
+    for (series in seriesObject) {
+      var single_series = seriesObject[series];
+      seriesArray.push({name: single_series.name, data: single_series.data[attribute_view]});
+    };	
+    return seriesArray;
+  }
+	
+  function resetChartData(){
+    var seriesArray = createSeriesArray();
+    var chart = $("#<%= @chart_div_id %>").highcharts();
+    chart.xAxis[0].setCategories(serverData[group_by].chart_categories, false);
+    chart.xAxis[0].setTitle({text: group_by}, false);
+    chart.yAxis[0].setTitle({text: capitalize(attribute_view)},false);
+    $.each(chart.series, function(index, value) {
+      chart.series[index].update({data: seriesArray[index].data, name: seriesArray[index].name},false);
+    });
+    chart.redraw(); 
+  }
+	
+	
+  function capitalize(txt){
+    return txt.substr(0,1).toUpperCase() + txt.substr(1);
+  }
+	
+  function numberWithDelimiter(val){
+    val = val.toFixed(2);
+    while (/(\d+)(\d{3})/.test(val.toString())){
+      val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    }
+    return val;
+  }
+	
+  function numberToCurrency(val){
+    val = numberWithDelimiter(val);
+    val = "$" + val;
+    return val
+  }
+
+  function toObject(paramArray){
+    var toObj = {};
+    paramArray.forEach(function(parameter){
+      toObj[parameter.attribute_name] = parameter.attribute_value;
+    });
+    return toObj;
+  }
+	
+  function getUrl(){
+    var url = baseUrl;
+    lastParametersUsed = getLastParameters();
+    lastParametersUsed.forEach(function(arrayItem) {
+      url += arrayItem.attribute_name + "=" + arrayItem.attribute_value + "&"; 
+    });
+    return url;
+  }
+	
+  function getLastParameters(){
+    var lastParams = []
+    parameters.forEach( function(arrayItem) {
+      var parameter_value = $("#"+arrayItem).val();
+      if (parameter_value !== null) {
+        lastParams.push({attribute_name: arrayItem, attribute_value: parameter_value + ""});  
+      }
+    });
+    return lastParams;	
+  }
+	
+  function refreshData() {
+    attribute_view = $("#attribute_view").val();
+    var url = getUrl();
+    $.get(url, function(data){
+      if (typeof(data) != "object") {
+        serverData = $.parseJSON(data);
+      } 
+      else {
+        serverData = data;
+      }
+      resetTable();
+      resetChartData();
+    }); 
+  }
+	
+  function resetTable(){
+    var columnHeaders = serverData[group_by].chart_categories;
+    var seriesData = serverData[group_by].series;
+    var html = '<table class="table table-striped" id="results_table"> <tr><th></th>';
+    $.each(columnHeaders, function(index, value) {
+      html += '<th>' + value + '</th>'
+    });
+    html += '<th>Total</th></tr>';
+    $.each(seriesData, function(key, value) {
+      var single_series = value;
+      var series_name = single_series.name;
+      var series_data = single_series.data[attribute_view];
+      html += '<tr><td>' + capitalize(series_name) + '</td>';
+      var total = 0;
+      $.each(series_data, function(index, data_point) {
+        total += data_point;
+        if (attribute_view == "cost") {
+          html += '<td>' + numberToCurrency(data_point) + '</td>';
+        }
+        else {
+          html += '<td>' + numberWithDelimiter(data_point) + '</td>' ;
+        }	
+      });
+      (attribute_view == "cost") ? total = numberToCurrency(total) :  total = numberWithDelimiter(total) ;
+      html += '<td>' + total + '</td></tr>'
+    });
+    html += '</table>';
+    $("#results_table").replaceWith(html);
+  }
+	
+  function populateFilter(savedCriterium){
+    $.each(savedCriterium.search_parameters, function(k,v) {
+      $("#" + k).val(v.split(',')).trigger('chosen:updated');	
+    });
+  }
+	
+  function cleanAndResetQuickFilter(savedCriterium){
+    $('.chosen-select','#quick_filter').val('').trigger('chosen:updated');
+    populateFilter(savedCriterium);
+  }
+	
+  function saveAndRun(){
+    var url = "/saved_search_criteria/" + savedCriterium.id + ".json";
+    lastParametersUsed = getLastParameters();
+    savedCriterium.search_parameters = toObject(lastParametersUsed);
+    $.ajax({
+      type: "PUT",
+      url: url,
+      data: {saved_search_criterium: savedCriterium},
+      success: function(data){
+        if (typeof(data) != "object") {
+          savedCriterium = $.parseJSON(data);
+        } 
+        else {
+          savedCriterium = data;
+        }
+      }		
+    });
+    refreshData();
+  }	
+	
+  $(function() {	
+    attribute_view = '<%= @default_attribute_view %>';
+
+    savedCriterium = {};
+
+    $("#attribute_view").change(function(){
+      attribute_view = $(this).val();
+      resetChartData();
+      resetTable();
+    });	  
+
+    $("#saved_search_criterium_id").change(function(){
+      var savedSearchCriteriumId = $(this).val();
+      if (savedSearchCriteriumId == "") {
+        $('.chosen-select','#quick_filter').val('').trigger('chosen:updated');
+        $("#edit_filter").prop('disabled', 'disabled');    
+      }
+      else {
+        $("#edit_filter").removeProp('disabled');
+        var url = "/saved_search_criteria/" + savedSearchCriteriumId + ".json";		
+        $.get(url, function(data){
+          if (typeof(data) != "object") {
+            savedCriterium = $.parseJSON(data);
+          } 
+          else {
+            savedCriterium = data;
+          }
+          cleanAndResetQuickFilter(savedCriterium);
+        });			
+      }
+    }); 
+		
+    <% @filter_object.filter_elements.each do |filter_element| %>
+    $("#<%= filter_element.element_name %>").chosen({search_contains: true});
+    $("#<%= filter_element.element_name %>").val('<%= filter_element.element_value %>'.split(',')).trigger('chosen:updated');	
+    <% end %>
+	
+  });
+
+
+ </script>
+
+	
