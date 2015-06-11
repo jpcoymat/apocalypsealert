@@ -108,14 +108,24 @@
     return lastParams;	
   }
 	
+  function getData(url){
+    $.get(url, function(data){
+  	  if (typeof(data) != "object") {
+  	    serverData = $.parseJSON(data);
+  	  } 
+  	  else {
+  	    serverData = data;
+  	  }
+  	resetTable();  
+      resetChartData();
+  	});	
+  }
+
+
   function refreshData() {
     attribute_view = $("#attribute_view").val();
     var url = getUrl();
-    $.get(url, function(data){
-      serverData = data;
-      resetTable();
-      resetChartData();
-    }); 
+    getData(url);
   }
 	
   function resetTable(){

@@ -110,17 +110,6 @@ function constructUrl(searchParameters){
 	return url;
 }
 
-function getData(url){
-  $.get(url, function(data){
-	  if (typeof(data) != "object") {
-	    serverData = $.parseJSON(data);
-	  } 
-	  else {
-	    serverData = data;
-	  }
-    resetChartData();
-	});	
-}
 
 function runFilter(formId){
 	console.log("initiating search");
