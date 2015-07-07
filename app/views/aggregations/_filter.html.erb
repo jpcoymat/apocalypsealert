@@ -13,7 +13,7 @@
 
 <ul class="nav nav-pills nav-stacked" id="quick_filter">
 <% @filter_object.filter_elements.each do |filter_element| %>
-  <li><%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chosen-select', data: {placeholder: filter_element.display_name} %></li>
+  <li><%= select_tag filter_element.element_name, filter_element.filter_select_options.html_safe, multiple: filter_element.multiselectable, class: 'form-control chosen-select col-md-2', data: {placeholder: filter_element.display_name} %></li>
 <% end %>
   <li>
     <button type="submit" class="btn btn-primary" onclick="javascript:refreshData()">Run</button>
