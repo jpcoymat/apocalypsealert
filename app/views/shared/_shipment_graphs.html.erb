@@ -23,7 +23,7 @@
 <% @graphs.each do |graph| %>
   <% graph.edges.each do |edge| %>
     <div class="modal fade" id="shipmentModal-<%= edge.shipment.id%>" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
