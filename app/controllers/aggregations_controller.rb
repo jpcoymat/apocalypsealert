@@ -19,11 +19,11 @@ class AggregationsController < ApplicationController
                       series: {
                         global: {
                           name: "Global", 
-                          data: {quantity: [@order_line_data.quantity.to_i, @ship_line_data.quantity.to_i ],
+                          data: {quantity: [2450, 587, 1593, 1631, 2881 ],
                                 total_cost: [@order_line_data.total_cost.to_i , @ship_line_data.total_cost.to_i]}
                         }
                       },
-                      chart_categories: ["Source","Move"] 
+                      chart_categories: ["Source","Make", "Move", "Store", "Deliver"] 
                     }}
                          
   end
